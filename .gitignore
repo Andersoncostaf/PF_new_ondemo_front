@@ -1,0 +1,16 @@
+/node_modules
+/dist
+/.angular
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+.env
+.env.local
+.vscode/*
+!.vscode/extensions.json
+.idea/
