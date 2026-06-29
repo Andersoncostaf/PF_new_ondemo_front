@@ -1,10 +1,15 @@
 import { AsyncPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ModulosService } from '../../core/identidade/modulos.service';
+import {
+  SHELL_HOME_ICON,
+  shellNavBadge,
+  shellNavIcon,
+} from './shell-nav.config';
 
 @Component({
   selector: 'app-shell',
@@ -15,6 +20,11 @@ import { ModulosService } from '../../core/identidade/modulos.service';
 })
 export class ShellComponent {
   readonly modulos$ = this.modulosService.modulos$;
+  readonly sidebarOpen = signal(false);
+  readonly homeIcon = SHELL_HOME_ICON;
+
+  readonly moduloIcon = shellNavIcon;
+  readonly moduloBadge = shellNavBadge;
 
   constructor(
     private readonly authService: AuthService,
@@ -27,6 +37,20 @@ export class ShellComponent {
 
   get tenantNome(): string {
     return this.authService.getTenant()?.razao_social ?? '';
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update((open) => !open);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
+
+  closeSidebarOnNavigate(): void {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      this.sidebarOpen.set(false);
+    }
   }
 
   logout(): void {
