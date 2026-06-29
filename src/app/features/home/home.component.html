@@ -1,0 +1,8 @@
+<p-card header="Início">
+  <p>Bem-vindo, <strong>{{ usuario?.nome }}</strong>.</p>
+  <p>Tenant: <strong>{{ tenant?.razao_social }}</strong> ({{ tenant?.slug }})</p>
+  <p>Assinatura: <strong>{{ tenant?.subscription_status }}</strong></p>
+  @if (tenant?.trial_ends_at) {
+    <p>Trial até: {{ tenant?.trial_ends_at | date: 'short' }}</p>
+  }
+</p-card>

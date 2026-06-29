@@ -1,0 +1,47 @@
+<div class="login-page">
+  <p-card header="Portal Fornecedor" subheader="Acesso do tenant">
+    @if (tenantSlug) {
+      <p class="tenant-hint">Tenant: <strong>{{ tenantSlug }}</strong></p>
+    } @else {
+      <p-message
+        severity="warn"
+        text="Host não reconhecido. Use portalfornecedor.{slug}.local"
+      />
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+      <label for="email">E-mail</label>
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+        autocomplete="username"
+        class="w-full"
+      />
+
+      <label for="password">Senha</label>
+      <p-password
+        inputId="password"
+        formControlName="password"
+        [feedback]="false"
+        [toggleMask]="true"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
+
+      @if (errorMessage) {
+        <p-message severity="error" [text]="errorMessage" />
+      }
+
+      <p-button
+        type="submit"
+        label="Entrar"
+        [loading]="loading"
+        styleClass="w-full"
+      />
+    </form>
+
+    <p class="dev-hint">Dev: admin&#64;clientex.local / password</p>
+  </p-card>
+</div>

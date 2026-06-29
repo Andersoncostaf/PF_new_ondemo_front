@@ -1,34 +1,54 @@
-# PF_new_ondemo_front
+# PF_ondemo_Front
 
-Front-end **Portal Fornecedor On Demand** — Angular 17+, PrimeNG, multi-tenant por hostname.
+Front-end **Portal Fornecedor On Demand** — Angular 17, PrimeNG, multi-tenant por hostname.
 
 ## Stack
 
-- Angular + PrimeNG
-- JWT (API Laravel)
-- Portais: colaborador (tenant) e fornecedor (global)
+- Angular 17 (standalone)
+- PrimeNG + PrimeIcons
+- JWT via API Laravel (`PF_ondemo_Back`)
+
+## Passo 5 — Identidade (implementado)
+
+- Login mínimo: `/auth/login`
+- `GET /api/v1/me/modulos` como fonte do menu
+- `ContratacaoGuard` protege `/contratacao`
+- Menu dinâmico no shell (item Contratação só se a API liberar)
 
 ## Desenvolvimento local
 
-Com Docker Compose no monorepo:
+1. Adicionar ao `hosts`:
 
-```bash
-docker compose --env-file .env up -d --build
+```
+127.0.0.1 portalfornecedor.clientex.local
+127.0.0.1 api.portalfornecedor.local
 ```
 
-URLs locais (após configurar `hosts`):
+2. API Laravel rodando em `http://api.portalfornecedor.local`
 
-- `http://portalfornecedor.clientex.local`
-- `http://portaldofornecedor.fornecedor.local`
-- API: `http://api.portalfornecedor.local`
-
-## Build homolog
+3. Front:
 
 ```bash
-npm ci
-npm run build -- --configuration production
+npm install
+npm start -- --host portalfornecedor.clientex.local --port 4200
+```
+
+4. Acessar `http://portalfornecedor.clientex.local:4200/auth/login`
+
+Credenciais demo: `admin@clientex.local` / `password`
+
+## Build
+
+```bash
+npm run build
+```
+
+## Testes
+
+```bash
+npm test
 ```
 
 ## Documentação
 
-Especificações em `meta_specs/` no monorepo local (`Portal_Fornecedor_new-ondemo`).
+Specs em `meta_specs/` no monorepo (`Portal_Fornecedor_new-ondemo`).

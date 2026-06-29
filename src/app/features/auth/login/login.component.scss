@@ -1,0 +1,25 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--surface-ground, #f4f6f8);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tenant-hint,
+.dev-hint {
+  margin: 0 0 1rem;
+  color: var(--text-color-secondary, #64748b);
+  font-size: 0.875rem;
+}
+
+.w-full {
+  width: 100%;
+}
