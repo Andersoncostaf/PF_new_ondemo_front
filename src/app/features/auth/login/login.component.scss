@@ -7,6 +7,22 @@
   background: var(--surface-ground, #f4f6f8);
 }
 
+.login-panel {
+  width: 100%;
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-logo {
+  width: 100%;
+  max-width: 18rem;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;

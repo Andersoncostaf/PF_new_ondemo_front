@@ -9,8 +9,16 @@
 
   <aside class="sidebar" [class.sidebar--open]="sidebarOpen()">
     <div class="sidebar-brand">
-      <span class="brand-title">Portal Fornecedor</span>
-      <span class="brand-subtitle">{{ tenantNome }}</span>
+      <img
+        src="assets/branding/logo-horizontal.png"
+        alt="Portal Fornecedor On Demand"
+        class="brand-logo"
+        width="620"
+        height="265"
+      />
+      @if (tenantNome) {
+        <span class="brand-subtitle">{{ tenantNome }}</span>
+      }
     </div>
 
     <nav class="sidebar-nav">
@@ -63,7 +71,15 @@
         ariaLabel="Abrir menu"
         (onClick)="toggleSidebar()"
       />
-      <span class="topbar-title">{{ tenantNome }}</span>
+      <img
+        src="assets/branding/logo-icon.png"
+        alt=""
+        class="topbar-logo"
+        width="32"
+        height="32"
+        aria-hidden="true"
+      />
+      <span class="topbar-title">{{ tenantNome || 'Portal Fornecedor' }}</span>
     </header>
 
     <main class="shell-content">
