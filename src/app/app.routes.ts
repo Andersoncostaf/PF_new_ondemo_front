@@ -2,15 +2,13 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/auth.guard';
 import { contratacaoGuard } from './guards/contratacao.guard';
-import { LoginComponent } from './features/auth/login/login.component';
 import { ShellComponent } from './features/shell/shell.component';
-import { HomeComponent } from './features/home/home.component';
-import { ContratacaoPlaceholderComponent } from './features/contratacao/contratacao-placeholder.component';
 
 export const routes: Routes = [
   {
     path: 'auth/login',
-    component: LoginComponent,
+    loadComponent: () =>
+      import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: '',
@@ -19,12 +17,14 @@ export const routes: Routes = [
     children: [
       {
         path: 'home',
-        component: HomeComponent,
+        loadComponent: () =>
+          import('./features/home/home.component').then((m) => m.HomeComponent),
       },
       {
         path: 'contratacao',
-        component: ContratacaoPlaceholderComponent,
         canActivate: [contratacaoGuard],
+        loadChildren: () =>
+          import('./features/contratacao/contratacao.routes').then((m) => m.contratacaoRoutes),
       },
       {
         path: '',

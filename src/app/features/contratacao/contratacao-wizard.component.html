@@ -1,0 +1,121 @@
+<p-card [header]="isNova ? 'Nova solicitação' : 'Editar solicitação'">
+  @if (loading) {
+    <p>Carregando...</p>
+  } @else {
+    @if (errorMessage) {
+      <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
+    }
+    @if (successMessage) {
+      <p-message severity="success" [text]="successMessage" styleClass="mb-3 w-full" />
+    }
+
+    <p-steps [model]="steps" [activeIndex]="activeStep" [readonly]="true" styleClass="mb-4" />
+
+    <form [formGroup]="form" class="wizard-form">
+      @if (activeStep === 0) {
+        <div class="field">
+          <label for="titulo">Título *</label>
+          <input id="titulo" pInputText formControlName="titulo" class="w-full" />
+        </div>
+        <div class="field">
+          <label for="categoria">Categoria de serviço *</label>
+          <input id="categoria" pInputText formControlName="categoria_servico" class="w-full" />
+        </div>
+        <div class="field">
+          <label for="local">Local</label>
+          <input id="local" pInputText formControlName="local" class="w-full" />
+        </div>
+        <div class="field">
+          <label for="prazo">Prazo desejado</label>
+          <input id="prazo" type="date" pInputText formControlName="prazo_desejado" class="w-full" />
+        </div>
+      }
+
+      @if (activeStep === 1) {
+        <div class="field">
+          <label for="tr">Termo de referência / escopo *</label>
+          <textarea
+            id="tr"
+            pInputTextarea
+            formControlName="termo_referencia"
+            rows="8"
+            class="w-full"
+          ></textarea>
+        </div>
+      }
+
+      @if (activeStep === 2) {
+        <div formArrayName="qqp_itens" class="qqp-list">
+          @for (item of qqpItens.controls; track i; let i = $index) {
+            <div [formGroupName]="i" class="qqp-row">
+              <div class="field flex-grow">
+                <label [for]="'desc-' + i">Descrição *</label>
+                <input [id]="'desc-' + i" pInputText formControlName="descricao" class="w-full" />
+              </div>
+              <div class="field qqp-qty">
+                <label [for]="'qty-' + i">Qtd *</label>
+                <input [id]="'qty-' + i" pInputText type="number" formControlName="quantidade" class="w-full" />
+              </div>
+              <div class="field qqp-unit">
+                <label [for]="'unit-' + i">Un. *</label>
+                <input [id]="'unit-' + i" pInputText formControlName="unidade" class="w-full" />
+              </div>
+              @if (!readOnly && qqpItens.length > 1) {
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [text]="true"
+                  (onClick)="removeQqpItem(i)"
+                />
+              }
+            </div>
+          }
+        </div>
+        @if (!readOnly) {
+          <p-button label="Adicionar item" icon="pi pi-plus" [text]="true" (onClick)="addQqpItem()" />
+        }
+      }
+
+      @if (activeStep === 3) {
+        <div class="review">
+          <p><strong>Título:</strong> {{ form.value.titulo }}</p>
+          <p><strong>Categoria:</strong> {{ form.value.categoria_servico }}</p>
+          <p><strong>Local:</strong> {{ form.value.local || '—' }}</p>
+          <p><strong>Prazo:</strong> {{ form.value.prazo_desejado || '—' }}</p>
+          <p><strong>TR / escopo:</strong></p>
+          <p class="review-tr">{{ form.value.termo_referencia }}</p>
+          <p><strong>Itens QQP:</strong></p>
+          <ul>
+            @for (item of form.value.qqp_itens; track $index) {
+              <li>{{ item.descricao }} — {{ item.quantidade }} {{ item.unidade }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </form>
+
+    <div class="wizard-actions">
+      <a routerLink="/contratacao">Voltar à lista</a>
+
+      <div class="wizard-actions-right">
+        @if (activeStep > 0) {
+          <p-button label="Anterior" severity="secondary" (onClick)="prevStep()" [disabled]="saving" />
+        }
+        @if (activeStep < steps.length - 1) {
+          <p-button label="Próximo" (onClick)="nextStep()" [disabled]="saving" />
+        }
+        @if (!readOnly) {
+          <p-button
+            label="Salvar rascunho"
+            severity="secondary"
+            (onClick)="salvarRascunho()"
+            [loading]="saving"
+          />
+          @if (activeStep === steps.length - 1) {
+            <p-button label="Submeter" (onClick)="submeter()" [loading]="saving" />
+          }
+        }
+      </div>
+    </div>
+  }
+</p-card>

@@ -8,6 +8,22 @@ Front-end **Portal Fornecedor On Demand** — Angular 17, PrimeNG, multi-tenant 
 - PrimeNG + PrimeIcons
 - JWT via API Laravel (`PF_ondemo_Back`)
 
+## Passo 6 — Wizard Contratação (MVP core)
+
+- Listagem em `/contratacao`
+- Wizard 4 passos: `/contratacao/nova` e `/contratacao/{uuid}/editar`
+- Integração com `GET/POST/PATCH /api/v1/contratacao` e `POST .../submeter`
+- Placeholder removido
+
+### Testar wizard
+
+1. Login com `admin@clientex.local` / `password` (ou `area@clientex.local` se existir no seed)
+2. Menu **Contratação** → **Nova solicitação**
+3. Preencher dados gerais, TR, QQP → **Salvar rascunho**
+4. Na revisão → **Submeter** → status **Submetido** na listagem
+
+Spec: `meta_specs/business/contratacao-wizard-v1.md`
+
 ## Passo 5 — Identidade (implementado)
 
 - Login mínimo: `/auth/login`
