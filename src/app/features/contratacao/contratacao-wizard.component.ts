@@ -23,6 +23,8 @@ import {
   TERMO_REFERENCIA_KEYS,
   TermoReferenciaCampoKey,
   TermoReferenciaCampos,
+  TermoReferenciaCampoPersonalizado,
+  TermoReferenciaCamposPayload,
   TermoReferenciaFieldDef,
   TermoReferenciaGroupDef,
 } from './termo-referencia.constants';
@@ -75,6 +77,7 @@ export class ContratacaoWizardComponent implements OnInit {
     local: [''],
     prazo_desejado: [''],
     termo_referencia_campos: this.buildTermoReferenciaGroup(),
+    tr_campos_personalizados: this.formBuilder.array([]),
     qqp_itens: this.formBuilder.array([this.createQqpItemGroup()]),
   });
 
@@ -103,6 +106,10 @@ export class ContratacaoWizardComponent implements OnInit {
     return this.form.controls.termo_referencia_campos;
   }
 
+  get trCamposPersonalizados(): FormArray {
+    return this.form.controls.tr_campos_personalizados;
+  }
+
   get readOnly(): boolean {
     return this.status === 'submetido';
   }
@@ -123,6 +130,31 @@ export class ContratacaoWizardComponent implements OnInit {
     }
 
     return this.formBuilder.group(controls);
+  }
+
+  createCustomTrFieldGroup(
+    value?: Partial<TermoReferenciaCampoPersonalizado>,
+  ): ReturnType<FormBuilder['group']> {
+    return this.formBuilder.group({
+      id: [value?.id ?? crypto.randomUUID()],
+      titulo: [value?.titulo ?? '', Validators.required],
+      conteudo: [value?.conteudo ?? '', Validators.required],
+    });
+  }
+
+  addCustomTrField(): void {
+    this.trCamposPersonalizados.push(this.createCustomTrFieldGroup());
+  }
+
+  removeCustomTrField(index: number): void {
+    this.trCamposPersonalizados.removeAt(index);
+  }
+
+  isCustomTrFieldFilled(index: number): boolean {
+    const group = this.trCamposPersonalizados.at(index);
+    const titulo = String(group.get('titulo')?.value ?? '').trim();
+    const conteudo = String(group.get('conteudo')?.value ?? '').trim();
+    return titulo.length > 0 && conteudo.length > 0;
   }
 
   createQqpItemGroup(): ReturnType<FormBuilder['group']> {
@@ -171,7 +203,7 @@ export class ContratacaoWizardComponent implements OnInit {
     local: string | null;
     prazo_desejado: string | null;
     termo_referencia: string | null;
-    termo_referencia_campos?: Partial<TermoReferenciaCampos>;
+    termo_referencia_campos?: Partial<TermoReferenciaCamposPayload>;
     qqp_itens: { descricao: string; quantidade: number; unidade: string }[];
   }): void {
     this.form.patchValue({
@@ -181,13 +213,20 @@ export class ContratacaoWizardComponent implements OnInit {
       prazo_desejado: data.prazo_desejado ?? '',
     });
 
-    const campos = { ...emptyTermoReferenciaCampos(), ...(data.termo_referencia_campos ?? {}) };
+    const payload = data.termo_referencia_campos ?? {};
+    const campos = { ...emptyTermoReferenciaCampos(), ...payload };
 
     if (!data.termo_referencia_campos && data.termo_referencia) {
       campos.escopo = data.termo_referencia;
     }
 
     this.trCamposGroup.patchValue(campos);
+
+    this.trCamposPersonalizados.clear();
+    const personalizados = payload.campos_personalizados ?? [];
+    for (const item of personalizados) {
+      this.trCamposPersonalizados.push(this.createCustomTrFieldGroup(item));
+    }
 
     this.qqpItens.clear();
     const itens = data.qqp_itens.length > 0 ? data.qqp_itens : [{ descricao: '', quantidade: 1, unidade: 'un' }];
@@ -225,9 +264,10 @@ export class ContratacaoWizardComponent implements OnInit {
 
     if (this.activeStep === 1) {
       this.trCamposGroup.markAllAsTouched();
+      this.trCamposPersonalizados.controls.forEach((group) => group.markAllAsTouched());
 
-      if (this.trCamposGroup.invalid) {
-        this.errorMessage = 'Preencha todos os 16 blocos do termo de referência para continuar.';
+      if (this.trCamposGroup.invalid || this.trCamposPersonalizados.invalid) {
+        this.errorMessage = 'Preencha todos os 16 blocos do termo de referência e os campos personalizados iniciados.';
         this.trAccordionIndex = this.firstIncompleteGroupIndex();
         return false;
       }
@@ -280,13 +320,27 @@ export class ContratacaoWizardComponent implements OnInit {
   buildPayload(): ContratacaoPayload {
     const raw = this.form.getRawValue();
     const campos = raw.termo_referencia_campos as TermoReferenciaCampos;
+    const personalizados = (raw.tr_campos_personalizados as TermoReferenciaCampoPersonalizado[])
+      .filter((item) => item.titulo.trim() && item.conteudo.trim())
+      .map((item, index) => ({
+        id: item.id,
+        titulo: item.titulo.trim(),
+        conteudo: item.conteudo.trim(),
+        ordem: index,
+      }));
+
+    const termoReferenciaCampos: TermoReferenciaCamposPayload = { ...campos };
+
+    if (personalizados.length > 0) {
+      termoReferenciaCampos.campos_personalizados = personalizados;
+    }
 
     return {
       titulo: raw.titulo,
       categoria_servico: raw.categoria_servico,
       local: raw.local || null,
       prazo_desejado: raw.prazo_desejado || null,
-      termo_referencia_campos: campos,
+      termo_referencia_campos: termoReferenciaCampos,
       qqp_itens: raw.qqp_itens.map((item, index) => ({
         ordem: index,
         descricao: String(item['descricao'] ?? ''),
@@ -338,7 +392,7 @@ export class ContratacaoWizardComponent implements OnInit {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       this.errorMessage = 'Preencha todos os campos obrigatórios antes de submeter.';
-      if (this.trCamposGroup.invalid) {
+      if (this.trCamposGroup.invalid || this.trCamposPersonalizados.invalid) {
         this.activeStep = 1;
         this.trAccordionIndex = this.firstIncompleteGroupIndex();
       }
@@ -375,15 +429,24 @@ export class ContratacaoWizardComponent implements OnInit {
     });
   }
 
-  trCamposForReview(): { label: string; value: string }[] {
+  trCamposForReview(): { label: string; value: string; custom?: boolean }[] {
     const campos = this.trCamposGroup.getRawValue() as TermoReferenciaCampos;
-
-    return this.trGroups.flatMap((group) =>
+    const standard = this.trGroups.flatMap((group) =>
       group.fields.map((field) => ({
         label: field.label,
         value: (campos[field.key] ?? '').trim() || '—',
       })),
     );
+
+    const personalizados = (this.trCamposPersonalizados.getRawValue() as TermoReferenciaCampoPersonalizado[])
+      .filter((item) => item.titulo.trim() || item.conteudo.trim())
+      .map((item) => ({
+        label: item.titulo.trim() || 'Campo personalizado',
+        value: item.conteudo.trim() || '—',
+        custom: true,
+      }));
+
+    return [...standard, ...personalizados];
   }
 
   private extractError(err: { error?: ApiErrorBody }): string {

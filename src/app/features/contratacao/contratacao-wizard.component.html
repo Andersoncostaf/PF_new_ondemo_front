@@ -40,14 +40,14 @@
       }
 
       @if (activeStep === 1) {
-        <div class="step-panel step-panel--tr" formGroupName="termo_referencia_campos">
+        <div class="step-panel step-panel--tr">
           <header class="tr-header">
             <div class="tr-header__copy">
               <span class="tr-header__eyebrow">Passo 2 de 4</span>
               <h3>Termo de Referência</h3>
               <p>
-                Estruture o escopo em {{ trTotalFields }} blocos. Cada seção ajuda Compras e fornecedores a
-                entender exatamente o que será contratado.
+                Estruture o escopo em {{ trTotalFields }} blocos. Você também pode incluir campos extras
+                específicos da sua contratação.
               </p>
             </div>
             <div class="tr-header__progress" [attr.aria-label]="'Progresso: ' + trFilledCount + ' de ' + trTotalFields">
@@ -78,7 +78,8 @@
             styleClass="tr-progress-bar"
           />
 
-          <p-accordion
+          <div formGroupName="termo_referencia_campos">
+            <p-accordion
             [(activeIndex)]="trAccordionIndex"
             [multiple]="false"
             styleClass="tr-accordion"
@@ -151,6 +152,101 @@
               </p-accordionTab>
             }
           </p-accordion>
+          </div>
+
+          <section class="tr-custom-section">
+            <div class="tr-custom-section__header">
+              <div>
+                <h4>Campos personalizados</h4>
+                <p>Adicione blocos extras com o nome e conteúdo que você definir.</p>
+              </div>
+              @if (!readOnly) {
+                <p-button
+                  label="Adicionar campo"
+                  icon="pi pi-plus"
+                  styleClass="tr-custom-add-btn"
+                  (onClick)="addCustomTrField()"
+                />
+              }
+            </div>
+
+            @if (trCamposPersonalizados.length === 0) {
+              <div class="tr-custom-empty">
+                <i class="pi pi-plus-circle" aria-hidden="true"></i>
+                <p>Nenhum campo extra ainda.</p>
+                @if (!readOnly) {
+                  <button type="button" class="tr-custom-empty__link" (click)="addCustomTrField()">
+                    Criar primeiro campo personalizado
+                  </button>
+                }
+              </div>
+            } @else {
+              <div formArrayName="tr_campos_personalizados" class="tr-custom-list">
+                @for (item of trCamposPersonalizados.controls; track item.get('id')?.value; let i = $index) {
+                  <article
+                    class="tr-custom-card"
+                    [formGroupName]="i"
+                    [class.tr-custom-card--filled]="isCustomTrFieldFilled(i)"
+                    [class.tr-custom-card--invalid]="item.invalid && item.touched"
+                  >
+                    <div class="tr-custom-card__head">
+                      <span class="tr-custom-card__badge">Campo {{ i + 1 }}</span>
+                      @if (isCustomTrFieldFilled(i)) {
+                        <i class="pi pi-check-circle tr-custom-card__check" aria-hidden="true"></i>
+                      }
+                      @if (!readOnly) {
+                        <p-button
+                          icon="pi pi-trash"
+                          severity="danger"
+                          [text]="true"
+                          pTooltip="Remover campo"
+                          (onClick)="removeCustomTrField(i)"
+                        />
+                      }
+                    </div>
+
+                    <div class="field">
+                      <label [for]="'custom-title-' + i">Nome do campo *</label>
+                      <input
+                        [id]="'custom-title-' + i"
+                        pInputText
+                        formControlName="titulo"
+                        class="w-full"
+                        placeholder="Ex.: Requisitos de segurança específicos"
+                      />
+                    </div>
+
+                    <div class="field">
+                      <label [for]="'custom-body-' + i">Conteúdo *</label>
+                      <textarea
+                        [id]="'custom-body-' + i"
+                        pInputTextarea
+                        formControlName="conteudo"
+                        rows="4"
+                        [autoResize]="true"
+                        class="w-full tr-textarea"
+                        placeholder="Descreva o conteúdo deste bloco..."
+                      ></textarea>
+                    </div>
+
+                    @if (item.invalid && item.touched) {
+                      <span class="tr-field-card__error">Preencha o nome e o conteúdo deste campo.</span>
+                    }
+                  </article>
+                }
+              </div>
+
+              @if (!readOnly) {
+                <p-button
+                  label="Adicionar outro campo"
+                  icon="pi pi-plus"
+                  [text]="true"
+                  styleClass="tr-custom-add-more"
+                  (onClick)="addCustomTrField()"
+                />
+              }
+            }
+          </section>
         </div>
       }
 
@@ -212,9 +308,14 @@
           <section class="review-section">
             <h4>Termo de Referência</h4>
             <div class="review-tr-list">
-              @for (item of trCamposForReview(); track item.label) {
-                <article class="review-tr-item">
-                  <h5>{{ item.label }}</h5>
+              @for (item of trCamposForReview(); track item.label + $index) {
+                <article class="review-tr-item" [class.review-tr-item--custom]="item.custom">
+                  <h5>
+                    {{ item.label }}
+                    @if (item.custom) {
+                      <span class="review-tr-item__badge">Personalizado</span>
+                    }
+                  </h5>
                   <p>{{ item.value }}</p>
                 </article>
               }

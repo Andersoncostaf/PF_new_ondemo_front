@@ -17,7 +17,7 @@ export interface Contratacao {
   local: string | null;
   prazo_desejado: string | null;
   termo_referencia: string | null;
-  termo_referencia_campos: Partial<import('./termo-referencia.constants').TermoReferenciaCampos>;
+  termo_referencia_campos: Partial<import('./termo-referencia.constants').TermoReferenciaCamposPayload>;
   status: ContratacaoStatus;
   criado_por_usuario_id?: string;
   created_at?: string;
@@ -50,7 +50,7 @@ export interface ContratacaoPayload {
   local?: string | null;
   prazo_desejado?: string | null;
   termo_referencia?: string | null;
-  termo_referencia_campos?: Partial<import('./termo-referencia.constants').TermoReferenciaCampos>;
+  termo_referencia_campos?: Partial<import('./termo-referencia.constants').TermoReferenciaCamposPayload>;
   qqp_itens?: QqpItem[];
 }
 

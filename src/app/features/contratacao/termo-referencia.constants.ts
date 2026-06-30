@@ -18,6 +18,17 @@ export type TermoReferenciaCampoKey =
 
 export type TermoReferenciaCampos = Record<TermoReferenciaCampoKey, string>;
 
+export interface TermoReferenciaCampoPersonalizado {
+  id: string;
+  titulo: string;
+  conteudo: string;
+  ordem?: number;
+}
+
+export type TermoReferenciaCamposPayload = Partial<TermoReferenciaCampos> & {
+  campos_personalizados?: TermoReferenciaCampoPersonalizado[];
+};
+
 export interface TermoReferenciaFieldDef {
   key: TermoReferenciaCampoKey;
   label: string;
