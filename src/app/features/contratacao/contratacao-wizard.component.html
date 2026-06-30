@@ -40,55 +40,15 @@
 
 
 
-          <p class="section-eyebrow">Selecione uma filial</p>
+          <p class="section-eyebrow">Digite a empresa</p>
 
           <div class="general-grid general-grid--filial">
 
             <div class="field">
 
-              <label for="filial">Empresa *</label>
+              <label for="empresa">Empresa *</label>
 
-              <p-dropdown
-
-                inputId="filial"
-
-                formControlName="filial_id"
-
-                [options]="filiais"
-
-                optionLabel="razao_social"
-
-                optionValue="id"
-
-                [filter]="true"
-
-                filterBy="codigo,razao_social"
-
-                placeholder="Selecione a empresa"
-
-                styleClass="w-full"
-
-                appendTo="body"
-
-              >
-
-                <ng-template pTemplate="selectedItem" let-item>
-
-                  @if (item) {
-
-                    <span>{{ filialLabel(item) }}</span>
-
-                  }
-
-                </ng-template>
-
-                <ng-template pTemplate="item" let-item>
-
-                  <span>{{ filialLabel(item) }}</span>
-
-                </ng-template>
-
-              </p-dropdown>
+              <input id="empresa" pInputText formControlName="empresa" class="w-full" placeholder="Digite a empresa" />
 
             </div>
 
@@ -100,23 +60,23 @@
 
             </div>
 
-          </div>
+            <div class="field">
 
+              <label for="empresa-cnpj">CNPJ</label>
 
-
-          @if (selectedFilial) {
-
-            <div class="filial-info-panel">
-
-              <div><strong>Filial:</strong> {{ selectedFilial.razao_social }}</div>
-
-              <div><strong>CNPJ:</strong> {{ formatCnpj(selectedFilial.cnpj) }}</div>
-
-              <div><strong>Endereço:</strong> {{ selectedFilial.endereco }}</div>
+              <input id="empresa-cnpj" pInputText formControlName="empresa_cnpj" class="w-full" placeholder="00.000.000/0000-00" />
 
             </div>
 
-          }
+            <div class="field">
+
+              <label for="empresa-endereco">Local ou Endereço</label>
+
+              <input id="empresa-endereco" pInputText formControlName="empresa_endereco" class="w-full" placeholder="Endereço ou local da empresa" />
+
+            </div>
+
+          </div>
 
 
 
@@ -882,7 +842,11 @@
 
             <dl class="review-grid">
 
-              <div><dt>Empresa</dt><dd>{{ selectedFilial ? filialLabel(selectedFilial) : '—' }}</dd></div>
+              <div><dt>Empresa</dt><dd>{{ form.value.empresa || '—' }}</dd></div>
+
+              <div><dt>CNPJ</dt><dd>{{ form.value.empresa_cnpj || '—' }}</dd></div>
+
+              <div><dt>Local ou Endereço</dt><dd>{{ form.value.empresa_endereco || '—' }}</dd></div>
 
               <div><dt>Departamento</dt><dd>{{ form.value.departamento || '—' }}</dd></div>
 

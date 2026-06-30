@@ -12,8 +12,6 @@ import { ButtonModule } from 'primeng/button';
 
 import { CardModule } from 'primeng/card';
 
-import { DropdownModule } from 'primeng/dropdown';
-
 import { EditorModule } from 'primeng/editor';
 
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -44,8 +42,6 @@ import { IdentidadeApiService } from '../../core/identidade/identidade-api.servi
 
 import { ContratacaoApiService } from './contratacao-api.service';
 
-import { FiliaisApiService } from './filiais-api.service';
-
 import {
 
   ApiErrorBody,
@@ -59,8 +55,6 @@ import {
   SOLICITACAO_SERVICO_LABELS,
 
   SolicitacaoServico,
-
-  TenantFilial,
 
 } from './contratacao.models';
 
@@ -122,8 +116,6 @@ interface SalvarRascunhoOptions {
 
     CardModule,
 
-    DropdownModule,
-
     EditorModule,
 
     InputNumberModule,
@@ -174,8 +166,6 @@ export class ContratacaoWizardComponent implements OnInit {
 
   trAccordionIndex: number | number[] = [0];
 
-  filiais: TenantFilial[] = [];
-
   anexos: ContratacaoAnexo[] = [];
 
   solicitanteNome = '';
@@ -214,7 +204,11 @@ export class ContratacaoWizardComponent implements OnInit {
 
   readonly form = this.formBuilder.group({
 
-    filial_id: [null as string | null, Validators.required],
+    empresa: ['', Validators.required],
+
+    empresa_cnpj: [''],
+
+    empresa_endereco: [''],
 
     departamento: [''],
 
@@ -270,8 +264,6 @@ export class ContratacaoWizardComponent implements OnInit {
 
     private readonly contratacaoApi: ContratacaoApiService,
 
-    private readonly filiaisApi: FiliaisApiService,
-
     private readonly identidadeApi: IdentidadeApiService,
 
   ) {}
@@ -279,8 +271,6 @@ export class ContratacaoWizardComponent implements OnInit {
 
 
   ngOnInit(): void {
-
-    this.loadFiliais();
 
     this.loadPerfil();
 
@@ -360,16 +350,6 @@ export class ContratacaoWizardComponent implements OnInit {
 
 
 
-  get selectedFilial(): TenantFilial | null {
-
-    const id = this.form.controls.filial_id.value;
-
-    return this.filiais.find((f) => f.id === id) ?? null;
-
-  }
-
-
-
   get qqpDescricaoPlainLength(): number {
 
     return this.plainTextLength(this.qqpDraftForm.controls.descricao.value ?? '');
@@ -389,30 +369,6 @@ export class ContratacaoWizardComponent implements OnInit {
       return total + qty * unit;
 
     }, 0);
-
-  }
-
-
-
-  filialLabel(filial: TenantFilial): string {
-
-    return `${filial.codigo} - ${filial.razao_social}`;
-
-  }
-
-
-
-  formatCnpj(cnpj: string): string {
-
-    const digits = cnpj.replace(/\D/g, '');
-
-    if (digits.length !== 14) {
-
-      return cnpj;
-
-    }
-
-    return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 
   }
 
@@ -756,28 +712,6 @@ export class ContratacaoWizardComponent implements OnInit {
 
 
 
-  private loadFiliais(): void {
-
-    this.filiaisApi.list().subscribe({
-
-      next: (response) => {
-
-        this.filiais = response.data;
-
-      },
-
-      error: () => {
-
-        this.errorMessage = 'Não foi possível carregar as filiais.';
-
-      },
-
-    });
-
-  }
-
-
-
   private loadPerfil(): void {
 
     this.identidadeApi.getPerfil().subscribe({
@@ -846,7 +780,11 @@ export class ContratacaoWizardComponent implements OnInit {
 
     this.form.patchValue({
 
-      filial_id: data.filial_id,
+      empresa: data.empresa ?? '',
+
+      empresa_cnpj: data.empresa_cnpj ?? '',
+
+      empresa_endereco: data.empresa_endereco ?? '',
 
       departamento: data.departamento ?? '',
 
@@ -978,7 +916,7 @@ export class ContratacaoWizardComponent implements OnInit {
 
     if (this.activeStep === 0) {
 
-      return this.markControls(['filial_id', 'titulo', 'categoria_servico']);
+      return this.markControls(['empresa', 'titulo', 'categoria_servico']);
 
     }
 
@@ -1198,7 +1136,11 @@ export class ContratacaoWizardComponent implements OnInit {
 
       prazo_desejado: raw.prazo_desejado || null,
 
-      filial_id: raw.filial_id || null,
+      empresa: raw.empresa || null,
+
+      empresa_cnpj: raw.empresa_cnpj || null,
+
+      empresa_endereco: raw.empresa_endereco || null,
 
       departamento: raw.departamento || null,
 
@@ -1370,11 +1312,11 @@ export class ContratacaoWizardComponent implements OnInit {
 
     this.form.markAllAsTouched();
 
-    if (this.form.controls.filial_id.invalid || this.qqpItens.length < 1) {
+    if (this.form.controls.empresa.invalid || this.qqpItens.length < 1) {
 
       this.errorMessage = 'Preencha todos os campos obrigatórios antes de submeter.';
 
-      if (this.form.controls.filial_id.invalid) {
+      if (this.form.controls.empresa.invalid) {
 
         this.activeStep = 0;
 
