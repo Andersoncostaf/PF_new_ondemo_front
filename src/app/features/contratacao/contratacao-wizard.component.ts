@@ -19,6 +19,7 @@ import { ApiErrorBody, ContratacaoPayload } from './contratacao.models';
 import {
   countFilledTermoCampos,
   emptyTermoReferenciaCampos,
+  generateTrCampoId,
   TERMO_REFERENCIA_GROUPS,
   TERMO_REFERENCIA_KEYS,
   TermoReferenciaCampoKey,
@@ -136,7 +137,7 @@ export class ContratacaoWizardComponent implements OnInit {
     value?: Partial<TermoReferenciaCampoPersonalizado>,
   ): ReturnType<FormBuilder['group']> {
     return this.formBuilder.group({
-      id: [value?.id ?? crypto.randomUUID()],
+      id: [value?.id ?? generateTrCampoId()],
       titulo: [value?.titulo ?? '', Validators.required],
       conteudo: [value?.conteudo ?? '', Validators.required],
     });
@@ -335,19 +336,28 @@ export class ContratacaoWizardComponent implements OnInit {
       termoReferenciaCampos.campos_personalizados = personalizados;
     }
 
-    return {
+    const qqpItens = raw.qqp_itens
+      .map((item, index) => ({
+        ordem: index,
+        descricao: String(item['descricao'] ?? '').trim(),
+        quantidade: Number(item['quantidade'] ?? 1),
+        unidade: String(item['unidade'] ?? 'un'),
+      }))
+      .filter((item) => item.descricao.length > 0);
+
+    const payload: ContratacaoPayload = {
       titulo: raw.titulo,
       categoria_servico: raw.categoria_servico,
       local: raw.local || null,
       prazo_desejado: raw.prazo_desejado || null,
       termo_referencia_campos: termoReferenciaCampos,
-      qqp_itens: raw.qqp_itens.map((item, index) => ({
-        ordem: index,
-        descricao: String(item['descricao'] ?? ''),
-        quantidade: Number(item['quantidade'] ?? 1),
-        unidade: String(item['unidade'] ?? 'un'),
-      })),
     };
+
+    if (qqpItens.length > 0) {
+      payload.qqp_itens = qqpItens;
+    }
+
+    return payload;
   }
 
   salvarRascunho(): void {
