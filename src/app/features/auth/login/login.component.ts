@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
@@ -16,7 +15,6 @@ import { TenantService } from '../../../core/tenant/tenant.service';
   imports: [
     ReactiveFormsModule,
     ButtonModule,
-    CardModule,
     InputTextModule,
     PasswordModule,
     MessageModule,
@@ -27,6 +25,7 @@ import { TenantService } from '../../../core/tenant/tenant.service';
 export class LoginComponent {
   errorMessage = '';
   loading = false;
+  shakeForm = false;
 
   readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,9 +43,20 @@ export class LoginComponent {
     return this.tenantService.getSlug();
   }
 
+  get emailInvalid(): boolean {
+    const control = this.form.controls.email;
+    return control.invalid && (control.dirty || control.touched);
+  }
+
+  get passwordInvalid(): boolean {
+    const control = this.form.controls.password;
+    return control.invalid && (control.dirty || control.touched);
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.triggerShake();
       return;
     }
 
@@ -62,8 +72,19 @@ export class LoginComponent {
       },
       error: () => {
         this.loading = false;
-        this.errorMessage = 'Credenciais inválidas.';
+        this.errorMessage = 'Credenciais inválidas. Verifique e-mail e senha.';
+        this.triggerShake();
       },
+    });
+  }
+
+  private triggerShake(): void {
+    this.shakeForm = false;
+    requestAnimationFrame(() => {
+      this.shakeForm = true;
+      window.setTimeout(() => {
+        this.shakeForm = false;
+      }, 450);
     });
   }
 }
