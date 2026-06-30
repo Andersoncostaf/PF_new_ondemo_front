@@ -500,7 +500,15 @@
 
               <label for="qqp-descricao">Descrição</label>
 
-              <p-editor formControlName="descricao" [style]="{ height: '200px' }" />
+              <textarea
+                id="qqp-descricao"
+                pInputTextarea
+                formControlName="descricao"
+                rows="6"
+                [autoResize]="true"
+                class="w-full qqp-descricao-textarea"
+                placeholder="Descreva o item de serviço"
+              ></textarea>
 
               <small class="qqp-char-count" [class.qqp-char-count--over]="qqpDescricaoPlainLength > qqpDescricaoMax">
 
@@ -572,7 +580,7 @@
 
                     <td>{{ i + 1 }}</td>
 
-                    <td class="qqp-table__desc" [innerHTML]="item.get('descricao')?.value"></td>
+                    <td class="qqp-table__desc">{{ item.get('descricao')?.value }}</td>
 
                     <td>{{ item.get('unidade')?.value }}</td>
 

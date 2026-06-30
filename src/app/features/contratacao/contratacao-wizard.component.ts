@@ -12,8 +12,6 @@ import { ButtonModule } from 'primeng/button';
 
 import { CardModule } from 'primeng/card';
 
-import { EditorModule } from 'primeng/editor';
-
 import { InputNumberModule } from 'primeng/inputnumber';
 
 import { InputTextModule } from 'primeng/inputtext';
@@ -115,8 +113,6 @@ interface SalvarRascunhoOptions {
     ButtonModule,
 
     CardModule,
-
-    EditorModule,
 
     InputNumberModule,
 
