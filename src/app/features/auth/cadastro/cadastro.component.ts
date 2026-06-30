@@ -6,6 +6,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -228,8 +229,7 @@ export class CadastroComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.loading = false;
-          const target = response.portal_url ?? this.tenantService.getTenantPortalUrl(response.tenant.slug);
-          window.location.href = `${target.replace(/\/$/, '')}/home`;
+          window.location.href = this.tenantService.buildPostCadastroRedirectUrl(response);
         },
         error: (err) => {
           this.loading = false;
@@ -263,8 +263,17 @@ export class CadastroComponent implements OnInit, OnDestroy {
     return fields.every((name) => this.form.controls[name].valid) && !this.form.hasError('passwordMismatch');
   }
 
-  private extractErrorMessage(err: { error?: { message?: string } }): string {
-    return err.error?.message ?? 'Não foi possível concluir o cadastro. Tente novamente.';
+  private extractErrorMessage(err: unknown): string {
+    if (err instanceof HttpErrorResponse) {
+      if (err.status === 0) {
+        return 'Não foi possível conectar à API. Inicie o backend: php artisan serve --port=8000 em PF_ondemo_Back.';
+      }
+      const body = err.error as { message?: string } | null;
+      if (body?.message) {
+        return body.message;
+      }
+    }
+    return 'Não foi possível concluir o cadastro. Tente novamente.';
   }
 
   private triggerShake(): void {

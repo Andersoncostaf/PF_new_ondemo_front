@@ -51,14 +51,29 @@ export class AuthService {
   }
 
   cadastro(payload: CadastroPayload): Observable<AuthResponse> {
-    return this.identidadeApi.cadastro(payload).pipe(
-      tap((response) => this.applyAuthResponse(response)),
-      switchMap((response) =>
+    return this.identidadeApi.cadastro(payload);
+  }
+
+  /** Repassa JWT após redirect cross-subdomain (cadastro → portal do tenant). */
+  completeHandoff(token: string): Observable<void> {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    this.tokenSubject.next(token);
+
+    return this.identidadeApi.getPerfil().pipe(
+      tap((perfil) => {
+        this.usuarioSubject.next(perfil.usuario);
+        this.tenantSubject.next(perfil.tenant);
+      }),
+      switchMap(() =>
         this.modulosService.load().pipe(
           catchError(() => of([])),
-          switchMap(() => of(response)),
+          switchMap(() => of(undefined)),
         ),
       ),
+      catchError((err) => {
+        this.clearSession();
+        return throwError(() => err);
+      }),
     );
   }
 

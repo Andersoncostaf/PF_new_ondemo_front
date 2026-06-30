@@ -16,6 +16,11 @@ export const routes: Routes = [
       import('./features/auth/cadastro/cadastro.component').then((m) => m.CadastroComponent),
   },
   {
+    path: 'auth/handoff',
+    loadComponent: () =>
+      import('./features/auth/handoff/auth-handoff.component').then((m) => m.AuthHandoffComponent),
+  },
+  {
     path: '',
     component: ShellComponent,
     canActivate: [authGuard],

@@ -50,7 +50,10 @@ export class LoginComponent implements OnInit {
   }
 
   get showCadastroLink(): boolean {
-    return !!this.tenantSlug && !this.tenantService.isCadastroHost();
+    if (this.tenantService.isCadastroHost()) {
+      return false;
+    }
+    return !!this.tenantSlug || this.tenantService.isLocalDevHost();
   }
 
   get tenantSlug(): string | null {

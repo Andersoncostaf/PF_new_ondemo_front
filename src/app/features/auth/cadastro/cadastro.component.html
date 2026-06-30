@@ -233,7 +233,9 @@
               </dl>
               <p class="review-note">
                 <i class="pi pi-info-circle" aria-hidden="true"></i>
-                Ao confirmar, você inicia o trial de 15 dias e será redirecionado ao portal da empresa.
+                Ao confirmar, você inicia o trial de 15 dias e entra no portal
+                <strong>{{ form.controls.razao_social.value }}</strong>.
+                Em produção o endereço será <strong>{{ portalPreview }}</strong>.
               </p>
             </div>
           }
