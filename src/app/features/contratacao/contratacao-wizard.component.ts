@@ -1,17 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { StepsModule } from 'primeng/steps';
 import { MessageModule } from 'primeng/message';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { MenuItem } from 'primeng/api';
 
 import { ContratacaoApiService } from './contratacao-api.service';
 import { ApiErrorBody, ContratacaoPayload } from './contratacao.models';
+import {
+  countFilledTermoCampos,
+  emptyTermoReferenciaCampos,
+  TERMO_REFERENCIA_GROUPS,
+  TERMO_REFERENCIA_KEYS,
+  TermoReferenciaCampoKey,
+  TermoReferenciaCampos,
+  TermoReferenciaFieldDef,
+  TermoReferenciaGroupDef,
+} from './termo-referencia.constants';
 
 @Component({
   selector: 'app-contratacao-wizard',
@@ -20,12 +34,16 @@ import { ApiErrorBody, ContratacaoPayload } from './contratacao.models';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
+    AccordionModule,
     ButtonModule,
     CardModule,
     InputTextModule,
     InputTextareaModule,
     StepsModule,
     MessageModule,
+    ProgressBarModule,
+    TagModule,
+    TooltipModule,
   ],
   templateUrl: './contratacao-wizard.component.html',
   styleUrl: './contratacao-wizard.component.scss',
@@ -39,6 +57,7 @@ export class ContratacaoWizardComponent implements OnInit {
   uuid: string | null = null;
   status: 'rascunho' | 'submetido' = 'rascunho';
   isNova = true;
+  trAccordionIndex: number | number[] = [0];
 
   readonly steps: MenuItem[] = [
     { label: 'Dados gerais' },
@@ -47,12 +66,15 @@ export class ContratacaoWizardComponent implements OnInit {
     { label: 'Revisão' },
   ];
 
+  readonly trGroups = TERMO_REFERENCIA_GROUPS;
+  readonly trTotalFields = TERMO_REFERENCIA_KEYS.length;
+
   readonly form = this.formBuilder.group({
     titulo: ['', Validators.required],
     categoria_servico: ['', Validators.required],
     local: [''],
     prazo_desejado: [''],
-    termo_referencia: ['', Validators.required],
+    termo_referencia_campos: this.buildTermoReferenciaGroup(),
     qqp_itens: this.formBuilder.array([this.createQqpItemGroup()]),
   });
 
@@ -77,8 +99,30 @@ export class ContratacaoWizardComponent implements OnInit {
     return this.form.controls.qqp_itens;
   }
 
+  get trCamposGroup(): FormGroup {
+    return this.form.controls.termo_referencia_campos;
+  }
+
   get readOnly(): boolean {
     return this.status === 'submetido';
+  }
+
+  get trFilledCount(): number {
+    return countFilledTermoCampos(this.trCamposGroup.getRawValue() as TermoReferenciaCampos);
+  }
+
+  get trProgressPercent(): number {
+    return Math.round((this.trFilledCount / this.trTotalFields) * 100);
+  }
+
+  private buildTermoReferenciaGroup(): FormGroup {
+    const controls: Record<string, ReturnType<FormBuilder['control']>> = {};
+
+    for (const key of TERMO_REFERENCIA_KEYS) {
+      controls[key] = this.formBuilder.control('', Validators.required);
+    }
+
+    return this.formBuilder.group(controls);
   }
 
   createQqpItemGroup(): ReturnType<FormBuilder['group']> {
@@ -127,6 +171,7 @@ export class ContratacaoWizardComponent implements OnInit {
     local: string | null;
     prazo_desejado: string | null;
     termo_referencia: string | null;
+    termo_referencia_campos?: Partial<TermoReferenciaCampos>;
     qqp_itens: { descricao: string; quantidade: number; unidade: string }[];
   }): void {
     this.form.patchValue({
@@ -134,8 +179,15 @@ export class ContratacaoWizardComponent implements OnInit {
       categoria_servico: data.categoria_servico ?? '',
       local: data.local ?? '',
       prazo_desejado: data.prazo_desejado ?? '',
-      termo_referencia: data.termo_referencia ?? '',
     });
+
+    const campos = { ...emptyTermoReferenciaCampos(), ...(data.termo_referencia_campos ?? {}) };
+
+    if (!data.termo_referencia_campos && data.termo_referencia) {
+      campos.escopo = data.termo_referencia;
+    }
+
+    this.trCamposGroup.patchValue(campos);
 
     this.qqpItens.clear();
     const itens = data.qqp_itens.length > 0 ? data.qqp_itens : [{ descricao: '', quantidade: 1, unidade: 'un' }];
@@ -149,6 +201,8 @@ export class ContratacaoWizardComponent implements OnInit {
         }),
       );
     }
+
+    this.trAccordionIndex = this.firstIncompleteGroupIndex();
   }
 
   nextStep(): void {
@@ -166,12 +220,19 @@ export class ContratacaoWizardComponent implements OnInit {
     this.errorMessage = '';
 
     if (this.activeStep === 0) {
-      const controls = ['titulo', 'categoria_servico'];
-      return this.markControls(controls);
+      return this.markControls(['titulo', 'categoria_servico']);
     }
 
     if (this.activeStep === 1) {
-      return this.markControls(['termo_referencia']);
+      this.trCamposGroup.markAllAsTouched();
+
+      if (this.trCamposGroup.invalid) {
+        this.errorMessage = 'Preencha todos os 16 blocos do termo de referência para continuar.';
+        this.trAccordionIndex = this.firstIncompleteGroupIndex();
+        return false;
+      }
+
+      return true;
     }
 
     if (this.activeStep === 2) {
@@ -194,14 +255,38 @@ export class ContratacaoWizardComponent implements OnInit {
     return valid;
   }
 
+  isTrFieldFilled(key: TermoReferenciaCampoKey): boolean {
+    const value = this.trCamposGroup.get(key)?.value;
+    return typeof value === 'string' && value.trim().length > 0;
+  }
+
+  groupFilledCount(group: TermoReferenciaGroupDef): number {
+    return group.fields.filter((field) => this.isTrFieldFilled(field.key)).length;
+  }
+
+  isGroupComplete(group: TermoReferenciaGroupDef): boolean {
+    return group.fields.every((field) => this.isTrFieldFilled(field.key));
+  }
+
+  firstIncompleteGroupIndex(): number {
+    const index = this.trGroups.findIndex((group) => !this.isGroupComplete(group));
+    return index >= 0 ? index : 0;
+  }
+
+  trFieldControl(field: TermoReferenciaFieldDef) {
+    return this.trCamposGroup.get(field.key);
+  }
+
   buildPayload(): ContratacaoPayload {
     const raw = this.form.getRawValue();
+    const campos = raw.termo_referencia_campos as TermoReferenciaCampos;
+
     return {
       titulo: raw.titulo,
       categoria_servico: raw.categoria_servico,
       local: raw.local || null,
       prazo_desejado: raw.prazo_desejado || null,
-      termo_referencia: raw.termo_referencia,
+      termo_referencia_campos: campos,
       qqp_itens: raw.qqp_itens.map((item, index) => ({
         ordem: index,
         descricao: String(item['descricao'] ?? ''),
@@ -253,6 +338,10 @@ export class ContratacaoWizardComponent implements OnInit {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       this.errorMessage = 'Preencha todos os campos obrigatórios antes de submeter.';
+      if (this.trCamposGroup.invalid) {
+        this.activeStep = 1;
+        this.trAccordionIndex = this.firstIncompleteGroupIndex();
+      }
       return;
     }
 
@@ -284,6 +373,17 @@ export class ContratacaoWizardComponent implements OnInit {
         this.errorMessage = this.extractError(err);
       },
     });
+  }
+
+  trCamposForReview(): { label: string; value: string }[] {
+    const campos = this.trCamposGroup.getRawValue() as TermoReferenciaCampos;
+
+    return this.trGroups.flatMap((group) =>
+      group.fields.map((field) => ({
+        label: field.label,
+        value: (campos[field.key] ?? '').trim() || '—',
+      })),
+    );
   }
 
   private extractError(err: { error?: ApiErrorBody }): string {

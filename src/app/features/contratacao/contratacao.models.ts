@@ -1,5 +1,7 @@
 export type ContratacaoStatus = 'rascunho' | 'submetido';
 
+export type { TermoReferenciaCampos, TermoReferenciaCampoKey } from './termo-referencia.constants';
+
 export interface QqpItem {
   id?: string;
   ordem: number;
@@ -15,6 +17,7 @@ export interface Contratacao {
   local: string | null;
   prazo_desejado: string | null;
   termo_referencia: string | null;
+  termo_referencia_campos: Partial<import('./termo-referencia.constants').TermoReferenciaCampos>;
   status: ContratacaoStatus;
   criado_por_usuario_id?: string;
   created_at?: string;
@@ -47,6 +50,7 @@ export interface ContratacaoPayload {
   local?: string | null;
   prazo_desejado?: string | null;
   termo_referencia?: string | null;
+  termo_referencia_campos?: Partial<import('./termo-referencia.constants').TermoReferenciaCampos>;
   qqp_itens?: QqpItem[];
 }
 

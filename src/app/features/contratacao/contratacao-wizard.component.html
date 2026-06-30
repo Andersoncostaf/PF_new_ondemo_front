@@ -9,87 +9,226 @@
       <p-message severity="success" [text]="successMessage" styleClass="mb-3 w-full" />
     }
 
-    <p-steps [model]="steps" [activeIndex]="activeStep" [readonly]="true" styleClass="mb-4" />
+    <p-steps [model]="steps" [activeIndex]="activeStep" [readonly]="true" styleClass="wizard-steps mb-4" />
 
     <form [formGroup]="form" class="wizard-form">
       @if (activeStep === 0) {
-        <div class="field">
-          <label for="titulo">Título *</label>
-          <input id="titulo" pInputText formControlName="titulo" class="w-full" />
-        </div>
-        <div class="field">
-          <label for="categoria">Categoria de serviço *</label>
-          <input id="categoria" pInputText formControlName="categoria_servico" class="w-full" />
-        </div>
-        <div class="field">
-          <label for="local">Local</label>
-          <input id="local" pInputText formControlName="local" class="w-full" />
-        </div>
-        <div class="field">
-          <label for="prazo">Prazo desejado</label>
-          <input id="prazo" type="date" pInputText formControlName="prazo_desejado" class="w-full" />
+        <div class="step-panel step-panel--general">
+          <div class="step-panel__intro">
+            <h3>Dados gerais</h3>
+            <p>Informações básicas para identificar a solicitação de serviço.</p>
+          </div>
+          <div class="general-grid">
+            <div class="field">
+              <label for="titulo">Título *</label>
+              <input id="titulo" pInputText formControlName="titulo" class="w-full" placeholder="Ex.: Manutenção elétrica predial" />
+            </div>
+            <div class="field">
+              <label for="categoria">Categoria de serviço *</label>
+              <input id="categoria" pInputText formControlName="categoria_servico" class="w-full" placeholder="Ex.: Manutenção" />
+            </div>
+            <div class="field">
+              <label for="local">Local</label>
+              <input id="local" pInputText formControlName="local" class="w-full" placeholder="Unidade, endereço ou área" />
+            </div>
+            <div class="field">
+              <label for="prazo">Prazo desejado</label>
+              <input id="prazo" type="date" pInputText formControlName="prazo_desejado" class="w-full" />
+            </div>
+          </div>
         </div>
       }
 
       @if (activeStep === 1) {
-        <div class="field">
-          <label for="tr">Termo de referência / escopo *</label>
-          <textarea
-            id="tr"
-            pInputTextarea
-            formControlName="termo_referencia"
-            rows="8"
-            class="w-full"
-          ></textarea>
+        <div class="step-panel step-panel--tr" formGroupName="termo_referencia_campos">
+          <header class="tr-header">
+            <div class="tr-header__copy">
+              <span class="tr-header__eyebrow">Passo 2 de 4</span>
+              <h3>Termo de Referência</h3>
+              <p>
+                Estruture o escopo em {{ trTotalFields }} blocos. Cada seção ajuda Compras e fornecedores a
+                entender exatamente o que será contratado.
+              </p>
+            </div>
+            <div class="tr-header__progress" [attr.aria-label]="'Progresso: ' + trFilledCount + ' de ' + trTotalFields">
+              <div class="tr-progress-ring">
+                <svg viewBox="0 0 36 36" aria-hidden="true">
+                  <path
+                    class="tr-progress-ring__track"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    class="tr-progress-ring__value"
+                    [attr.stroke-dasharray]="trProgressPercent + ', 100'"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                <span class="tr-progress-ring__label">{{ trFilledCount }}/{{ trTotalFields }}</span>
+              </div>
+              <div class="tr-header__progress-meta">
+                <strong>{{ trProgressPercent }}%</strong>
+                <span>concluído</span>
+              </div>
+            </div>
+          </header>
+
+          <p-progressBar
+            [value]="trProgressPercent"
+            [showValue]="false"
+            styleClass="tr-progress-bar"
+          />
+
+          <p-accordion
+            [(activeIndex)]="trAccordionIndex"
+            [multiple]="false"
+            styleClass="tr-accordion"
+          >
+            @for (group of trGroups; track group.id; let gi = $index) {
+              <p-accordionTab>
+                <ng-template pTemplate="header">
+                  <div class="tr-tab-header" [style.--group-accent]="group.accent">
+                    <span class="tr-tab-header__icon">
+                      <i [class]="group.icon"></i>
+                    </span>
+                    <span class="tr-tab-header__text">
+                      <span class="tr-tab-header__title">{{ group.title }}</span>
+                      <span class="tr-tab-header__subtitle">{{ group.subtitle }}</span>
+                    </span>
+                    <p-tag
+                      [value]="groupFilledCount(group) + '/' + group.fields.length"
+                      [severity]="isGroupComplete(group) ? 'success' : 'info'"
+                      styleClass="tr-tab-header__tag"
+                    />
+                  </div>
+                </ng-template>
+
+                <div class="tr-fields-grid">
+                  @for (field of group.fields; track field.key) {
+                    <article
+                      class="tr-field-card"
+                      [class.tr-field-card--filled]="isTrFieldFilled(field.key)"
+                      [class.tr-field-card--invalid]="trFieldControl(field)?.invalid && trFieldControl(field)?.touched"
+                    >
+                      <div class="tr-field-card__head">
+                        <span class="tr-field-card__icon" [style.color]="group.accent">
+                          <i [class]="field.icon"></i>
+                        </span>
+                        <div class="tr-field-card__labels">
+                          <label [for]="'tr-' + field.key">{{ field.label }} *</label>
+                          <small>{{ field.hint }}</small>
+                        </div>
+                        @if (isTrFieldFilled(field.key)) {
+                          <i class="pi pi-check-circle tr-field-card__check" aria-hidden="true"></i>
+                        }
+                      </div>
+
+                      @if (field.singleLine) {
+                        <input
+                          [id]="'tr-' + field.key"
+                          pInputText
+                          [formControlName]="field.key"
+                          class="w-full"
+                          [placeholder]="field.hint"
+                        />
+                      } @else {
+                        <textarea
+                          [id]="'tr-' + field.key"
+                          pInputTextarea
+                          [formControlName]="field.key"
+                          [rows]="field.rows"
+                          [autoResize]="true"
+                          class="w-full tr-textarea"
+                          [placeholder]="field.hint"
+                        ></textarea>
+                      }
+
+                      @if (trFieldControl(field)?.invalid && trFieldControl(field)?.touched) {
+                        <span class="tr-field-card__error">Campo obrigatório</span>
+                      }
+                    </article>
+                  }
+                </div>
+              </p-accordionTab>
+            }
+          </p-accordion>
         </div>
       }
 
       @if (activeStep === 2) {
-        <div formArrayName="qqp_itens" class="qqp-list">
-          @for (item of qqpItens.controls; track i; let i = $index) {
-            <div [formGroupName]="i" class="qqp-row">
-              <div class="field flex-grow">
-                <label [for]="'desc-' + i">Descrição *</label>
-                <input [id]="'desc-' + i" pInputText formControlName="descricao" class="w-full" />
+        <div class="step-panel step-panel--qqp">
+          <div class="step-panel__intro">
+            <h3>QQP — Quantitativo</h3>
+            <p>Liste os itens de serviço com quantidade e unidade de medida.</p>
+          </div>
+          <div formArrayName="qqp_itens" class="qqp-list">
+            @for (item of qqpItens.controls; track i; let i = $index) {
+              <div [formGroupName]="i" class="qqp-row">
+                <div class="field flex-grow">
+                  <label [for]="'desc-' + i">Descrição *</label>
+                  <input [id]="'desc-' + i" pInputText formControlName="descricao" class="w-full" />
+                </div>
+                <div class="field qqp-qty">
+                  <label [for]="'qty-' + i">Qtd *</label>
+                  <input [id]="'qty-' + i" pInputText type="number" formControlName="quantidade" class="w-full" />
+                </div>
+                <div class="field qqp-unit">
+                  <label [for]="'unit-' + i">Un. *</label>
+                  <input [id]="'unit-' + i" pInputText formControlName="unidade" class="w-full" />
+                </div>
+                @if (!readOnly && qqpItens.length > 1) {
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    [text]="true"
+                    (onClick)="removeQqpItem(i)"
+                  />
+                }
               </div>
-              <div class="field qqp-qty">
-                <label [for]="'qty-' + i">Qtd *</label>
-                <input [id]="'qty-' + i" pInputText type="number" formControlName="quantidade" class="w-full" />
-              </div>
-              <div class="field qqp-unit">
-                <label [for]="'unit-' + i">Un. *</label>
-                <input [id]="'unit-' + i" pInputText formControlName="unidade" class="w-full" />
-              </div>
-              @if (!readOnly && qqpItens.length > 1) {
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [text]="true"
-                  (onClick)="removeQqpItem(i)"
-                />
-              }
-            </div>
+            }
+          </div>
+          @if (!readOnly) {
+            <p-button label="Adicionar item" icon="pi pi-plus" [text]="true" (onClick)="addQqpItem()" />
           }
         </div>
-        @if (!readOnly) {
-          <p-button label="Adicionar item" icon="pi pi-plus" [text]="true" (onClick)="addQqpItem()" />
-        }
       }
 
       @if (activeStep === 3) {
-        <div class="review">
-          <p><strong>Título:</strong> {{ form.value.titulo }}</p>
-          <p><strong>Categoria:</strong> {{ form.value.categoria_servico }}</p>
-          <p><strong>Local:</strong> {{ form.value.local || '—' }}</p>
-          <p><strong>Prazo:</strong> {{ form.value.prazo_desejado || '—' }}</p>
-          <p><strong>TR / escopo:</strong></p>
-          <p class="review-tr">{{ form.value.termo_referencia }}</p>
-          <p><strong>Itens QQP:</strong></p>
-          <ul>
-            @for (item of form.value.qqp_itens; track $index) {
-              <li>{{ item.descricao }} — {{ item.quantidade }} {{ item.unidade }}</li>
-            }
-          </ul>
+        <div class="step-panel step-panel--review">
+          <div class="step-panel__intro">
+            <h3>Revisão final</h3>
+            <p>Confira os dados antes de submeter a solicitação.</p>
+          </div>
+
+          <section class="review-section">
+            <h4>Dados gerais</h4>
+            <dl class="review-grid">
+              <div><dt>Título</dt><dd>{{ form.value.titulo }}</dd></div>
+              <div><dt>Categoria</dt><dd>{{ form.value.categoria_servico }}</dd></div>
+              <div><dt>Local</dt><dd>{{ form.value.local || '—' }}</dd></div>
+              <div><dt>Prazo desejado</dt><dd>{{ form.value.prazo_desejado || '—' }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="review-section">
+            <h4>Termo de Referência</h4>
+            <div class="review-tr-list">
+              @for (item of trCamposForReview(); track item.label) {
+                <article class="review-tr-item">
+                  <h5>{{ item.label }}</h5>
+                  <p>{{ item.value }}</p>
+                </article>
+              }
+            </div>
+          </section>
+
+          <section class="review-section">
+            <h4>Itens QQP</h4>
+            <ul class="review-qqp">
+              @for (item of form.value.qqp_itens; track $index) {
+                <li>{{ item.descricao }} — {{ item.quantidade }} {{ item.unidade }}</li>
+              }
+            </ul>
+          </section>
         </div>
       }
     </form>
