@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, tap, catchError, throwError, switchMap, of
 
 import { IdentidadeApiService } from '../identidade/identidade-api.service';
 import { ModulosService } from '../identidade/modulos.service';
-import { AuthResponse, AuthTenant, AuthUsuario } from '../identidade/identidade.models';
+import { AuthResponse, AuthTenant, AuthUsuario, CadastroPayload } from '../identidade/identidade.models';
 
 const TOKEN_KEY = 'pf_jwt_token';
 
@@ -40,6 +40,18 @@ export class AuthService {
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.identidadeApi.login(email, password).pipe(
+      tap((response) => this.applyAuthResponse(response)),
+      switchMap((response) =>
+        this.modulosService.load().pipe(
+          catchError(() => of([])),
+          switchMap(() => of(response)),
+        ),
+      ),
+    );
+  }
+
+  cadastro(payload: CadastroPayload): Observable<AuthResponse> {
+    return this.identidadeApi.cadastro(payload).pipe(
       tap((response) => this.applyAuthResponse(response)),
       switchMap((response) =>
         this.modulosService.load().pipe(

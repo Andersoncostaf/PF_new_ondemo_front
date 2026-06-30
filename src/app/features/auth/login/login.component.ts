@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -22,7 +22,7 @@ import { TenantService } from '../../../core/tenant/tenant.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   errorMessage = '';
   loading = false;
   shakeForm = false;
@@ -38,6 +38,20 @@ export class LoginComponent {
     private readonly tenantService: TenantService,
     private readonly router: Router,
   ) {}
+
+  ngOnInit(): void {
+    if (this.tenantService.isCadastroHost()) {
+      void this.router.navigate(['/auth/cadastro']);
+    }
+  }
+
+  get cadastroUrl(): string {
+    return this.tenantService.getCadastroPortalUrl();
+  }
+
+  get showCadastroLink(): boolean {
+    return !!this.tenantSlug && !this.tenantService.isCadastroHost();
+  }
 
   get tenantSlug(): string | null {
     return this.tenantService.getSlug();

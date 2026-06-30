@@ -5,8 +5,10 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AuthResponse,
+  CadastroPayload,
   ModulosResponse,
   PerfilResponse,
+  SlugDisponivelResponse,
 } from './identidade.models';
 
 @Injectable({ providedIn: 'root' })
@@ -32,5 +34,15 @@ export class IdentidadeApiService {
 
   getPerfil(): Observable<PerfilResponse> {
     return this.http.get<PerfilResponse>(`${this.baseUrl}/v1/me`);
+  }
+
+  cadastro(payload: CadastroPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/v1/public/cadastro`, payload);
+  }
+
+  verificarSlugDisponivel(slug: string): Observable<SlugDisponivelResponse> {
+    return this.http.get<SlugDisponivelResponse>(`${this.baseUrl}/v1/public/slug-disponivel`, {
+      params: { slug },
+    });
   }
 }

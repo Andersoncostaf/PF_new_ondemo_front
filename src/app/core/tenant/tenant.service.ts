@@ -12,4 +12,18 @@ export class TenantService {
   getSlug(): string | null {
     return this.getSlugFromHostname();
   }
+
+  isCadastroHost(): boolean {
+    return this.getSlug() === 'cadastro';
+  }
+
+  getCadastroPortalUrl(): string {
+    const port = window.location.port ? `:${window.location.port}` : '';
+    return `${window.location.protocol}//portalfornecedor.cadastro.local${port}/auth/cadastro`;
+  }
+
+  getTenantPortalUrl(slug: string): string {
+    const port = window.location.port ? `:${window.location.port}` : '';
+    return `${window.location.protocol}//portalfornecedor.${slug}.local${port}`;
+  }
 }

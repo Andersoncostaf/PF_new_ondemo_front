@@ -31,6 +31,24 @@ export interface AuthResponse {
   expires_in: number;
   usuario: AuthUsuario;
   tenant: AuthTenant;
+  portal_url?: string;
+}
+
+export interface CadastroPayload {
+  razao_social: string;
+  cnpj: string;
+  slug?: string | null;
+  nome: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  cargo?: string | null;
+}
+
+export interface SlugDisponivelResponse {
+  disponivel: boolean;
+  slug: string;
+  sugestao: string | null;
 }
 
 export interface PerfilResponse {

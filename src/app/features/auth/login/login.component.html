@@ -110,6 +110,13 @@
           />
         </form>
 
+        @if (showCadastroLink) {
+          <p class="auth-link">
+            Nova empresa?
+            <a [href]="cadastroUrl">Criar conta grátis por 15 dias</a>
+          </p>
+        }
+
         <p class="dev-hint">
           <i class="pi pi-code" aria-hidden="true"></i>
           Ambiente dev: admin&#64;clientex.local / password

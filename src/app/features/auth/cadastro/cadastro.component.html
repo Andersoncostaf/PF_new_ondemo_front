@@ -1,0 +1,293 @@
+<div class="login-page">
+  <aside class="login-hero" aria-hidden="false">
+    <div class="login-hero__media login-hero__media--cadastro"></div>
+    <div class="login-hero__shade"></div>
+    <div class="login-hero__content">
+      <img
+        src="assets/branding/logo-inverted.png"
+        alt=""
+        class="login-hero__logo"
+        width="440"
+        height="208"
+      />
+      <div class="trial-badge">
+        <i class="pi pi-gift" aria-hidden="true"></i>
+        <span>15 dias grátis para começar</span>
+      </div>
+      <p class="login-hero__tagline">
+        Crie o portal da sua empresa em minutos e centralize compras, fornecedores e contratações.
+      </p>
+      <ul class="login-hero__features">
+        <li>
+          <i class="pi pi-check-circle" aria-hidden="true"></i>
+          <span>Seu endereço exclusivo: portalfornecedor.sua-empresa.local</span>
+        </li>
+        <li>
+          <i class="pi pi-users" aria-hidden="true"></i>
+          <span>Primeiro usuário como administrador do tenant</span>
+        </li>
+        <li>
+          <i class="pi pi-bolt" aria-hidden="true"></i>
+          <span>Acesso imediato ao módulo de Contratação no trial</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="login-main">
+    <div class="login-panel login-panel--wide" [class.login-panel--shake]="shakeForm">
+      <img
+        src="assets/branding/logo-horizontal.png"
+        alt="Portal Fornecedor On Demand"
+        class="login-logo login-logo--mobile"
+        width="620"
+        height="265"
+      />
+
+      <div class="login-card">
+        <header class="login-card__header">
+          <h1>Crie sua conta</h1>
+          <p>Cadastre a empresa e o administrador que vai operar o portal.</p>
+        </header>
+
+        @if (!isCadastroHost) {
+          <p-message
+            severity="info"
+            styleClass="w-full mb-3"
+            text="Recomendado: acesse portalfornecedor.cadastro.local para criar conta."
+          />
+        }
+
+        <p-steps [model]="steps" [activeIndex]="activeStep" [readonly]="true" styleClass="cadastro-steps" />
+
+        <form [formGroup]="form" class="login-form" (ngSubmit)="submit()" novalidate>
+          @if (activeStep === 0) {
+            <div class="step-panel">
+              <div class="field" [class.field--invalid]="invalid('razao_social')">
+                <label for="razao_social">Razão social</label>
+                <span class="p-input-icon-left w-full">
+                  <i class="pi pi-building"></i>
+                  <input
+                    pInputText
+                    id="razao_social"
+                    formControlName="razao_social"
+                    placeholder="Minha Empresa Ltda"
+                    class="w-full"
+                    [class.p-invalid]="invalid('razao_social')"
+                  />
+                </span>
+                @if (invalid('razao_social')) {
+                  <small class="field-error">Informe a razão social.</small>
+                }
+              </div>
+
+              <div class="field" [class.field--invalid]="invalid('cnpj')">
+                <label for="cnpj">CNPJ</label>
+                <span class="p-input-icon-left w-full">
+                  <i class="pi pi-id-card"></i>
+                  <input
+                    pInputText
+                    id="cnpj"
+                    formControlName="cnpj"
+                    placeholder="00.000.000/0000-00"
+                    maxlength="18"
+                    class="w-full"
+                    [class.p-invalid]="invalid('cnpj')"
+                    (input)="onCnpjInput($event)"
+                  />
+                </span>
+                @if (invalid('cnpj')) {
+                  <small class="field-error">CNPJ inválido.</small>
+                }
+              </div>
+
+              <div class="field" [class.field--invalid]="invalid('slug') || slugStatus === 'unavailable'">
+                <label for="slug">Endereço do portal</label>
+                <div class="slug-input-row">
+                  <span class="p-input-icon-left w-full">
+                    <i class="pi pi-link"></i>
+                    <input
+                      pInputText
+                      id="slug"
+                      formControlName="slug"
+                      placeholder="minha-empresa"
+                      class="w-full"
+                      [class.p-invalid]="invalid('slug') || slugStatus === 'unavailable'"
+                    />
+                  </span>
+                  @if (slugStatus === 'checking') {
+                    <i class="pi pi-spin pi-spinner slug-status slug-status--checking" aria-label="Verificando"></i>
+                  } @else if (slugStatus === 'available') {
+                    <i class="pi pi-check-circle slug-status slug-status--ok" aria-label="Disponível"></i>
+                  } @else if (slugStatus === 'unavailable' || slugStatus === 'invalid') {
+                    <i class="pi pi-times-circle slug-status slug-status--bad" aria-label="Indisponível"></i>
+                  }
+                </div>
+                <small class="slug-preview">{{ portalPreview }}</small>
+                @if (slugSuggestion) {
+                  <button type="button" class="slug-suggestion" (click)="applySlugSuggestion()">
+                    Usar sugestão: <strong>{{ slugSuggestion }}</strong>
+                  </button>
+                }
+                @if (slugStatus === 'unavailable') {
+                  <small class="field-error">Este endereço não está disponível.</small>
+                }
+              </div>
+            </div>
+          }
+
+          @if (activeStep === 1) {
+            <div class="step-panel">
+              <div class="field" [class.field--invalid]="invalid('nome')">
+                <label for="nome">Seu nome</label>
+                <span class="p-input-icon-left w-full">
+                  <i class="pi pi-user"></i>
+                  <input
+                    pInputText
+                    id="nome"
+                    formControlName="nome"
+                    placeholder="Maria Silva"
+                    class="w-full"
+                    [class.p-invalid]="invalid('nome')"
+                  />
+                </span>
+                @if (invalid('nome')) {
+                  <small class="field-error">Informe seu nome.</small>
+                }
+              </div>
+
+              <div class="field" [class.field--invalid]="invalid('email')">
+                <label for="email">E-mail corporativo</label>
+                <span class="p-input-icon-left w-full">
+                  <i class="pi pi-envelope"></i>
+                  <input
+                    pInputText
+                    id="email"
+                    type="email"
+                    formControlName="email"
+                    autocomplete="email"
+                    placeholder="voce@empresa.com.br"
+                    class="w-full"
+                    [class.p-invalid]="invalid('email')"
+                  />
+                </span>
+                @if (invalid('email')) {
+                  <small class="field-error">Informe um e-mail válido.</small>
+                }
+              </div>
+
+              <div class="field">
+                <label for="cargo">Cargo (opcional)</label>
+                <input
+                  pInputText
+                  id="cargo"
+                  formControlName="cargo"
+                  placeholder="Diretor(a), Compras..."
+                  class="w-full"
+                />
+              </div>
+
+              <div class="field" [class.field--invalid]="invalid('password')">
+                <label for="password">Senha</label>
+                <p-password
+                  inputId="password"
+                  formControlName="password"
+                  [toggleMask]="true"
+                  [feedback]="true"
+                  placeholder="Mínimo 8 caracteres"
+                  styleClass="w-full login-password"
+                  inputStyleClass="w-full"
+                />
+                @if (invalid('password')) {
+                  <small class="field-error">Senha com no mínimo 8 caracteres.</small>
+                }
+              </div>
+
+              <div class="field" [class.field--invalid]="invalid('password_confirmation') || form.hasError('passwordMismatch')">
+                <label for="password_confirmation">Confirmar senha</label>
+                <p-password
+                  inputId="password_confirmation"
+                  formControlName="password_confirmation"
+                  [toggleMask]="true"
+                  [feedback]="false"
+                  placeholder="Repita a senha"
+                  styleClass="w-full login-password"
+                  inputStyleClass="w-full"
+                />
+                @if (form.hasError('passwordMismatch') && form.controls.password_confirmation.touched) {
+                  <small class="field-error">As senhas não coincidem.</small>
+                }
+              </div>
+            </div>
+          }
+
+          @if (activeStep === 2) {
+            <div class="step-panel review-panel">
+              <h2 class="review-title">Revise antes de criar</h2>
+              <dl class="review-list">
+                <div><dt>Empresa</dt><dd>{{ form.controls.razao_social.value }}</dd></div>
+                <div><dt>CNPJ</dt><dd>{{ form.controls.cnpj.value }}</dd></div>
+                <div><dt>Portal</dt><dd>{{ portalPreview }}</dd></div>
+                <div><dt>Administrador</dt><dd>{{ form.controls.nome.value }}</dd></div>
+                <div><dt>E-mail</dt><dd>{{ form.controls.email.value }}</dd></div>
+              </dl>
+              <p class="review-note">
+                <i class="pi pi-info-circle" aria-hidden="true"></i>
+                Ao confirmar, você inicia o trial de 15 dias e será redirecionado ao portal da empresa.
+              </p>
+            </div>
+          }
+
+          @if (errorMessage) {
+            <p-message severity="error" [text]="errorMessage" styleClass="w-full" />
+          }
+
+          <div class="step-actions">
+            @if (activeStep > 0) {
+              <p-button
+                type="button"
+                label="Voltar"
+                severity="secondary"
+                [outlined]="true"
+                icon="pi pi-arrow-left"
+                (onClick)="prevStep()"
+              />
+            }
+            @if (activeStep < 2) {
+              <p-button
+                type="button"
+                label="Continuar"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                styleClass="login-submit flex-1"
+                (onClick)="nextStep()"
+              />
+            } @else {
+              <p-button
+                type="submit"
+                label="Criar portal"
+                icon="pi pi-check"
+                iconPos="right"
+                [loading]="loading"
+                styleClass="login-submit flex-1"
+              />
+            }
+          </div>
+        </form>
+
+        <p class="auth-link">
+          Já tem conta?
+          @if (loginUrl) {
+            <a [href]="loginUrl">Entrar em {{ portalPreview }}</a>
+          } @else {
+            <span>Use o endereço <strong>portalfornecedor.sua-empresa.local</strong> da sua empresa.</span>
+          }
+        </p>
+      </div>
+
+      <footer class="login-footer">
+        <span>portalfornecedorondemand.com</span>
+      </footer>
+    </div>
+  </main>
+</div>
