@@ -225,6 +225,26 @@ export function emptyTermoReferenciaCampos(): TermoReferenciaCampos {
   }, {} as TermoReferenciaCampos);
 }
 
+/** Funciona em HTTP (.local) onde crypto.randomUUID não está disponível. */
+export function generateTrCampoId(preferred?: string): string {
+  if (preferred) {
+    return preferred;
+  }
+
+  const cryptoRef = globalThis.crypto;
+  if (cryptoRef && typeof cryptoRef.randomUUID === 'function') {
+    return cryptoRef.randomUUID();
+  }
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+    const random = Math.trunc(Math.random() * 16);
+    if (char === 'x') {
+      return random.toString(16);
+    }
+    return ((random & 0x3) | 0x8).toString(16);
+  });
+}
+
 export function countFilledTermoCampos(campos: Partial<TermoReferenciaCampos> | null | undefined): number {
   if (!campos) {
     return 0;

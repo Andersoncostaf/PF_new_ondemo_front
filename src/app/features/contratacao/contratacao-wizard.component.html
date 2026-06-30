@@ -1,361 +1,1056 @@
 <p-card [header]="isNova ? 'Nova solicitação' : 'Editar solicitação'">
+
   @if (loading) {
+
     <p>Carregando...</p>
+
   } @else {
+
     @if (errorMessage) {
+
       <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
+
     }
+
     @if (successMessage) {
+
       <p-message severity="success" [text]="successMessage" styleClass="mb-3 w-full" />
+
     }
+
+
 
     <p-steps [model]="steps" [activeIndex]="activeStep" [readonly]="true" styleClass="wizard-steps mb-4" />
 
+
+
     <form [formGroup]="form" class="wizard-form">
+
       @if (activeStep === 0) {
+
         <div class="step-panel step-panel--general">
+
           <div class="step-panel__intro">
+
             <h3>Dados gerais</h3>
+
             <p>Informações básicas para identificar a solicitação de serviço.</p>
+
           </div>
-          <div class="general-grid">
-            <div class="field">
-              <label for="titulo">Título *</label>
-              <input id="titulo" pInputText formControlName="titulo" class="w-full" placeholder="Ex.: Manutenção elétrica predial" />
-            </div>
-            <div class="field">
-              <label for="categoria">Categoria de serviço *</label>
-              <input id="categoria" pInputText formControlName="categoria_servico" class="w-full" placeholder="Ex.: Manutenção" />
-            </div>
-            <div class="field">
-              <label for="local">Local</label>
-              <input id="local" pInputText formControlName="local" class="w-full" placeholder="Unidade, endereço ou área" />
-            </div>
-            <div class="field">
-              <label for="prazo">Prazo desejado</label>
-              <input id="prazo" type="date" pInputText formControlName="prazo_desejado" class="w-full" />
-            </div>
-          </div>
-        </div>
-      }
 
-      @if (activeStep === 1) {
-        <div class="step-panel step-panel--tr">
-          <header class="tr-header">
-            <div class="tr-header__copy">
-              <span class="tr-header__eyebrow">Passo 2 de 4</span>
-              <h3>Termo de Referência</h3>
-              <p>
-                Estruture o escopo em {{ trTotalFields }} blocos. Você também pode incluir campos extras
-                específicos da sua contratação.
-              </p>
-            </div>
-            <div class="tr-header__progress" [attr.aria-label]="'Progresso: ' + trFilledCount + ' de ' + trTotalFields">
-              <div class="tr-progress-ring">
-                <svg viewBox="0 0 36 36" aria-hidden="true">
-                  <path
-                    class="tr-progress-ring__track"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    class="tr-progress-ring__value"
-                    [attr.stroke-dasharray]="trProgressPercent + ', 100'"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <span class="tr-progress-ring__label">{{ trFilledCount }}/{{ trTotalFields }}</span>
-              </div>
-              <div class="tr-header__progress-meta">
-                <strong>{{ trProgressPercent }}%</strong>
-                <span>concluído</span>
-              </div>
-            </div>
-          </header>
 
-          <p-progressBar
-            [value]="trProgressPercent"
-            [showValue]="false"
-            styleClass="tr-progress-bar"
-          />
 
-          <div formGroupName="termo_referencia_campos">
-            <p-accordion
-            [(activeIndex)]="trAccordionIndex"
-            [multiple]="false"
-            styleClass="tr-accordion"
-          >
-            @for (group of trGroups; track group.id; let gi = $index) {
-              <p-accordionTab>
-                <ng-template pTemplate="header">
-                  <div class="tr-tab-header" [style.--group-accent]="group.accent">
-                    <span class="tr-tab-header__icon">
-                      <i [class]="group.icon"></i>
-                    </span>
-                    <span class="tr-tab-header__text">
-                      <span class="tr-tab-header__title">{{ group.title }}</span>
-                      <span class="tr-tab-header__subtitle">{{ group.subtitle }}</span>
-                    </span>
-                    <p-tag
-                      [value]="groupFilledCount(group) + '/' + group.fields.length"
-                      [severity]="isGroupComplete(group) ? 'success' : 'info'"
-                      styleClass="tr-tab-header__tag"
-                    />
-                  </div>
+          <p class="section-eyebrow">Selecione uma filial</p>
+
+          <div class="general-grid general-grid--filial">
+
+            <div class="field">
+
+              <label for="filial">Empresa *</label>
+
+              <p-dropdown
+
+                inputId="filial"
+
+                formControlName="filial_id"
+
+                [options]="filiais"
+
+                optionLabel="razao_social"
+
+                optionValue="id"
+
+                [filter]="true"
+
+                filterBy="codigo,razao_social"
+
+                placeholder="Selecione a empresa"
+
+                styleClass="w-full"
+
+                appendTo="body"
+
+              >
+
+                <ng-template pTemplate="selectedItem" let-item>
+
+                  @if (item) {
+
+                    <span>{{ filialLabel(item) }}</span>
+
+                  }
+
                 </ng-template>
 
-                <div class="tr-fields-grid">
-                  @for (field of group.fields; track field.key) {
-                    <article
-                      class="tr-field-card"
-                      [class.tr-field-card--filled]="isTrFieldFilled(field.key)"
-                      [class.tr-field-card--invalid]="trFieldControl(field)?.invalid && trFieldControl(field)?.touched"
-                    >
-                      <div class="tr-field-card__head">
-                        <span class="tr-field-card__icon" [style.color]="group.accent">
-                          <i [class]="field.icon"></i>
-                        </span>
-                        <div class="tr-field-card__labels">
-                          <label [for]="'tr-' + field.key">{{ field.label }} *</label>
-                          <small>{{ field.hint }}</small>
-                        </div>
-                        @if (isTrFieldFilled(field.key)) {
-                          <i class="pi pi-check-circle tr-field-card__check" aria-hidden="true"></i>
-                        }
-                      </div>
+                <ng-template pTemplate="item" let-item>
 
-                      @if (field.singleLine) {
-                        <input
-                          [id]="'tr-' + field.key"
-                          pInputText
-                          [formControlName]="field.key"
-                          class="w-full"
-                          [placeholder]="field.hint"
-                        />
-                      } @else {
-                        <textarea
-                          [id]="'tr-' + field.key"
-                          pInputTextarea
-                          [formControlName]="field.key"
-                          [rows]="field.rows"
-                          [autoResize]="true"
-                          class="w-full tr-textarea"
-                          [placeholder]="field.hint"
-                        ></textarea>
-                      }
+                  <span>{{ filialLabel(item) }}</span>
 
-                      @if (trFieldControl(field)?.invalid && trFieldControl(field)?.touched) {
-                        <span class="tr-field-card__error">Campo obrigatório</span>
-                      }
-                    </article>
-                  }
-                </div>
-              </p-accordionTab>
-            }
-          </p-accordion>
+                </ng-template>
+
+              </p-dropdown>
+
+            </div>
+
+            <div class="field">
+
+              <label for="departamento">Informe o departamento</label>
+
+              <input id="departamento" pInputText formControlName="departamento" class="w-full" placeholder="Ex.: Manutenção" />
+
+            </div>
+
           </div>
+
+
+
+          @if (selectedFilial) {
+
+            <div class="filial-info-panel">
+
+              <div><strong>Filial:</strong> {{ selectedFilial.razao_social }}</div>
+
+              <div><strong>CNPJ:</strong> {{ formatCnpj(selectedFilial.cnpj) }}</div>
+
+              <div><strong>Endereço:</strong> {{ selectedFilial.endereco }}</div>
+
+            </div>
+
+          }
+
+
+
+          <div class="general-grid">
+
+            <div class="field">
+
+              <label for="titulo">Título *</label>
+
+              <input id="titulo" pInputText formControlName="titulo" class="w-full" placeholder="Ex.: Manutenção elétrica predial" />
+
+            </div>
+
+            <div class="field">
+
+              <label for="categoria">Categoria de serviço *</label>
+
+              <input id="categoria" pInputText formControlName="categoria_servico" class="w-full" placeholder="Ex.: Manutenção" />
+
+            </div>
+
+            <div class="field">
+
+              <label for="local">Local</label>
+
+              <input id="local" pInputText formControlName="local" class="w-full" placeholder="Unidade, endereço ou área" />
+
+            </div>
+
+            <div class="field">
+
+              <label for="prazo">Prazo desejado</label>
+
+              <input id="prazo" type="date" pInputText formControlName="prazo_desejado" class="w-full" />
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+
+
+      @if (activeStep === 1) {
+
+        <div class="step-panel step-panel--tr">
+
+          <header class="tr-header">
+
+            <div class="tr-header__copy">
+
+              <span class="tr-header__eyebrow">Passo 2 de 6</span>
+
+              <h3>Termo de Referência</h3>
+
+              <p>
+
+                Estruture o escopo em {{ trTotalFields }} blocos. Você também pode incluir campos extras
+
+                específicos da sua contratação.
+
+              </p>
+
+            </div>
+
+            <div class="tr-header__progress" [attr.aria-label]="'Progresso: ' + trFilledCount + ' de ' + trTotalFields">
+
+              <div class="tr-progress-ring">
+
+                <svg viewBox="0 0 36 36" aria-hidden="true">
+
+                  <path
+
+                    class="tr-progress-ring__track"
+
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+
+                  />
+
+                  <path
+
+                    class="tr-progress-ring__value"
+
+                    [attr.stroke-dasharray]="trProgressPercent + ', 100'"
+
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+
+                  />
+
+                </svg>
+
+                <span class="tr-progress-ring__label">{{ trFilledCount }}/{{ trTotalFields }}</span>
+
+              </div>
+
+              <div class="tr-header__progress-meta">
+
+                <strong>{{ trProgressPercent }}%</strong>
+
+                <span>concluído</span>
+
+              </div>
+
+            </div>
+
+          </header>
+
+
+
+          <p-progressBar [value]="trProgressPercent" [showValue]="false" styleClass="tr-progress-bar" />
+
+
+
+          <div formGroupName="termo_referencia_campos">
+
+            <p-accordion [(activeIndex)]="trAccordionIndex" [multiple]="false" styleClass="tr-accordion">
+
+              @for (group of trGroups; track group.id) {
+
+                <p-accordionTab>
+
+                  <ng-template pTemplate="header">
+
+                    <div class="tr-tab-header" [style.--group-accent]="group.accent">
+
+                      <span class="tr-tab-header__icon"><i [class]="group.icon"></i></span>
+
+                      <span class="tr-tab-header__text">
+
+                        <span class="tr-tab-header__title">{{ group.title }}</span>
+
+                        <span class="tr-tab-header__subtitle">{{ group.subtitle }}</span>
+
+                      </span>
+
+                      <p-tag
+
+                        [value]="groupFilledCount(group) + '/' + group.fields.length"
+
+                        [severity]="isGroupComplete(group) ? 'success' : 'info'"
+
+                        styleClass="tr-tab-header__tag"
+
+                      />
+
+                    </div>
+
+                  </ng-template>
+
+
+
+                  <div class="tr-fields-grid">
+
+                    @for (field of group.fields; track field.key) {
+
+                      <article
+
+                        class="tr-field-card"
+
+                        [class.tr-field-card--filled]="isTrFieldFilled(field.key)"
+
+                        [class.tr-field-card--invalid]="trFieldControl(field)?.invalid && trFieldControl(field)?.touched"
+
+                      >
+
+                        <div class="tr-field-card__head">
+
+                          <span class="tr-field-card__icon" [style.color]="group.accent">
+
+                            <i [class]="field.icon"></i>
+
+                          </span>
+
+                          <div class="tr-field-card__labels">
+
+                            <label [for]="'tr-' + field.key">{{ field.label }} *</label>
+
+                            <small>{{ field.hint }}</small>
+
+                          </div>
+
+                          @if (isTrFieldFilled(field.key)) {
+
+                            <i class="pi pi-check-circle tr-field-card__check" aria-hidden="true"></i>
+
+                          }
+
+                        </div>
+
+
+
+                        @if (field.singleLine) {
+
+                          <input
+
+                            [id]="'tr-' + field.key"
+
+                            pInputText
+
+                            [formControlName]="field.key"
+
+                            class="w-full"
+
+                            [placeholder]="field.hint"
+
+                          />
+
+                        } @else {
+
+                          <textarea
+
+                            [id]="'tr-' + field.key"
+
+                            pInputTextarea
+
+                            [formControlName]="field.key"
+
+                            [rows]="field.rows"
+
+                            [autoResize]="true"
+
+                            class="w-full tr-textarea"
+
+                            [placeholder]="field.hint"
+
+                          ></textarea>
+
+                        }
+
+
+
+                        @if (trFieldControl(field)?.invalid && trFieldControl(field)?.touched) {
+
+                          <span class="tr-field-card__error">Campo obrigatório</span>
+
+                        }
+
+                      </article>
+
+                    }
+
+                  </div>
+
+                </p-accordionTab>
+
+              }
+
+            </p-accordion>
+
+          </div>
+
+
 
           <section class="tr-custom-section">
+
             <div class="tr-custom-section__header">
+
               <div>
+
                 <h4>Campos personalizados</h4>
+
                 <p>Adicione blocos extras com o nome e conteúdo que você definir.</p>
+
               </div>
+
               @if (!readOnly) {
-                <p-button
-                  label="Adicionar campo"
-                  icon="pi pi-plus"
-                  styleClass="tr-custom-add-btn"
-                  (onClick)="addCustomTrField()"
-                />
+
+                <p-button label="Adicionar campo" icon="pi pi-plus" styleClass="tr-custom-add-btn" (onClick)="addCustomTrField()" />
+
               }
+
             </div>
+
+
 
             @if (trCamposPersonalizados.length === 0) {
+
               <div class="tr-custom-empty">
+
                 <i class="pi pi-plus-circle" aria-hidden="true"></i>
+
                 <p>Nenhum campo extra ainda.</p>
+
                 @if (!readOnly) {
+
                   <button type="button" class="tr-custom-empty__link" (click)="addCustomTrField()">
+
                     Criar primeiro campo personalizado
+
                   </button>
+
                 }
+
               </div>
+
             } @else {
+
               <div formArrayName="tr_campos_personalizados" class="tr-custom-list">
-                @for (item of trCamposPersonalizados.controls; track item.get('id')?.value; let i = $index) {
+
+                @for (item of trCamposPersonalizados.controls; track item; let i = $index) {
+
                   <article
+
                     class="tr-custom-card"
+
                     [formGroupName]="i"
+
                     [class.tr-custom-card--filled]="isCustomTrFieldFilled(i)"
+
                     [class.tr-custom-card--invalid]="item.invalid && item.touched"
+
                   >
+
                     <div class="tr-custom-card__head">
+
                       <span class="tr-custom-card__badge">Campo {{ i + 1 }}</span>
+
                       @if (isCustomTrFieldFilled(i)) {
+
                         <i class="pi pi-check-circle tr-custom-card__check" aria-hidden="true"></i>
+
                       }
+
                       @if (!readOnly) {
-                        <p-button
-                          icon="pi pi-trash"
-                          severity="danger"
-                          [text]="true"
-                          pTooltip="Remover campo"
-                          (onClick)="removeCustomTrField(i)"
-                        />
+
+                        <p-button icon="pi pi-trash" severity="danger" [text]="true" pTooltip="Remover campo" (onClick)="removeCustomTrField(i)" />
+
                       }
+
                     </div>
 
                     <div class="field">
+
                       <label [for]="'custom-title-' + i">Nome do campo *</label>
-                      <input
-                        [id]="'custom-title-' + i"
-                        pInputText
-                        formControlName="titulo"
-                        class="w-full"
-                        placeholder="Ex.: Requisitos de segurança específicos"
-                      />
+
+                      <input [id]="'custom-title-' + i" pInputText formControlName="titulo" class="w-full" />
+
                     </div>
 
                     <div class="field">
+
                       <label [for]="'custom-body-' + i">Conteúdo *</label>
-                      <textarea
-                        [id]="'custom-body-' + i"
-                        pInputTextarea
-                        formControlName="conteudo"
-                        rows="4"
-                        [autoResize]="true"
-                        class="w-full tr-textarea"
-                        placeholder="Descreva o conteúdo deste bloco..."
-                      ></textarea>
+
+                      <textarea [id]="'custom-body-' + i" pInputTextarea formControlName="conteudo" rows="4" [autoResize]="true" class="w-full tr-textarea"></textarea>
+
                     </div>
 
-                    @if (item.invalid && item.touched) {
-                      <span class="tr-field-card__error">Preencha o nome e o conteúdo deste campo.</span>
-                    }
                   </article>
+
                 }
+
               </div>
 
-              @if (!readOnly) {
-                <p-button
-                  label="Adicionar outro campo"
-                  icon="pi pi-plus"
-                  [text]="true"
-                  styleClass="tr-custom-add-more"
-                  (onClick)="addCustomTrField()"
-                />
-              }
             }
+
           </section>
+
         </div>
+
       }
+
+
 
       @if (activeStep === 2) {
+
         <div class="step-panel step-panel--qqp">
-          <div class="step-panel__intro">
-            <h3>QQP — Quantitativo</h3>
-            <p>Liste os itens de serviço com quantidade e unidade de medida.</p>
-          </div>
-          <div formArrayName="qqp_itens" class="qqp-list">
-            @for (item of qqpItens.controls; track i; let i = $index) {
-              <div [formGroupName]="i" class="qqp-row">
-                <div class="field flex-grow">
-                  <label [for]="'desc-' + i">Descrição *</label>
-                  <input [id]="'desc-' + i" pInputText formControlName="descricao" class="w-full" />
-                </div>
-                <div class="field qqp-qty">
-                  <label [for]="'qty-' + i">Qtd *</label>
-                  <input [id]="'qty-' + i" pInputText type="number" formControlName="quantidade" class="w-full" />
-                </div>
-                <div class="field qqp-unit">
-                  <label [for]="'unit-' + i">Un. *</label>
-                  <input [id]="'unit-' + i" pInputText formControlName="unidade" class="w-full" />
-                </div>
-                @if (!readOnly && qqpItens.length > 1) {
-                  <p-button
-                    icon="pi pi-trash"
-                    severity="danger"
-                    [text]="true"
-                    (onClick)="removeQqpItem(i)"
-                  />
-                }
+
+          <p class="section-eyebrow">Preencha as informações</p>
+
+
+
+          <div [formGroup]="qqpDraftForm" class="qqp-entry-form">
+
+            <div class="qqp-entry-row">
+
+              <div class="field">
+
+                <label for="qqp-unidade">Unidade</label>
+
+                <input id="qqp-unidade" pInputText formControlName="unidade" class="w-full" />
+
               </div>
+
+              <div class="field">
+
+                <label for="qqp-quantidade">Quantidade</label>
+
+                <p-inputNumber inputId="qqp-quantidade" formControlName="quantidade" [minFractionDigits]="0" [maxFractionDigits]="4" class="w-full" />
+
+              </div>
+
+              <div class="field">
+
+                <label for="qqp-valor">Valor unitário</label>
+
+                <p-inputNumber
+
+                  inputId="qqp-valor"
+
+                  formControlName="valor_unitario"
+
+                  mode="currency"
+
+                  currency="BRL"
+
+                  locale="pt-BR"
+
+                  class="w-full"
+
+                />
+
+              </div>
+
+            </div>
+
+
+
+            <div class="field qqp-descricao-field">
+
+              <label for="qqp-descricao">Descrição</label>
+
+              <p-editor formControlName="descricao" [style]="{ height: '200px' }" />
+
+              <small class="qqp-char-count" [class.qqp-char-count--over]="qqpDescricaoPlainLength > qqpDescricaoMax">
+
+                {{ qqpDescricaoPlainLength }} / {{ qqpDescricaoMax }} caracteres
+
+              </small>
+
+            </div>
+
+
+
+            @if (!readOnly) {
+
+              <div class="qqp-entry-actions">
+
+                <p-button label="Limpar" icon="pi pi-trash" severity="secondary" (onClick)="limparQqpDraft()" />
+
+                <p-button label="Salvar" icon="pi pi-check" styleClass="qqp-save-btn" (onClick)="salvarQqpItem()" />
+
+              </div>
+
             }
+
           </div>
-          @if (!readOnly) {
-            <p-button label="Adicionar item" icon="pi pi-plus" [text]="true" (onClick)="addQqpItem()" />
-          }
+
+
+
+          <div class="qqp-table-wrap">
+
+            <table class="qqp-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>Item</th>
+
+                  <th>Descrição</th>
+
+                  <th>Unidade</th>
+
+                  <th>Quantidade</th>
+
+                  <th>Valor unitário ($)</th>
+
+                  <th>Valor total ($)</th>
+
+                  <th>Remover</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody formArrayName="qqp_itens">
+
+                @if (qqpItens.length === 0) {
+
+                  <tr>
+
+                    <td colspan="7" class="qqp-table__empty">Nenhum item adicionado.</td>
+
+                  </tr>
+
+                }
+
+                @for (item of qqpItens.controls; track item; let i = $index) {
+
+                  <tr [formGroupName]="i">
+
+                    <td>{{ i + 1 }}</td>
+
+                    <td class="qqp-table__desc" [innerHTML]="item.get('descricao')?.value"></td>
+
+                    <td>{{ item.get('unidade')?.value }}</td>
+
+                    <td>{{ item.get('quantidade')?.value }}</td>
+
+                    <td>{{ formatCurrency(item.get('valor_unitario')?.value) }}</td>
+
+                    <td>{{ formatCurrency(qqpItemTotal(i)) }}</td>
+
+                    <td>
+
+                      @if (!readOnly) {
+
+                        <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeQqpItem(i)" />
+
+                      }
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+            <div class="qqp-total">Preço total: {{ formatCurrency(qqpPrecoTotal) }}</div>
+
+          </div>
+
         </div>
+
       }
+
+
 
       @if (activeStep === 3) {
-        <div class="step-panel step-panel--review">
-          <div class="step-panel__intro">
-            <h3>Revisão final</h3>
-            <p>Confira os dados antes de submeter a solicitação.</p>
+
+        <div class="step-panel step-panel--anexos">
+
+          <p class="section-eyebrow">Preencha as informações</p>
+
+
+
+          <div [formGroup]="anexoDraftForm" class="anexo-entry-form">
+
+            <div class="anexo-entry-row">
+
+              <div class="field flex-grow">
+
+                <label for="anexo-descricao">Descrição</label>
+
+                <input id="anexo-descricao" pInputText formControlName="descricao" class="w-full" />
+
+              </div>
+
+              <div class="field anexo-file-field">
+
+                <label for="anexo-arquivo">Arquivo</label>
+
+                <input id="anexo-arquivo" type="file" class="anexo-file-input" (change)="onAnexoFileSelected($event)" />
+
+              </div>
+
+            </div>
+
+
+
+            @if (!readOnly) {
+
+              <div class="anexo-entry-actions">
+
+                <p-button label="Limpar" icon="pi pi-trash" severity="warning" (onClick)="limparAnexoDraft()" />
+
+                <p-button label="Anexar" icon="pi pi-check" styleClass="anexo-save-btn" [loading]="uploadingAnexo" (onClick)="anexarArquivo()" />
+
+              </div>
+
+            }
+
           </div>
 
-          <section class="review-section">
-            <h4>Dados gerais</h4>
-            <dl class="review-grid">
-              <div><dt>Título</dt><dd>{{ form.value.titulo }}</dd></div>
-              <div><dt>Categoria</dt><dd>{{ form.value.categoria_servico }}</dd></div>
-              <div><dt>Local</dt><dd>{{ form.value.local || '—' }}</dd></div>
-              <div><dt>Prazo desejado</dt><dd>{{ form.value.prazo_desejado || '—' }}</dd></div>
-            </dl>
-          </section>
 
-          <section class="review-section">
-            <h4>Termo de Referência</h4>
-            <div class="review-tr-list">
-              @for (item of trCamposForReview(); track item.label + $index) {
-                <article class="review-tr-item" [class.review-tr-item--custom]="item.custom">
-                  <h5>
-                    {{ item.label }}
-                    @if (item.custom) {
-                      <span class="review-tr-item__badge">Personalizado</span>
-                    }
-                  </h5>
-                  <p>{{ item.value }}</p>
-                </article>
-              }
-            </div>
-          </section>
 
-          <section class="review-section">
-            <h4>Itens QQP</h4>
-            <ul class="review-qqp">
-              @for (item of form.value.qqp_itens; track $index) {
-                <li>{{ item.descricao }} — {{ item.quantidade }} {{ item.unidade }}</li>
-              }
-            </ul>
-          </section>
+          <div class="anexo-table-wrap">
+
+            <table class="anexo-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>Nome</th>
+
+                  <th>Opções</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                @if (anexos.length === 0) {
+
+                  <tr>
+
+                    <td colspan="2" class="anexo-table__empty">Nenhum anexo adicionado.</td>
+
+                  </tr>
+
+                }
+
+                @for (anexo of anexos; track anexo.id) {
+
+                  <tr>
+
+                    <td>{{ anexo.descricao ? anexo.descricao + ' — ' : '' }}{{ anexo.nome_arquivo }}</td>
+
+                    <td>
+
+                      @if (!readOnly) {
+
+                        <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removerAnexo(anexo.id)" />
+
+                      }
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
         </div>
+
       }
+
+
+
+      @if (activeStep === 4) {
+
+        <div class="step-panel step-panel--ss" formGroupName="solicitacao_servico">
+
+          <p class="section-eyebrow">Preencha as informações (facultativo)</p>
+
+
+
+          <div class="ss-grid">
+
+            <div class="field">
+
+              <label for="ss-codigo">Código do serviço</label>
+
+              <input id="ss-codigo" pInputText formControlName="codigo_servico" class="w-full" placeholder="Digite para pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-centro">Centro de custo</label>
+
+              <input id="ss-centro" pInputText formControlName="centro_custo" class="w-full" placeholder="Digite para pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-projeto">Projeto</label>
+
+              <input id="ss-projeto" pInputText formControlName="projeto" class="w-full" placeholder="Digite para pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-fase">Fase</label>
+
+              <input id="ss-fase" pInputText formControlName="fase" class="w-full" placeholder="Digite para pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-conta-fin">Conta financeira</label>
+
+              <input id="ss-conta-fin" pInputText formControlName="conta_financeira" class="w-full" placeholder="Pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-conta-cont">Conta contábil</label>
+
+              <input id="ss-conta-cont" pInputText formControlName="conta_contabil" class="w-full" placeholder="Pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-transacao">Transação</label>
+
+              <input id="ss-transacao" pInputText formControlName="transacao" class="w-full" placeholder="Pesquisar..." />
+
+            </div>
+
+            <div class="field">
+
+              <label for="ss-valor">Valor do serviço</label>
+
+              <input id="ss-valor" pInputText formControlName="valor_servico" class="w-full" placeholder="R$ 0,00" />
+
+            </div>
+
+          </div>
+
+
+
+          <div class="field ss-observacao">
+
+            <label for="ss-obs">Observação SS</label>
+
+            <textarea id="ss-obs" pInputTextarea formControlName="observacao_ss" rows="5" class="w-full"></textarea>
+
+          </div>
+
+
+
+          <div class="ss-meta-panel">
+
+            <div><strong>Status:</strong> {{ statusLabel() }}</div>
+
+            <div><strong>Nº solicitação:</strong> —</div>
+
+            <div><strong>Solicitante:</strong> {{ solicitanteNome || '—' }}</div>
+
+          </div>
+
+        </div>
+
+      }
+
+
+
+      @if (activeStep === 5) {
+
+        <div class="step-panel step-panel--review">
+
+          <div class="step-panel__intro">
+
+            <h3>Revisão final</h3>
+
+            <p>Confira os dados antes de submeter a solicitação.</p>
+
+          </div>
+
+
+
+          <section class="review-section">
+
+            <h4>Dados gerais</h4>
+
+            <dl class="review-grid">
+
+              <div><dt>Empresa</dt><dd>{{ selectedFilial ? filialLabel(selectedFilial) : '—' }}</dd></div>
+
+              <div><dt>Departamento</dt><dd>{{ form.value.departamento || '—' }}</dd></div>
+
+              <div><dt>Título</dt><dd>{{ form.value.titulo }}</dd></div>
+
+              <div><dt>Categoria</dt><dd>{{ form.value.categoria_servico }}</dd></div>
+
+              <div><dt>Local</dt><dd>{{ form.value.local || '—' }}</dd></div>
+
+              <div><dt>Prazo desejado</dt><dd>{{ form.value.prazo_desejado || '—' }}</dd></div>
+
+            </dl>
+
+          </section>
+
+
+
+          <section class="review-section">
+
+            <h4>Termo de Referência</h4>
+
+            <div class="review-tr-list">
+
+              @for (item of trCamposForReview(); track item.label + item.value) {
+
+                <article class="review-tr-item" [class.review-tr-item--custom]="item.custom">
+
+                  <h5>
+
+                    {{ item.label }}
+
+                    @if (item.custom) {
+
+                      <span class="review-tr-item__badge">Personalizado</span>
+
+                    }
+
+                  </h5>
+
+                  <p>{{ item.value }}</p>
+
+                </article>
+
+              }
+
+            </div>
+
+          </section>
+
+
+
+          <section class="review-section">
+
+            <h4>Itens QQP</h4>
+
+            <ul class="review-qqp">
+
+              @for (item of qqpItensForReview(); track item.descricao; let i = $index) {
+
+                <li>
+
+                  {{ i + 1 }}. {{ stripHtml(item.descricao) }} — {{ item.quantidade }} {{ item.unidade }}
+
+                  — {{ formatCurrency(item.valor_unitario) }} (total: {{ formatCurrency(item.quantidade * item.valor_unitario) }})
+
+                </li>
+
+              }
+
+            </ul>
+
+            <p class="review-qqp-total"><strong>Preço total:</strong> {{ formatCurrency(qqpPrecoTotal) }}</p>
+
+          </section>
+
+
+
+          <section class="review-section">
+
+            <h4>Anexos</h4>
+
+            @if (anexos.length === 0) {
+
+              <p class="review-empty">Nenhum anexo.</p>
+
+            } @else {
+
+              <ul class="review-qqp">
+
+                @for (anexo of anexos; track anexo.id) {
+
+                  <li>{{ anexo.nome_arquivo }}</li>
+
+                }
+
+              </ul>
+
+            }
+
+          </section>
+
+
+
+          @if (ssCamposForReview().length > 0) {
+
+            <section class="review-section">
+
+              <h4>Solicitação de serviço</h4>
+
+              <dl class="review-grid">
+
+                @for (item of ssCamposForReview(); track item.label) {
+
+                  <div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>
+
+                }
+
+              </dl>
+
+            </section>
+
+          }
+
+        </div>
+
+      }
+
     </form>
 
+
+
     <div class="wizard-actions">
+
       <a routerLink="/contratacao">Voltar à lista</a>
 
+
+
       <div class="wizard-actions-right">
+
         @if (activeStep > 0) {
-          <p-button label="Anterior" severity="secondary" (onClick)="prevStep()" [disabled]="saving" />
+
+          <p-button label="Anterior" severity="secondary" (onClick)="prevStep()" [disabled]="saving || uploadingAnexo" />
+
         }
+
         @if (activeStep < steps.length - 1) {
-          <p-button label="Próximo" (onClick)="nextStep()" [disabled]="saving" />
+
+          <p-button label="Próximo" (onClick)="nextStep()" [loading]="saving" [disabled]="uploadingAnexo" />
+
         }
+
         @if (!readOnly) {
-          <p-button
-            label="Salvar rascunho"
-            severity="secondary"
-            (onClick)="salvarRascunho()"
-            [loading]="saving"
-          />
+
+          <p-button label="Salvar rascunho" severity="secondary" (onClick)="salvarRascunho()" [loading]="saving" [disabled]="uploadingAnexo" />
+
           @if (activeStep === steps.length - 1) {
+
             <p-button label="Submeter" (onClick)="submeter()" [loading]="saving" />
+
           }
+
         }
+
       </div>
+
     </div>
+
   }
+
 </p-card>
+
