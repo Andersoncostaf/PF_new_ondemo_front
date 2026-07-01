@@ -10,17 +10,80 @@
       <p-message severity="success" [text]="store.successMessage" styleClass="mb-3 w-full" />
     }
 
-    <p-steps
-      [model]="store.stepMenuItems"
-      [activeIndex]="activeIndex"
-      [readonly]="false"
-      styleClass="wizard-steps mb-4"
-    />
+    <nav class="wizard-stepper" aria-label="Passos da contratação">
+      @for (step of wizardSteps; track step.slug) {
+        @if (stepLink(step.slug); as link) {
+          <a
+            [routerLink]="link"
+            class="wizard-stepper__item"
+            [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+            [class.wizard-stepper__item--done]="step.index < activeIndex"
+          >
+            <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+            <span class="wizard-stepper__content">
+              <span class="wizard-stepper__label">{{ step.label }}</span>
+              @if (step.index === 0) {
+                <span class="wizard-stepper__hint">Preencha as informações</span>
+              }
+            </span>
+          </a>
+        } @else {
+          <span
+            class="wizard-stepper__item wizard-stepper__item--disabled"
+            [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+          >
+            <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+            <span class="wizard-stepper__content">
+              <span class="wizard-stepper__label">{{ step.label }}</span>
+              @if (step.index === 0) {
+                <span class="wizard-stepper__hint">Preencha as informações</span>
+              }
+            </span>
+          </span>
+        }
+      }
+    </nav>
 
-    <form [formGroup]="store.form" class="wizard-form">
+    <div class="wizard-form">
       <router-outlet />
-    </form>
+    </div>
 
-    <app-contratacao-wizard-actions />
+    <div class="wizard-actions">
+      <a routerLink="/contratacao">Voltar à lista</a>
+
+      <div class="wizard-actions-right">
+        @if (!store.isFirstStep) {
+          <p-button
+            label="Anterior"
+            severity="secondary"
+            (onClick)="store.prevStep()"
+            [disabled]="store.saving || store.uploadingAnexo"
+          />
+        }
+
+        @if (!store.isLastStep) {
+          <p-button
+            label="Próximo"
+            (onClick)="store.nextStep()"
+            [loading]="store.saving"
+            [disabled]="store.uploadingAnexo"
+          />
+        }
+
+        @if (!store.readOnly) {
+          <p-button
+            label="Salvar rascunho"
+            severity="secondary"
+            (onClick)="store.salvarRascunho()"
+            [loading]="store.saving"
+            [disabled]="store.uploadingAnexo"
+          />
+
+          @if (store.isLastStep) {
+            <p-button label="Submeter" (onClick)="store.submeter()" [loading]="store.saving" />
+          }
+        }
+      </div>
+    </div>
   }
 </p-card>

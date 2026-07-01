@@ -1,4 +1,4 @@
-<div class="step-panel step-panel--tr">
+<div class="step-panel step-panel--tr" [formGroup]="store.form">
   <header class="tr-header">
     <div class="tr-header__copy">
       <span class="tr-header__eyebrow">Passo 2 de 6</span>
@@ -29,7 +29,7 @@
 
   <p-progressBar [value]="store.trProgressPercent" [showValue]="false" styleClass="tr-progress-bar" />
 
-  <div formGroupName="termo_referencia_campos">
+  <div [formGroup]="store.trCamposGroup">
     <p-accordion [(activeIndex)]="store.trAccordionIndex" [multiple]="false" styleClass="tr-accordion">
       @for (group of store.trGroups; track group.id) {
         <p-accordionTab>

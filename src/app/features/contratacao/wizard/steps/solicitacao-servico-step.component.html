@@ -1,4 +1,5 @@
-<div class="step-panel step-panel--ss" formGroupName="solicitacao_servico">
+<div class="step-panel step-panel--ss" [formGroup]="store.form">
+  <div [formGroup]="store.ssGroup">
   <p class="section-eyebrow">Preencha as informações (facultativo)</p>
 
   <div class="ss-grid">
@@ -45,5 +46,6 @@
     <div><strong>Status:</strong> {{ store.statusLabel() }}</div>
     <div><strong>Nº solicitação:</strong> —</div>
     <div><strong>Solicitante:</strong> {{ store.solicitanteNome || '—' }}</div>
+  </div>
   </div>
 </div>

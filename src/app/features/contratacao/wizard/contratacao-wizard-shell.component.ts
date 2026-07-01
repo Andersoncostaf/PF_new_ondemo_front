@@ -1,14 +1,17 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
-import { StepsModule } from 'primeng/steps';
 import { filter, Subscription } from 'rxjs';
 
-import { activeIndexFromSlug, stepBySlug } from './contratacao-wizard.steps';
-import { ContratacaoWizardActionsComponent } from './contratacao-wizard-actions.component';
+import {
+  activeIndexFromSlug,
+  stepBySlug,
+  stepRouterLink,
+  WIZARD_STEPS,
+} from './contratacao-wizard.steps';
 import { ContratacaoWizardStore } from './contratacao-wizard.store';
 
 @Component({
@@ -16,14 +19,13 @@ import { ContratacaoWizardStore } from './contratacao-wizard.store';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     RouterModule,
     RouterOutlet,
+    ButtonModule,
     CardModule,
     MessageModule,
-    StepsModule,
-    ContratacaoWizardActionsComponent,
   ],
+  providers: [ContratacaoWizardStore],
   templateUrl: './contratacao-wizard-shell.component.html',
   styleUrl: './contratacao-wizard.shared.scss',
 })
@@ -31,6 +33,8 @@ export class ContratacaoWizardShellComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly store = inject(ContratacaoWizardStore);
+
+  readonly wizardSteps = WIZARD_STEPS;
 
   private routeSub?: Subscription;
 
@@ -48,6 +52,10 @@ export class ContratacaoWizardShellComponent implements OnInit, OnDestroy {
 
   get activeIndex(): number {
     return activeIndexFromSlug(this.store.currentSlug);
+  }
+
+  stepLink(slug: string): string[] | null {
+    return stepRouterLink(this.store.uuid, slug);
   }
 
   private syncFromRoute(): void {

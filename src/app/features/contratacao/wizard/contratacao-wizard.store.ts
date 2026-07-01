@@ -60,7 +60,7 @@ export class ContratacaoWizardStore {
   status: 'rascunho' | 'submetido' = 'rascunho';
   isNova = true;
   currentSlug = FIRST_STEP_SLUG;
-  trAccordionIndex: number | number[] = [0];
+  trAccordionIndex = 0;
   anexos: ContratacaoAnexo[] = [];
   solicitanteNome = '';
   anexoArquivo: File | null = null;
