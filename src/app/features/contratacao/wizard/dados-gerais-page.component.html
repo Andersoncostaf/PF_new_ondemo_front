@@ -1,0 +1,15 @@
+<p-card header="Nova solicitação">
+  @if (store.errorMessage) {
+    <p-message severity="error" [text]="store.errorMessage" styleClass="mb-3 w-full" />
+  }
+
+  @if (store.successMessage) {
+    <p-message severity="success" [text]="store.successMessage" styleClass="mb-3 w-full" />
+  }
+
+  <form [formGroup]="store.form" class="wizard-form">
+    <app-dados-gerais-step />
+  </form>
+
+  <app-contratacao-wizard-actions />
+</p-card>

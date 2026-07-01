@@ -1,0 +1,26 @@
+<p-card [header]="store.isNova ? 'Nova solicitação' : 'Editar solicitação'">
+  @if (store.loading) {
+    <p>Carregando...</p>
+  } @else {
+    @if (store.errorMessage) {
+      <p-message severity="error" [text]="store.errorMessage" styleClass="mb-3 w-full" />
+    }
+
+    @if (store.successMessage) {
+      <p-message severity="success" [text]="store.successMessage" styleClass="mb-3 w-full" />
+    }
+
+    <p-steps
+      [model]="store.stepMenuItems"
+      [activeIndex]="activeIndex"
+      [readonly]="false"
+      styleClass="wizard-steps mb-4"
+    />
+
+    <form [formGroup]="store.form" class="wizard-form">
+      <router-outlet />
+    </form>
+
+    <app-contratacao-wizard-actions />
+  }
+</p-card>

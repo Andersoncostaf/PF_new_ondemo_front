@@ -1,0 +1,49 @@
+<div class="step-panel step-panel--ss" formGroupName="solicitacao_servico">
+  <p class="section-eyebrow">Preencha as informações (facultativo)</p>
+
+  <div class="ss-grid">
+    <div class="field">
+      <label for="ss-codigo">Código do serviço</label>
+      <input id="ss-codigo" pInputText formControlName="codigo_servico" class="w-full" placeholder="Digite para pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-centro">Centro de custo</label>
+      <input id="ss-centro" pInputText formControlName="centro_custo" class="w-full" placeholder="Digite para pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-projeto">Projeto</label>
+      <input id="ss-projeto" pInputText formControlName="projeto" class="w-full" placeholder="Digite para pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-fase">Fase</label>
+      <input id="ss-fase" pInputText formControlName="fase" class="w-full" placeholder="Digite para pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-conta-fin">Conta financeira</label>
+      <input id="ss-conta-fin" pInputText formControlName="conta_financeira" class="w-full" placeholder="Pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-conta-cont">Conta contábil</label>
+      <input id="ss-conta-cont" pInputText formControlName="conta_contabil" class="w-full" placeholder="Pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-transacao">Transação</label>
+      <input id="ss-transacao" pInputText formControlName="transacao" class="w-full" placeholder="Pesquisar..." />
+    </div>
+    <div class="field">
+      <label for="ss-valor">Valor do serviço</label>
+      <input id="ss-valor" pInputText formControlName="valor_servico" class="w-full" placeholder="R$ 0,00" />
+    </div>
+  </div>
+
+  <div class="field ss-observacao">
+    <label for="ss-obs">Observação SS</label>
+    <textarea id="ss-obs" pInputTextarea formControlName="observacao_ss" rows="5" class="w-full"></textarea>
+  </div>
+
+  <div class="ss-meta-panel">
+    <div><strong>Status:</strong> {{ store.statusLabel() }}</div>
+    <div><strong>Nº solicitação:</strong> —</div>
+    <div><strong>Solicitante:</strong> {{ store.solicitanteNome || '—' }}</div>
+  </div>
+</div>

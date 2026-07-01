@@ -1,0 +1,51 @@
+<div class="step-panel step-panel--anexos">
+  <p class="section-eyebrow">Preencha as informações</p>
+
+  <div [formGroup]="store.anexoDraftForm" class="anexo-entry-form">
+    <div class="anexo-entry-row">
+      <div class="field flex-grow">
+        <label for="anexo-descricao">Descrição</label>
+        <input id="anexo-descricao" pInputText formControlName="descricao" class="w-full" />
+      </div>
+      <div class="field anexo-file-field">
+        <label for="anexo-arquivo">Arquivo</label>
+        <input id="anexo-arquivo" type="file" class="anexo-file-input" (change)="store.onAnexoFileSelected($event)" />
+      </div>
+    </div>
+
+    @if (!store.readOnly) {
+      <div class="anexo-entry-actions">
+        <p-button label="Limpar" icon="pi pi-trash" severity="warning" (onClick)="store.limparAnexoDraft()" />
+        <p-button label="Anexar" icon="pi pi-check" styleClass="anexo-save-btn" [loading]="store.uploadingAnexo" (onClick)="store.anexarArquivo()" />
+      </div>
+    }
+  </div>
+
+  <div class="anexo-table-wrap">
+    <table class="anexo-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Opções</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (store.anexos.length === 0) {
+          <tr>
+            <td colspan="2" class="anexo-table__empty">Nenhum anexo adicionado.</td>
+          </tr>
+        }
+        @for (anexo of store.anexos; track anexo.id) {
+          <tr>
+            <td>{{ anexo.descricao ? anexo.descricao + ' — ' : '' }}{{ anexo.nome_arquivo }}</td>
+            <td>
+              @if (!store.readOnly) {
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="store.removerAnexo(anexo.id)" />
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

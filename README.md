@@ -11,7 +11,10 @@ Front-end **Portal Fornecedor On Demand** — Angular 17, PrimeNG, multi-tenant 
 ## Passo 6 — Wizard Contratação (MVP core)
 
 - Listagem em `/contratacao`
-- Wizard 4 passos: `/contratacao/nova` e `/contratacao/{uuid}/editar`
+- Wizard 6 passos com rota por etapa (padrão legado):
+  - Nova: `/contratacao/nova/dados-gerais`
+  - Com UUID: `/contratacao/nova/{uuid}/dados-gerais`, `/tr`, `/qqp`, `/anexos`, `/solicitacao-servico`, `/revisao`
+  - Redirect legado: `/contratacao/{uuid}/editar` → `/contratacao/nova/{uuid}/dados-gerais`
 - Integração com `GET/POST/PATCH /api/v1/contratacao` e `POST .../submeter`
 - Placeholder removido
 

@@ -1,0 +1,37 @@
+<div class="wizard-actions">
+  <a routerLink="/contratacao">Voltar à lista</a>
+
+  <div class="wizard-actions-right">
+    @if (!store.isFirstStep) {
+      <p-button
+        label="Anterior"
+        severity="secondary"
+        (onClick)="store.prevStep()"
+        [disabled]="store.saving || store.uploadingAnexo"
+      />
+    }
+
+    @if (!store.isLastStep) {
+      <p-button
+        label="Próximo"
+        (onClick)="store.nextStep()"
+        [loading]="store.saving"
+        [disabled]="store.uploadingAnexo"
+      />
+    }
+
+    @if (!store.readOnly) {
+      <p-button
+        label="Salvar rascunho"
+        severity="secondary"
+        (onClick)="store.salvarRascunho()"
+        [loading]="store.saving"
+        [disabled]="store.uploadingAnexo"
+      />
+
+      @if (store.isLastStep) {
+        <p-button label="Submeter" (onClick)="store.submeter()" [loading]="store.saving" />
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="step-panel step-panel--qqp">
+  <p class="section-eyebrow">Preencha as informações</p>
+
+  <div [formGroup]="store.qqpDraftForm" class="qqp-entry-form">
+    <div class="qqp-entry-row">
+      <div class="field">
+        <label for="qqp-unidade">Unidade</label>
+        <input id="qqp-unidade" pInputText formControlName="unidade" class="w-full" />
+      </div>
+      <div class="field">
+        <label for="qqp-quantidade">Quantidade</label>
+        <p-inputNumber inputId="qqp-quantidade" formControlName="quantidade" [minFractionDigits]="0" [maxFractionDigits]="4" class="w-full" />
+      </div>
+      <div class="field">
+        <label for="qqp-valor">Valor unitário</label>
+        <p-inputNumber
+          inputId="qqp-valor"
+          formControlName="valor_unitario"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <div class="field qqp-descricao-field">
+      <label for="qqp-descricao">Descrição</label>
+      <textarea
+        id="qqp-descricao"
+        pInputTextarea
+        formControlName="descricao"
+        rows="6"
+        [autoResize]="true"
+        class="w-full qqp-descricao-textarea"
+        placeholder="Descreva o item de serviço"
+      ></textarea>
+      <small class="qqp-char-count" [class.qqp-char-count--over]="store.qqpDescricaoPlainLength > store.qqpDescricaoMax">
+        {{ store.qqpDescricaoPlainLength }} / {{ store.qqpDescricaoMax }} caracteres
+      </small>
+    </div>
+
+    @if (!store.readOnly) {
+      <div class="qqp-entry-actions">
+        <p-button label="Limpar" icon="pi pi-trash" severity="secondary" (onClick)="store.limparQqpDraft()" />
+        <p-button label="Salvar" icon="pi pi-check" styleClass="qqp-save-btn" (onClick)="store.salvarQqpItem()" />
+      </div>
+    }
+  </div>
+
+  <div class="qqp-table-wrap">
+    <table class="qqp-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Descrição</th>
+          <th>Unidade</th>
+          <th>Quantidade</th>
+          <th>Valor unitário ($)</th>
+          <th>Valor total ($)</th>
+          <th>Remover</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="qqp_itens">
+        @if (store.qqpItens.length === 0) {
+          <tr>
+            <td colspan="7" class="qqp-table__empty">Nenhum item adicionado.</td>
+          </tr>
+        }
+        @for (item of store.qqpItens.controls; track item; let i = $index) {
+          <tr [formGroupName]="i">
+            <td>{{ i + 1 }}</td>
+            <td class="qqp-table__desc">{{ item.get('descricao')?.value }}</td>
+            <td>{{ item.get('unidade')?.value }}</td>
+            <td>{{ item.get('quantidade')?.value }}</td>
+            <td>{{ store.formatCurrency(item.get('valor_unitario')?.value) }}</td>
+            <td>{{ store.formatCurrency(store.qqpItemTotal(i)) }}</td>
+            <td>
+              @if (!store.readOnly) {
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="store.removeQqpItem(i)" />
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <div class="qqp-total">Preço total: {{ store.formatCurrency(store.qqpPrecoTotal) }}</div>
+  </div>
+</div>

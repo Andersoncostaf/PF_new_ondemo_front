@@ -1,0 +1,45 @@
+<div class="step-panel step-panel--general">
+  <div class="step-panel__intro">
+    <h3>Dados gerais</h3>
+    <p>Informações básicas para identificar a solicitação de serviço.</p>
+  </div>
+
+  <p class="section-eyebrow">Digite a empresa</p>
+  <div class="general-grid general-grid--filial">
+    <div class="field">
+      <label for="empresa">Empresa *</label>
+      <input id="empresa" pInputText formControlName="empresa" class="w-full" placeholder="Digite a empresa" />
+    </div>
+    <div class="field">
+      <label for="departamento">Informe o departamento</label>
+      <input id="departamento" pInputText formControlName="departamento" class="w-full" placeholder="Ex.: Manutenção" />
+    </div>
+    <div class="field">
+      <label for="empresa-cnpj">CNPJ</label>
+      <input id="empresa-cnpj" pInputText formControlName="empresa_cnpj" class="w-full" placeholder="00.000.000/0000-00" />
+    </div>
+    <div class="field">
+      <label for="empresa-endereco">Local ou Endereço</label>
+      <input id="empresa-endereco" pInputText formControlName="empresa_endereco" class="w-full" placeholder="Endereço ou local da empresa" />
+    </div>
+  </div>
+
+  <div class="general-grid">
+    <div class="field">
+      <label for="titulo">Título *</label>
+      <input id="titulo" pInputText formControlName="titulo" class="w-full" placeholder="Ex.: Manutenção elétrica predial" />
+    </div>
+    <div class="field">
+      <label for="categoria">Categoria de serviço *</label>
+      <input id="categoria" pInputText formControlName="categoria_servico" class="w-full" placeholder="Ex.: Manutenção" />
+    </div>
+    <div class="field">
+      <label for="local">Local</label>
+      <input id="local" pInputText formControlName="local" class="w-full" placeholder="Unidade, endereço ou área" />
+    </div>
+    <div class="field">
+      <label for="prazo">Prazo desejado</label>
+      <input id="prazo" type="date" pInputText formControlName="prazo_desejado" class="w-full" />
+    </div>
+  </div>
+</div>

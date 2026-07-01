@@ -64,10 +64,10 @@ export class ContratacaoListaComponent implements OnInit {
   }
 
   abrir(contratacao: ContratacaoListItem): void {
-    void this.router.navigate(['/contratacao', contratacao.uuid, 'editar']);
+    void this.router.navigate(['/contratacao', 'nova', contratacao.uuid, 'dados-gerais']);
   }
 
   nova(): void {
-    void this.router.navigate(['/contratacao', 'nova']);
+    void this.router.navigate(['/contratacao', 'nova', 'dados-gerais']);
   }
 }

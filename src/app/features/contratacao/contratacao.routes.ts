@@ -8,12 +8,12 @@ export const contratacaoRoutes: Routes = [
   },
   {
     path: 'nova',
-    loadComponent: () =>
-      import('./contratacao-wizard.component').then((m) => m.ContratacaoWizardComponent),
+    loadChildren: () =>
+      import('./wizard/contratacao-wizard.routes').then((m) => m.contratacaoWizardRoutes),
   },
   {
     path: ':uuid/editar',
-    loadComponent: () =>
-      import('./contratacao-wizard.component').then((m) => m.ContratacaoWizardComponent),
+    redirectTo: 'nova/:uuid/dados-gerais',
+    pathMatch: 'full',
   },
 ];

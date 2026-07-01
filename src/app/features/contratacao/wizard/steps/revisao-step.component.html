@@ -1,0 +1,74 @@
+<div class="step-panel step-panel--review">
+  <div class="step-panel__intro">
+    <h3>Revisão final</h3>
+    <p>Confira os dados antes de submeter a solicitação.</p>
+  </div>
+
+  <section class="review-section">
+    <h4>Dados gerais</h4>
+    <dl class="review-grid">
+      <div><dt>Empresa</dt><dd>{{ store.form.value.empresa || '—' }}</dd></div>
+      <div><dt>CNPJ</dt><dd>{{ store.form.value.empresa_cnpj || '—' }}</dd></div>
+      <div><dt>Local ou Endereço</dt><dd>{{ store.form.value.empresa_endereco || '—' }}</dd></div>
+      <div><dt>Departamento</dt><dd>{{ store.form.value.departamento || '—' }}</dd></div>
+      <div><dt>Título</dt><dd>{{ store.form.value.titulo }}</dd></div>
+      <div><dt>Categoria</dt><dd>{{ store.form.value.categoria_servico }}</dd></div>
+      <div><dt>Local</dt><dd>{{ store.form.value.local || '—' }}</dd></div>
+      <div><dt>Prazo desejado</dt><dd>{{ store.form.value.prazo_desejado || '—' }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="review-section">
+    <h4>Termo de Referência</h4>
+    <div class="review-tr-list">
+      @for (item of store.trCamposForReview(); track item.label + item.value) {
+        <article class="review-tr-item" [class.review-tr-item--custom]="item.custom">
+          <h5>
+            {{ item.label }}
+            @if (item.custom) {
+              <span class="review-tr-item__badge">Personalizado</span>
+            }
+          </h5>
+          <p>{{ item.value }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="review-section">
+    <h4>Itens QQP</h4>
+    <ul class="review-qqp">
+      @for (item of store.qqpItensForReview(); track item.descricao; let i = $index) {
+        <li>
+          {{ i + 1 }}. {{ store.stripHtml(item.descricao) }} — {{ item.quantidade }} {{ item.unidade }}
+          — {{ store.formatCurrency(item.valor_unitario) }} (total: {{ store.formatCurrency(item.quantidade * item.valor_unitario) }})
+        </li>
+      }
+    </ul>
+    <p class="review-qqp-total"><strong>Preço total:</strong> {{ store.formatCurrency(store.qqpPrecoTotal) }}</p>
+  </section>
+
+  <section class="review-section">
+    <h4>Anexos</h4>
+    @if (store.anexos.length === 0) {
+      <p class="review-empty">Nenhum anexo.</p>
+    } @else {
+      <ul class="review-qqp">
+        @for (anexo of store.anexos; track anexo.id) {
+          <li>{{ anexo.nome_arquivo }}</li>
+        }
+      </ul>
+    }
+  </section>
+
+  @if (store.ssCamposForReview().length > 0) {
+    <section class="review-section">
+      <h4>Solicitação de serviço</h4>
+      <dl class="review-grid">
+        @for (item of store.ssCamposForReview(); track item.label) {
+          <div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>
+        }
+      </dl>
+    </section>
+  }
+</div>

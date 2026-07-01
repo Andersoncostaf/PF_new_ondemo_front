@@ -1,0 +1,154 @@
+<div class="step-panel step-panel--tr">
+  <header class="tr-header">
+    <div class="tr-header__copy">
+      <span class="tr-header__eyebrow">Passo 2 de 6</span>
+      <h3>Termo de Referência</h3>
+      <p>
+        Estruture o escopo em {{ store.trTotalFields }} blocos. Você também pode incluir campos extras
+        específicos da sua contratação.
+      </p>
+    </div>
+    <div class="tr-header__progress" [attr.aria-label]="'Progresso: ' + store.trFilledCount + ' de ' + store.trTotalFields">
+      <div class="tr-progress-ring">
+        <svg viewBox="0 0 36 36" aria-hidden="true">
+          <path class="tr-progress-ring__track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path
+            class="tr-progress-ring__value"
+            [attr.stroke-dasharray]="store.trProgressPercent + ', 100'"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        </svg>
+        <span class="tr-progress-ring__label">{{ store.trFilledCount }}/{{ store.trTotalFields }}</span>
+      </div>
+      <div class="tr-header__progress-meta">
+        <strong>{{ store.trProgressPercent }}%</strong>
+        <span>concluído</span>
+      </div>
+    </div>
+  </header>
+
+  <p-progressBar [value]="store.trProgressPercent" [showValue]="false" styleClass="tr-progress-bar" />
+
+  <div formGroupName="termo_referencia_campos">
+    <p-accordion [(activeIndex)]="store.trAccordionIndex" [multiple]="false" styleClass="tr-accordion">
+      @for (group of store.trGroups; track group.id) {
+        <p-accordionTab>
+          <ng-template pTemplate="header">
+            <div class="tr-tab-header" [style.--group-accent]="group.accent">
+              <span class="tr-tab-header__icon"><i [class]="group.icon"></i></span>
+              <span class="tr-tab-header__text">
+                <span class="tr-tab-header__title">{{ group.title }}</span>
+                <span class="tr-tab-header__subtitle">{{ group.subtitle }}</span>
+              </span>
+              <p-tag
+                [value]="store.groupFilledCount(group) + '/' + group.fields.length"
+                [severity]="store.isGroupComplete(group) ? 'success' : 'info'"
+                styleClass="tr-tab-header__tag"
+              />
+            </div>
+          </ng-template>
+
+          <div class="tr-fields-grid">
+            @for (field of group.fields; track field.key) {
+              <article
+                class="tr-field-card"
+                [class.tr-field-card--filled]="store.isTrFieldFilled(field.key)"
+                [class.tr-field-card--invalid]="store.trFieldControl(field)?.invalid && store.trFieldControl(field)?.touched"
+              >
+                <div class="tr-field-card__head">
+                  <span class="tr-field-card__icon" [style.color]="group.accent">
+                    <i [class]="field.icon"></i>
+                  </span>
+                  <div class="tr-field-card__labels">
+                    <label [for]="'tr-' + field.key">{{ field.label }} *</label>
+                    <small>{{ field.hint }}</small>
+                  </div>
+                  @if (store.isTrFieldFilled(field.key)) {
+                    <i class="pi pi-check-circle tr-field-card__check" aria-hidden="true"></i>
+                  }
+                </div>
+
+                @if (field.singleLine) {
+                  <input
+                    [id]="'tr-' + field.key"
+                    pInputText
+                    [formControlName]="field.key"
+                    class="w-full"
+                    [placeholder]="field.hint"
+                  />
+                } @else {
+                  <textarea
+                    [id]="'tr-' + field.key"
+                    pInputTextarea
+                    [formControlName]="field.key"
+                    [rows]="field.rows"
+                    [autoResize]="true"
+                    class="w-full tr-textarea"
+                    [placeholder]="field.hint"
+                  ></textarea>
+                }
+
+                @if (store.trFieldControl(field)?.invalid && store.trFieldControl(field)?.touched) {
+                  <span class="tr-field-card__error">Campo obrigatório</span>
+                }
+              </article>
+            }
+          </div>
+        </p-accordionTab>
+      }
+    </p-accordion>
+  </div>
+
+  <section class="tr-custom-section">
+    <div class="tr-custom-section__header">
+      <div>
+        <h4>Campos personalizados</h4>
+        <p>Adicione blocos extras com o nome e conteúdo que você definir.</p>
+      </div>
+      @if (!store.readOnly) {
+        <p-button label="Adicionar campo" icon="pi pi-plus" styleClass="tr-custom-add-btn" (onClick)="store.addCustomTrField()" />
+      }
+    </div>
+
+    @if (store.trCamposPersonalizados.length === 0) {
+      <div class="tr-custom-empty">
+        <i class="pi pi-plus-circle" aria-hidden="true"></i>
+        <p>Nenhum campo extra ainda.</p>
+        @if (!store.readOnly) {
+          <button type="button" class="tr-custom-empty__link" (click)="store.addCustomTrField()">
+            Criar primeiro campo personalizado
+          </button>
+        }
+      </div>
+    } @else {
+      <div formArrayName="tr_campos_personalizados" class="tr-custom-list">
+        @for (item of store.trCamposPersonalizados.controls; track item; let i = $index) {
+          <article
+            class="tr-custom-card"
+            [formGroupName]="i"
+            [class.tr-custom-card--filled]="store.isCustomTrFieldFilled(i)"
+            [class.tr-custom-card--invalid]="item.invalid && item.touched"
+          >
+            <div class="tr-custom-card__head">
+              <span class="tr-custom-card__badge">Campo {{ i + 1 }}</span>
+              @if (store.isCustomTrFieldFilled(i)) {
+                <i class="pi pi-check-circle tr-custom-card__check" aria-hidden="true"></i>
+              }
+              @if (!store.readOnly) {
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" pTooltip="Remover campo" (onClick)="store.removeCustomTrField(i)" />
+              }
+            </div>
+            <div class="field">
+              <label [for]="'custom-title-' + i">Nome do campo *</label>
+              <input [id]="'custom-title-' + i" pInputText formControlName="titulo" class="w-full" />
+            </div>
+            <div class="field">
+              <label [for]="'custom-body-' + i">Conteúdo *</label>
+              <textarea [id]="'custom-body-' + i" pInputTextarea formControlName="conteudo" rows="4" [autoResize]="true" class="w-full tr-textarea"></textarea>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>
