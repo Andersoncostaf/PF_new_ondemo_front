@@ -55,11 +55,28 @@ export interface Contratacao {
 
 export interface ContratacaoListItem {
   uuid: string;
+  numero_exibicao: string;
   titulo: string | null;
+  empresa: string | null;
+  empresa_cnpj: string | null;
+  departamento: string | null;
+  criado_por_nome: string | null;
   categoria_servico: string | null;
   status: ContratacaoStatus;
   created_at?: string;
   updated_at?: string;
+  fornecedor_vencedor?: string | null;
+  data_inicio_analise?: string | null;
+  responsavel_analise?: string | null;
+  apontamentos_pendentes?: number | null;
+}
+
+export interface ContratacaoListQuery {
+  page?: number;
+  per_page?: number;
+  data_inicio?: string;
+  data_fim?: string;
+  numero?: string;
 }
 
 export interface ContratacaoListResponse {

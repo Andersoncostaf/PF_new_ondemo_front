@@ -1,0 +1,26 @@
+<p-card header="Contratação de Serviços">
+  @if (errorMessage) {
+    <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
+  }
+
+  <div class="lista-actions">
+    <p-button label="Nova solicitação" icon="pi pi-plus" (onClick)="nova()" />
+  </div>
+
+  <app-contratacao-lista-filtros
+    [loading]="loading"
+    (filtrar)="onFiltrar($event)"
+    (limpar)="onLimparFiltros()"
+  />
+
+  <app-contratacao-lista-tabela
+    [contratacoes]="contratacoes"
+    [loading]="loading"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    (pageChange)="onPageChange($event)"
+    (editar)="editar($event)"
+    (visualizar)="visualizar($event)"
+  />
+</p-card>

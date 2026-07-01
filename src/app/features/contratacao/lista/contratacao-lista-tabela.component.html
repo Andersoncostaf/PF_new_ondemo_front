@@ -1,0 +1,106 @@
+<p-table
+  [value]="contratacoes"
+  [loading]="loading"
+  [scrollable]="true"
+  scrollHeight="flex"
+  styleClass="p-datatable-gridlines tabela-solicitacoes-listagem"
+  [tableStyle]="{ 'min-width': '85rem' }"
+  [paginator]="true"
+  [rows]="rows"
+  [first]="first"
+  [totalRecords]="totalRecords"
+  [lazy]="true"
+  (onLazyLoad)="onPage($event)"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="{first} - {last} de {totalRecords}"
+  [rowsPerPageOptions]="[10, 20, 50]"
+  [sortField]="'created_at'"
+  [sortOrder]="-1"
+  [resizableColumns]="true"
+  columnResizeMode="expand"
+>
+  <ng-template pTemplate="colgroup">
+    <colgroup>
+      @for (col of colunasLarguras; track col.width) {
+        <col [style.width]="col.width" />
+      }
+    </colgroup>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pResizableColumn>Nº contratação</th>
+      <th pSortableColumn="created_at" pResizableColumn>
+        Data de geração
+        <p-sortIcon field="created_at" />
+      </th>
+      <th pResizableColumn>Contratante</th>
+      <th pResizableColumn>CNPJ contratante</th>
+      <th pResizableColumn>Departamento</th>
+      <th pResizableColumn class="col-usuario">Usuário</th>
+      <th pResizableColumn>Status</th>
+      <th pResizableColumn class="col-fornecedor-vencedor">Fornecedor vencedor</th>
+      <th pResizableColumn>Data início da análise</th>
+      <th pResizableColumn>Responsável pela análise</th>
+      <th pResizableColumn>Apontamentos</th>
+      <th pFrozenColumn alignFrozen="right" pResizableColumn class="col-acoes">Ações</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-item>
+    <tr>
+      <td>{{ displayOrDash(item.numero_exibicao) }}</td>
+      <td>{{ item.created_at ? (item.created_at | date: 'dd/MM/yy HH:mm:ss') : '—' }}</td>
+      <td>{{ displayOrDash(item.empresa) }}</td>
+      <td>{{ displayOrDash(item.empresa_cnpj) }}</td>
+      <td>{{ displayOrDash(item.departamento) }}</td>
+      <td class="col-usuario">{{ displayOrDash(item.criado_por_nome) }}</td>
+      <td>
+        <p-tag [value]="statusLabel(item.status)" [severity]="statusSeverity(item.status)" />
+      </td>
+      <td class="col-fornecedor-vencedor">
+        <span class="col-fornecedor-vencedor__text">{{ displayOrDash(item.fornecedor_vencedor) }}</span>
+      </td>
+      <td>{{ displayOrDash(item.data_inicio_analise) }}</td>
+      <td>{{ displayOrDash(item.responsavel_analise) }}</td>
+      <td>
+        <p-tag
+          [value]="apontamentosLabel(item)"
+          [severity]="apontamentosSeverity(item)"
+        />
+      </td>
+      <td pFrozenColumn alignFrozen="right" class="col-acoes">
+        <div class="tabela-solicitacoes-acoes">
+          @if (podeEditar(item)) {
+            <p-button
+              [rounded]="true"
+              tooltipPosition="left"
+              pTooltip="Editar"
+              icon="pi pi-pencil"
+              styleClass="tabela-acao-btn"
+              severity="secondary"
+              (onClick)="editar.emit(item)"
+            />
+          }
+          @if (podeVisualizar(item)) {
+            <p-button
+              [rounded]="true"
+              tooltipPosition="left"
+              pTooltip="Visualizar"
+              icon="pi pi-eye"
+              styleClass="tabela-acao-btn"
+              severity="info"
+              (onClick)="visualizar.emit(item)"
+            />
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="12">Nenhuma solicitação encontrada.</td>
+    </tr>
+  </ng-template>
+</p-table>

@@ -1,0 +1,40 @@
+<div class="contratacao-filtros-panel mb-3 p-3">
+  <div class="filtros-row">
+    <div class="filtros-field">
+      <label class="filtros-label" for="filtro-data-inicio">Data início</label>
+      <input
+        id="filtro-data-inicio"
+        type="date"
+        class="filtros-input-line"
+        [(ngModel)]="filtros.dataInicio"
+      />
+    </div>
+    <div class="filtros-field">
+      <label class="filtros-label" for="filtro-data-fim">Data fim</label>
+      <input
+        id="filtro-data-fim"
+        type="date"
+        class="filtros-input-line"
+        [(ngModel)]="filtros.dataFim"
+      />
+    </div>
+    <div class="filtros-field">
+      <label class="filtros-label" for="filtro-numero">Nº contratação</label>
+      <input
+        id="filtro-numero"
+        type="text"
+        class="filtros-input-line"
+        [(ngModel)]="filtros.numeroContratacao"
+        placeholder="Digite o número"
+      />
+    </div>
+    <div class="filtros-field filtros-field--actions">
+      <button type="button" class="filtros-btn-filtrar" [disabled]="loading" (click)="aplicarFiltros()">
+        Filtrar
+      </button>
+      <button type="button" class="filtros-btn-limpar" [disabled]="loading" (click)="limparFiltros()">
+        Limpar
+      </button>
+    </div>
+  </div>
+</div>

@@ -4,7 +4,7 @@ export const contratacaoRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./contratacao-lista.component').then((m) => m.ContratacaoListaComponent),
+      import('./lista/contratacao-lista.page').then((m) => m.ContratacaoListaPageComponent),
   },
   {
     path: 'nova',

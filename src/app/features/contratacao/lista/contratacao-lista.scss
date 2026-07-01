@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.lista-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.contratacao-filtros-panel {
+  border: 1px solid var(--surface-border, #e2e8f0);
+  border-radius: 12px;
+  background: var(--surface-card, #fff);
+}
+
+.filtros-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filtros-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filtros-field--actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filtros-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-color-secondary, #64748b);
+}
+
+.filtros-input-line {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--surface-border, #cbd5e1);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: var(--surface-ground, #fff);
+  color: var(--text-color, #0f172a);
+}
+
+.filtros-btn-filtrar,
+.filtros-btn-limpar {
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.filtros-btn-filtrar {
+  background: #2563eb;
+  color: #fff;
+}
+
+.filtros-btn-filtrar:disabled,
+.filtros-btn-limpar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filtros-btn-limpar {
+  background: #64748b;
+  color: #fff;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-tbody > tr:nth-child(even) > td {
+  background-color: #e9ecef !important;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-tbody > tr:nth-child(odd) > td {
+  background-color: #ffffff !important;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-tbody > tr:hover > td {
+  background-color: #94c0b9 !important;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-tbody > tr:hover {
+  background-color: #e3f2fd !important;
+}
+
+.col-usuario {
+  max-width: 18rem;
+}
+
+.col-fornecedor-vencedor {
+  max-width: 13rem;
+}
+
+.col-fornecedor-vencedor__text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-acoes {
+  min-width: 6rem;
+}
+
+.tabela-solicitacoes-acoes {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+:host ::ng-deep .tabela-acao-btn {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host ::ng-deep .tabela-solicitacoes-listagem .p-datatable-thead > tr > th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 960px) {
+  .filtros-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filtros-field--actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .filtros-row {
+    grid-template-columns: 1fr;
+  }
+}
