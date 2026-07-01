@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { ContratacaoWizardStore } from './wizard/contratacao-wizard.store';
+
 export const contratacaoRoutes: Routes = [
   {
     path: '',
@@ -8,6 +10,7 @@ export const contratacaoRoutes: Routes = [
   },
   {
     path: 'nova',
+    providers: [ContratacaoWizardStore],
     loadChildren: () =>
       import('./wizard/contratacao-wizard.routes').then((m) => m.contratacaoWizardRoutes),
   },

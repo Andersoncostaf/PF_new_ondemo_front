@@ -24,6 +24,7 @@ import { ContratacaoWizardStore } from '../contratacao-wizard.store';
     TooltipModule,
   ],
   templateUrl: './tr-step.component.html',
+  styleUrl: '../contratacao-wizard.shared.scss',
 })
 export class TrStepComponent {
   readonly store = inject(ContratacaoWizardStore);

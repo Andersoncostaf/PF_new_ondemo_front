@@ -9,6 +9,7 @@ import { ContratacaoWizardStore } from '../contratacao-wizard.store';
   standalone: true,
   imports: [ReactiveFormsModule, InputTextModule],
   templateUrl: './dados-gerais-step.component.html',
+  styleUrl: '../contratacao-wizard.shared.scss',
 })
 export class DadosGeraisStepComponent {
   readonly store = inject(ContratacaoWizardStore);

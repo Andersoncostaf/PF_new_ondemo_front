@@ -10,6 +10,7 @@ import { ContratacaoWizardStore } from '../contratacao-wizard.store';
   standalone: true,
   imports: [ReactiveFormsModule, ButtonModule, InputTextModule],
   templateUrl: './anexos-step.component.html',
+  styleUrl: '../contratacao-wizard.shared.scss',
 })
 export class AnexosStepComponent {
   readonly store = inject(ContratacaoWizardStore);

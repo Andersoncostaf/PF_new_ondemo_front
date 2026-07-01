@@ -10,6 +10,7 @@ import { ContratacaoWizardStore } from '../contratacao-wizard.store';
   standalone: true,
   imports: [ReactiveFormsModule, InputTextModule, InputTextareaModule],
   templateUrl: './solicitacao-servico-step.component.html',
+  styleUrl: '../contratacao-wizard.shared.scss',
 })
 export class SolicitacaoServicoStepComponent {
   readonly store = inject(ContratacaoWizardStore);

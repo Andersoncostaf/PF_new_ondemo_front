@@ -9,6 +9,7 @@ import { ContratacaoWizardStore } from './contratacao-wizard.store';
   standalone: true,
   imports: [RouterLink, ButtonModule],
   templateUrl: './contratacao-wizard-actions.component.html',
+  styleUrl: './contratacao-wizard.shared.scss',
 })
 export class ContratacaoWizardActionsComponent {
   readonly store = inject(ContratacaoWizardStore);

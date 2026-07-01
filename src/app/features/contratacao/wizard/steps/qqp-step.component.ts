@@ -18,6 +18,7 @@ import { ContratacaoWizardStore } from '../contratacao-wizard.store';
     InputTextareaModule,
   ],
   templateUrl: './qqp-step.component.html',
+  styleUrl: '../contratacao-wizard.shared.scss',
 })
 export class QqpStepComponent {
   readonly store = inject(ContratacaoWizardStore);

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -7,7 +7,7 @@ import { MessageModule } from 'primeng/message';
 import { StepsModule } from 'primeng/steps';
 import { filter, Subscription } from 'rxjs';
 
-import { activeIndexFromSlug } from './contratacao-wizard.steps';
+import { activeIndexFromSlug, stepBySlug } from './contratacao-wizard.steps';
 import { ContratacaoWizardActionsComponent } from './contratacao-wizard-actions.component';
 import { ContratacaoWizardStore } from './contratacao-wizard.store';
 
@@ -17,6 +17,7 @@ import { ContratacaoWizardStore } from './contratacao-wizard.store';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
     RouterOutlet,
     CardModule,
     MessageModule,
@@ -35,10 +36,10 @@ export class ContratacaoWizardShellComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.initShell();
-    this.syncSlugFromRoute();
+    this.syncFromRoute();
     this.routeSub = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => this.syncSlugFromRoute());
+      .subscribe(() => this.syncFromRoute());
   }
 
   ngOnDestroy(): void {
@@ -49,14 +50,27 @@ export class ContratacaoWizardShellComponent implements OnInit, OnDestroy {
     return activeIndexFromSlug(this.store.currentSlug);
   }
 
-  private syncSlugFromRoute(): void {
-    let child = this.route.firstChild;
-    while (child?.firstChild) {
-      child = child.firstChild;
+  private syncFromRoute(): void {
+    let route: ActivatedRoute = this.route;
+    let routeUuid: string | null = null;
+
+    while (route.firstChild) {
+      route = route.firstChild;
+      const uuid = route.snapshot.paramMap.get('uuid');
+      if (uuid) {
+        routeUuid = uuid;
+      }
     }
-    const slug = child?.snapshot.url[0]?.path;
-    if (slug) {
+
+    const slug = route.snapshot.url[0]?.path;
+    if (slug && stepBySlug(slug)) {
       this.store.setCurrentSlug(slug);
+    }
+
+    if (routeUuid) {
+      this.store.isNova = false;
+    } else if (!this.store.uuid) {
+      this.store.isNova = true;
     }
   }
 }
