@@ -5,6 +5,7 @@ import { map, of, switchMap } from 'rxjs';
 import { AuthService } from '../core/auth/auth.service';
 import { ModulosService } from '../core/identidade/modulos.service';
 
+/** @deprecated Use contratacaoWizardGuard from contratacao-aprovacao.guard.ts */
 export const contratacaoGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const modulosService = inject(ModulosService);

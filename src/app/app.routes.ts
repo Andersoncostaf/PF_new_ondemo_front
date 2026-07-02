@@ -1,7 +1,12 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/auth.guard';
-import { contratacaoGuard } from './guards/contratacao.guard';
+import {
+  adminTenantGuard,
+  contratacaoAprovacaoGuard,
+  contratacaoWizardGuard,
+} from './guards/contratacao-aprovacao.guard';
+import { moduloGuard } from './guards/modulo.guard';
 import { ShellComponent } from './features/shell/shell.component';
 
 export const routes: Routes = [
@@ -32,9 +37,37 @@ export const routes: Routes = [
       },
       {
         path: 'contratacao',
-        canActivate: [contratacaoGuard],
+        canActivate: [contratacaoWizardGuard],
         loadChildren: () =>
           import('./features/contratacao/contratacao.routes').then((m) => m.contratacaoRoutes),
+      },
+      {
+        path: 'contratacao/aprovacao',
+        canActivate: [contratacaoAprovacaoGuard],
+        loadChildren: () =>
+          import('./features/contratacao/aprovacao/contratacao-aprovacao.routes').then(
+            (m) => m.contratacaoAprovacaoRoutes,
+          ),
+      },
+      {
+        path: 'admin/usuarios',
+        canActivate: [adminTenantGuard],
+        loadComponent: () =>
+          import('./features/admin/usuarios/admin-usuarios.page').then(
+            (m) => m.AdminUsuariosPageComponent,
+          ),
+      },
+      {
+        path: 'nota-fiscal',
+        canActivate: [moduloGuard('nota_fiscal')],
+        loadComponent: () =>
+          import('./features/shared/em-breve.page').then((m) => m.EmBrevePageComponent),
+      },
+      {
+        path: 'admin/auditoria',
+        canActivate: [moduloGuard('auditoria')],
+        loadComponent: () =>
+          import('./features/shared/em-breve.page').then((m) => m.EmBrevePageComponent),
       },
       {
         path: '',

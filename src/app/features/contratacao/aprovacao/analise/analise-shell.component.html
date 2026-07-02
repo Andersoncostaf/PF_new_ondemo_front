@@ -1,0 +1,48 @@
+<p-card>
+  <div class="analise-header">
+    <p-button icon="pi pi-arrow-left" label="Voltar" [text]="true" (onClick)="store.voltarLista()" />
+    <div>
+      <h2>Análise de contratação</h2>
+      @if (store.contratacao?.titulo) {
+        <p class="analise-subtitle">{{ store.contratacao?.titulo }}</p>
+      }
+    </div>
+  </div>
+
+  @if (store.errorMessage) {
+    <p-message severity="error" [text]="store.errorMessage" styleClass="mb-3 w-full" />
+  }
+
+  <nav class="analise-steps">
+    @for (step of steps; track step.routeSlug) {
+      <a
+        [routerLink]="stepLink(step.routeSlug)"
+        class="analise-step"
+        [class.analise-step--active]="isActive(step.routeSlug)"
+      >
+        {{ step.label }}
+      </a>
+    }
+  </nav>
+
+  @if (store.loading) {
+    <p>Carregando...</p>
+  } @else {
+    <router-outlet />
+
+    @if (store.emAnalise) {
+      <app-apontamentos-panel
+        [uuid]="store.uuid!"
+        [etapa]="store.currentEtapa"
+        [apontamentos]="store.apontamentos"
+        [loading]="store.apontamentosLoading"
+        (changed)="onApontamentosChanged()"
+      />
+
+      <app-aprovacao-acoes-bar
+        [uuid]="store.uuid!"
+        (concluido)="onAcaoConcluida()"
+      />
+    }
+  }
+</p-card>

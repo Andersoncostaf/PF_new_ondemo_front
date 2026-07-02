@@ -1,0 +1,11 @@
+.acoes-bar {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.acoes-bar__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}

@@ -99,6 +99,10 @@ export class ContratacaoListaPageComponent {
     void this.router.navigate(['/contratacao', 'nova', contratacao.uuid, 'revisao']);
   }
 
+  ajustes(contratacao: ContratacaoListItem): void {
+    void this.router.navigate(['/contratacao', 'ajustes', contratacao.uuid]);
+  }
+
   private normalizeListItem(item: ContratacaoListItem): ContratacaoListItem {
     return {
       ...item,

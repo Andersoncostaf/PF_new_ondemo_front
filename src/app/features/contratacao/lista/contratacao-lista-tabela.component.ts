@@ -6,6 +6,13 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { ContratacaoListItem } from '../contratacao.models';
+import {
+  contratacaoPodeAjustes,
+  contratacaoPodeEditar,
+  contratacaoPodeVisualizar,
+  contratacaoStatusLabel,
+  contratacaoStatusSeverity,
+} from '../contratacao-status.utils';
 import { displayOrDash, LISTA_COLUNAS_LARGURAS } from './contratacao-lista.constants';
 
 @Component({
@@ -24,24 +31,19 @@ export class ContratacaoListaTabelaComponent {
   @Output() pageChange = new EventEmitter<{ page: number; rows: number }>();
   @Output() editar = new EventEmitter<ContratacaoListItem>();
   @Output() visualizar = new EventEmitter<ContratacaoListItem>();
+  @Output() ajustes = new EventEmitter<ContratacaoListItem>();
 
   readonly colunasLarguras = LISTA_COLUNAS_LARGURAS;
 
   displayOrDash = displayOrDash;
+  statusLabel = contratacaoStatusLabel;
+  statusSeverity = contratacaoStatusSeverity;
 
   onPage(event: TableLazyLoadEvent): void {
     const rows = event.rows ?? this.rows;
     const first = event.first ?? 0;
     const page = Math.floor(first / rows) + 1;
     this.pageChange.emit({ page, rows });
-  }
-
-  statusLabel(status: string): string {
-    return status === 'submetido' ? 'Submetido' : 'Rascunho';
-  }
-
-  statusSeverity(status: string): 'success' | 'warning' {
-    return status === 'submetido' ? 'success' : 'warning';
   }
 
   apontamentosLabel(item: ContratacaoListItem): string {
@@ -57,10 +59,14 @@ export class ContratacaoListaTabelaComponent {
   }
 
   podeEditar(item: ContratacaoListItem): boolean {
-    return item.status === 'rascunho';
+    return contratacaoPodeEditar(item.status);
   }
 
   podeVisualizar(item: ContratacaoListItem): boolean {
-    return item.status === 'submetido';
+    return contratacaoPodeVisualizar(item.status);
+  }
+
+  podeAjustes(item: ContratacaoListItem): boolean {
+    return contratacaoPodeAjustes(item.status);
   }
 }

@@ -1,4 +1,25 @@
-export type ContratacaoStatus = 'rascunho' | 'submetido';
+import type { ContratacaoStatus } from './contratacao-status.utils';
+
+export type { ContratacaoStatus };
+
+export type ApontamentoEtapa = 'filial' | 'tr' | 'qqp' | 'anexos' | 'solicitacao_servico';
+
+export type ApontamentoStatus = 'pendente' | 'respondido' | 'cancelado';
+
+export interface ContratacaoApontamento {
+  id: string;
+  uuid: string;
+  etapa: ApontamentoEtapa;
+  descricao: string | null;
+  status: ApontamentoStatus;
+  resposta: string | null;
+  autor_nome?: string | null;
+  respondedor_nome?: string | null;
+  nome_arquivo?: string | null;
+  tamanho_bytes?: number;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export type { TermoReferenciaCampoKey, TermoReferenciaCampos } from './termo-referencia.constants';
 

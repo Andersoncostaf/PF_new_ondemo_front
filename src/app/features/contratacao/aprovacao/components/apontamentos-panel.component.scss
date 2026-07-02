@@ -1,0 +1,50 @@
+.apontamentos-panel {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.apontamentos-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.apontamentos-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.apontamentos-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.apontamentos-list li {
+  border: 1px solid var(--surface-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.apontamentos-list__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.apontamentos-list__resposta {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--surface-border);
+}
+
+.apontamentos-empty {
+  color: var(--text-color-secondary);
+}

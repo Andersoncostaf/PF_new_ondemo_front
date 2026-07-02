@@ -1,0 +1,36 @@
+.analise-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.analise-header h2 {
+  margin: 0;
+}
+
+.analise-subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--text-color-secondary);
+}
+
+.analise-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.analise-step {
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: var(--surface-100);
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.analise-step--active {
+  background: var(--primary-color);
+  color: var(--primary-color-text);
+}

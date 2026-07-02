@@ -11,9 +11,11 @@ import {
   Contratacao,
   ContratacaoAnexo,
   ContratacaoPayload,
+  ContratacaoStatus,
   SOLICITACAO_SERVICO_LABELS,
   SolicitacaoServico,
 } from '../contratacao.models';
+import { contratacaoStatusLabel } from '../contratacao-status.utils';
 import {
   countFilledTermoCampos,
   emptyTermoReferenciaCampos,
@@ -57,7 +59,7 @@ export class ContratacaoWizardStore {
   errorMessage = '';
   successMessage = '';
   uuid: string | null = null;
-  status: 'rascunho' | 'submetido' = 'rascunho';
+  status: ContratacaoStatus = 'rascunho';
   isNova = true;
   currentSlug = FIRST_STEP_SLUG;
   trAccordionIndex = 0;
@@ -126,7 +128,7 @@ export class ContratacaoWizardStore {
   }
 
   get readOnly(): boolean {
-    return this.status === 'submetido';
+    return this.status !== 'rascunho';
   }
 
   get trFilledCount(): number {
@@ -364,7 +366,7 @@ export class ContratacaoWizardStore {
     this.patchForm(data);
     this.anexos = data.anexos ?? [];
 
-    if (data.status === 'submetido') {
+    if (data.status !== 'rascunho') {
       this.form.disable();
       this.qqpDraftForm.disable();
       this.anexoDraftForm.disable();
@@ -752,7 +754,7 @@ export class ContratacaoWizardStore {
   }
 
   statusLabel(): string {
-    return this.status === 'submetido' ? 'Submetido' : 'Em elaboração';
+    return contratacaoStatusLabel(this.status);
   }
 
   private extractError(err: { error?: ApiErrorBody }): string {

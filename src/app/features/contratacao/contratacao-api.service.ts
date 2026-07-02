@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import {
   Contratacao,
   ContratacaoAnexo,
+  ContratacaoApontamento,
   ContratacaoListQuery,
   ContratacaoListResponse,
   ContratacaoPayload,
@@ -65,5 +66,25 @@ export class ContratacaoApiService {
 
   deleteAnexo(uuid: string, anexoId: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${uuid}/anexos/${anexoId}`);
+  }
+
+  listarApontamentos(uuid: string, etapa?: string): Observable<{ data: ContratacaoApontamento[] }> {
+    let params = new HttpParams();
+    if (etapa) params = params.set('etapa', etapa);
+    return this.http.get<{ data: ContratacaoApontamento[] }>(
+      `${this.baseUrl}/${uuid}/apontamentos`,
+      { params },
+    );
+  }
+
+  responderApontamento(uuid: string, apontamentoId: string, resposta: string): Observable<ContratacaoApontamento> {
+    return this.http.post<ContratacaoApontamento>(
+      `${this.baseUrl}/${uuid}/apontamentos/${apontamentoId}/responder`,
+      { resposta },
+    );
+  }
+
+  reenviar(uuid: string): Observable<Contratacao> {
+    return this.http.post<Contratacao>(`${this.baseUrl}/${uuid}/reenviar`, {});
   }
 }

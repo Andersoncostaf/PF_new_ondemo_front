@@ -1,0 +1,22 @@
+<div class="acoes-bar">
+  @if (errorMessage) {
+    <p-message severity="error" [text]="errorMessage" styleClass="w-full" />
+  }
+  <div class="acoes-bar__buttons">
+    <p-button
+      label="Retornar para ajustes"
+      icon="pi pi-replay"
+      severity="warning"
+      [loading]="loading"
+      (onClick)="retornarAjustes()"
+    />
+    <p-button
+      label="Aprovar análise"
+      icon="pi pi-check"
+      [loading]="loading"
+      (onClick)="aprovarAnalise()"
+    />
+  </div>
+</div>
+
+<p-confirmDialog />

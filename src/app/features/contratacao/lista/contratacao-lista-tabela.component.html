@@ -93,6 +93,17 @@
               (onClick)="visualizar.emit(item)"
             />
           }
+          @if (podeAjustes(item)) {
+            <p-button
+              [rounded]="true"
+              tooltipPosition="left"
+              pTooltip="Responder apontamentos"
+              icon="pi pi-comments"
+              styleClass="tabela-acao-btn"
+              severity="warning"
+              (onClick)="ajustes.emit(item)"
+            />
+          }
         </div>
       </td>
     </tr>

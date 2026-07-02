@@ -1,0 +1,18 @@
+.toolbar {
+  margin-bottom: 1rem;
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dialog-form label {
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+.w-full {
+  width: 100%;
+}

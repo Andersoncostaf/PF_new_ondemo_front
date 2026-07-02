@@ -2,6 +2,7 @@ export interface ModuloItem {
   codigo: string;
   label: string;
   rota: string;
+  grupo?: string;
 }
 
 export interface ModulosResponse {

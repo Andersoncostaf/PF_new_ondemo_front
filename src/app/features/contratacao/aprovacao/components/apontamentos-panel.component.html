@@ -1,0 +1,55 @@
+<section class="apontamentos-panel">
+  <h3>Apontamentos — {{ etapa }}</h3>
+
+  @if (errorMessage) {
+    <p-message severity="error" [text]="errorMessage" styleClass="mb-2 w-full" />
+  }
+
+  @if (!readonly) {
+    <div class="apontamentos-form">
+      <p-editor [(ngModel)]="descricao" [style]="{ height: '180px' }" />
+      <div class="apontamentos-upload">
+        <input type="file" (change)="onFileSelected($event)" />
+        <small>Anexo opcional — máximo 50MB</small>
+      </div>
+      <p-button label="Registrar apontamento" icon="pi pi-plus" [loading]="saving" (onClick)="salvar()" />
+    </div>
+  }
+
+  @if (loading) {
+    <p>Carregando apontamentos...</p>
+  } @else if (apontamentos.length === 0) {
+    <p class="apontamentos-empty">Nenhum apontamento nesta etapa.</p>
+  } @else {
+    <ul class="apontamentos-list">
+      @for (item of apontamentos; track item.id) {
+        <li>
+          <div class="apontamentos-list__header">
+            <p-tag [value]="item.status" [severity]="item.status === 'pendente' ? 'danger' : 'success'" />
+            <span>{{ item.autor_nome || 'Compras' }} — {{ item.created_at | date: 'dd/MM/yy HH:mm' }}</span>
+            @if (!readonly && item.status === 'pendente') {
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (onClick)="excluir(item)" />
+            }
+          </div>
+          @if (item.descricao) {
+            <div class="apontamentos-list__descricao" [innerHTML]="item.descricao"></div>
+          }
+          @if (item.nome_arquivo) {
+            <p-button
+              [label]="item.nome_arquivo"
+              icon="pi pi-download"
+              [text]="true"
+              (onClick)="baixarAnexo(item)"
+            />
+          }
+          @if (item.resposta) {
+            <div class="apontamentos-list__resposta">
+              <strong>Resposta da Área:</strong>
+              <p>{{ item.resposta }}</p>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>
