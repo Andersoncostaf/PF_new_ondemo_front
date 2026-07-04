@@ -1,40 +1,70 @@
-<div class="contratacao-filtros-panel mb-3 p-3">
+<section class="contratacao-filtros-panel">
+  <div class="filtros-panel-head">
+    <div class="filtros-panel-head__title">
+      <i class="pi pi-filter" aria-hidden="true"></i>
+      <span>Filtros</span>
+    </div>
+    @if (hasActive) {
+      <span class="filtros-panel-head__badge">Ativos</span>
+    }
+  </div>
+
   <div class="filtros-row">
     <div class="filtros-field">
       <label class="filtros-label" for="filtro-data-inicio">Data início</label>
-      <input
-        id="filtro-data-inicio"
-        type="date"
-        class="filtros-input-line"
-        [(ngModel)]="filtros.dataInicio"
-      />
+      <span class="filtros-input-wrap">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        <input
+          id="filtro-data-inicio"
+          type="date"
+          class="filtros-input-line"
+          [(ngModel)]="filtros.dataInicio"
+        />
+      </span>
     </div>
     <div class="filtros-field">
       <label class="filtros-label" for="filtro-data-fim">Data fim</label>
-      <input
-        id="filtro-data-fim"
-        type="date"
-        class="filtros-input-line"
-        [(ngModel)]="filtros.dataFim"
-      />
+      <span class="filtros-input-wrap">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        <input
+          id="filtro-data-fim"
+          type="date"
+          class="filtros-input-line"
+          [(ngModel)]="filtros.dataFim"
+        />
+      </span>
     </div>
     <div class="filtros-field">
       <label class="filtros-label" for="filtro-numero">Nº contratação</label>
-      <input
-        id="filtro-numero"
-        type="text"
-        class="filtros-input-line"
-        [(ngModel)]="filtros.numeroContratacao"
-        placeholder="Digite o número"
-      />
+      <span class="filtros-input-wrap">
+        <i class="pi pi-search" aria-hidden="true"></i>
+        <input
+          id="filtro-numero"
+          type="text"
+          class="filtros-input-line"
+          [(ngModel)]="filtros.numeroContratacao"
+          placeholder="Ex.: 795AD3C8"
+          (keyup.enter)="aplicarFiltros()"
+        />
+      </span>
     </div>
     <div class="filtros-field filtros-field--actions">
-      <button type="button" class="filtros-btn-filtrar" [disabled]="loading" (click)="aplicarFiltros()">
-        Filtrar
-      </button>
-      <button type="button" class="filtros-btn-limpar" [disabled]="loading" (click)="limparFiltros()">
-        Limpar
-      </button>
+      <p-button
+        label="Filtrar"
+        icon="pi pi-check"
+        [loading]="loading"
+        styleClass="filtros-btn"
+        (onClick)="aplicarFiltros()"
+      />
+      <p-button
+        label="Limpar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="loading"
+        styleClass="filtros-btn"
+        (onClick)="limparFiltros()"
+      />
     </div>
   </div>
-</div>
+</section>

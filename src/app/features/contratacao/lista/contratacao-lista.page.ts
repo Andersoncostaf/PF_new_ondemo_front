@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 
 import { ContratacaoApiService } from '../contratacao-api.service';
 import { ContratacaoListItem } from '../contratacao.models';
 import {
   ContratacaoListaFiltros,
+  DEFAULT_LISTA_PAGE_SIZE,
   EMPTY_CONTRATACAO_LISTA_FILTROS,
   filtrosToQueryParams,
 } from './contratacao-lista.constants';
@@ -19,7 +19,6 @@ import { ContratacaoListaTabelaComponent } from './contratacao-lista-tabela.comp
   standalone: true,
   imports: [
     ButtonModule,
-    CardModule,
     MessageModule,
     ContratacaoListaFiltrosComponent,
     ContratacaoListaTabelaComponent,
@@ -33,7 +32,7 @@ export class ContratacaoListaPageComponent {
   errorMessage = '';
 
   currentPage = 1;
-  rows = 20;
+  rows = DEFAULT_LISTA_PAGE_SIZE;
   totalRecords = 0;
   first = 0;
 

@@ -1,6 +1,7 @@
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
@@ -13,18 +14,32 @@ import {
   contratacaoStatusLabel,
   contratacaoStatusSeverity,
 } from '../contratacao-status.utils';
-import { displayOrDash, LISTA_COLUNAS_LARGURAS } from './contratacao-lista.constants';
+import {
+  DEFAULT_LISTA_PAGE_SIZE,
+  displayOrDash,
+  LISTA_COLUNAS_LARGURAS,
+  LISTA_ROWS_PER_PAGE_OPTIONS,
+} from './contratacao-lista.constants';
 
 @Component({
   selector: 'app-contratacao-lista-tabela',
   standalone: true,
-  imports: [DatePipe, ButtonModule, TableModule, TagModule, TooltipModule],
+  imports: [
+    DatePipe,
+    NgTemplateOutlet,
+    ButtonModule,
+    TableModule,
+    TagModule,
+    TooltipModule,
+    PaginatorModule,
+  ],
   templateUrl: './contratacao-lista-tabela.component.html',
+  styleUrl: './contratacao-lista.scss',
 })
 export class ContratacaoListaTabelaComponent {
   @Input() contratacoes: ContratacaoListItem[] = [];
   @Input() loading = false;
-  @Input() rows = 20;
+  @Input() rows = DEFAULT_LISTA_PAGE_SIZE;
   @Input() totalRecords = 0;
   @Input() first = 0;
 
@@ -34,16 +49,18 @@ export class ContratacaoListaTabelaComponent {
   @Output() ajustes = new EventEmitter<ContratacaoListItem>();
 
   readonly colunasLarguras = LISTA_COLUNAS_LARGURAS;
+  readonly rowsPerPageOptions = [...LISTA_ROWS_PER_PAGE_OPTIONS];
 
   displayOrDash = displayOrDash;
   statusLabel = contratacaoStatusLabel;
   statusSeverity = contratacaoStatusSeverity;
 
   onPage(event: TableLazyLoadEvent): void {
-    const rows = event.rows ?? this.rows;
-    const first = event.first ?? 0;
-    const page = Math.floor(first / rows) + 1;
-    this.pageChange.emit({ page, rows });
+    this.emitPage(event.first ?? 0, event.rows ?? this.rows);
+  }
+
+  onPaginatorChange(event: PaginatorState): void {
+    this.emitPage(event.first ?? 0, event.rows ?? this.rows);
   }
 
   apontamentosLabel(item: ContratacaoListItem): string {
@@ -68,5 +85,10 @@ export class ContratacaoListaTabelaComponent {
 
   podeAjustes(item: ContratacaoListItem): boolean {
     return contratacaoPodeAjustes(item.status);
+  }
+
+  private emitPage(first: number, rows: number): void {
+    const page = Math.floor(first / rows) + 1;
+    this.pageChange.emit({ page, rows });
   }
 }
