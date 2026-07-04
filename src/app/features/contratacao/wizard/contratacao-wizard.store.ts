@@ -16,6 +16,7 @@ import {
   SolicitacaoServico,
 } from '../contratacao.models';
 import { contratacaoStatusLabel } from '../contratacao-status.utils';
+import { anexoArquivoValido, formatAnexoTamanho } from '../contratacao-anexo.constants';
 import {
   countFilledTermoCampos,
   emptyTermoReferenciaCampos,
@@ -67,6 +68,7 @@ export class ContratacaoWizardStore {
   anexos: ContratacaoAnexo[] = [];
   solicitanteNome = '';
   anexoArquivo: File | null = null;
+  anexoArquivoErro = '';
   hydrated = false;
 
   readonly trGroups = TERMO_REFERENCIA_GROUPS;
@@ -287,15 +289,47 @@ export class ContratacaoWizardStore {
 
   onAnexoFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.anexoArquivo = input.files?.[0] ?? null;
+    this.definirAnexoArquivo(input.files?.[0] ?? null);
+  }
+
+  definirAnexoArquivo(file: File | null): void {
+    this.anexoArquivoErro = '';
+
+    if (!file) {
+      this.anexoArquivo = null;
+      return;
+    }
+
+    const erro = anexoArquivoValido(file);
+    if (erro) {
+      this.anexoArquivo = null;
+      this.anexoArquivoErro = erro;
+      return;
+    }
+
+    this.anexoArquivo = file;
+  }
+
+  anexoArquivoLabel(): string {
+    if (!this.anexoArquivo) {
+      return '';
+    }
+
+    return `${this.anexoArquivo.name} (${formatAnexoTamanho(this.anexoArquivo.size)})`;
   }
 
   limparAnexoDraft(): void {
     this.anexoDraftForm.reset({ descricao: '' });
     this.anexoArquivo = null;
+    this.anexoArquivoErro = '';
   }
 
   async anexarArquivo(): Promise<void> {
+    if (this.anexoArquivoErro) {
+      this.errorMessage = this.anexoArquivoErro;
+      return;
+    }
+
     if (!this.anexoArquivo) {
       this.errorMessage = 'Selecione um arquivo para anexar.';
       return;
