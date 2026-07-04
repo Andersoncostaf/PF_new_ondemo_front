@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { ContratacaoAprovacaoApiService } from '../contratacao-aprovacao-api.service';
+import { ContratacaoComprasApiService } from '../../compras/contratacao-compras-api.service';
+import { isContratacaoComprasRoute } from '../../compras/contratacao-compras.context';
 import { Contratacao, ContratacaoApontamento } from '../../contratacao.models';
 import { SOLICITACAO_SERVICO_LABELS } from '../../contratacao.models';
 import {
@@ -14,6 +16,7 @@ import { analiseStepByRouteSlug } from '../contratacao-aprovacao.steps';
 @Injectable()
 export class AnaliseContratacaoStore {
   private readonly api = inject(ContratacaoAprovacaoApiService);
+  private readonly comprasApi = inject(ContratacaoComprasApiService);
   private readonly router = inject(Router);
 
   uuid: string | null = null;
@@ -36,7 +39,8 @@ export class AnaliseContratacaoStore {
     this.loading = true;
     this.errorMessage = '';
     try {
-      this.contratacao = await firstValueFrom(this.api.get(this.uuid));
+      const api = isContratacaoComprasRoute(this.router.url) ? this.comprasApi : this.api;
+      this.contratacao = await firstValueFrom(api.get(this.uuid));
     } catch {
       this.errorMessage = 'Não foi possível carregar a contratação.';
     } finally {
@@ -116,6 +120,10 @@ export class AnaliseContratacaoStore {
   }
 
   voltarLista(): void {
-    void this.router.navigate(['/contratacao', 'aprovacao']);
+    void this.router.navigate(
+      isContratacaoComprasRoute(this.router.url)
+        ? ['/contratacao', 'compras']
+        : ['/contratacao', 'aprovacao'],
+    );
   }
 }

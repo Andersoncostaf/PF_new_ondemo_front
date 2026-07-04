@@ -7,6 +7,8 @@ import { MessageModule } from 'primeng/message';
 import { filter, Subscription } from 'rxjs';
 
 import { ANALISE_STEPS, analiseStepRouterLink } from '../contratacao-aprovacao.steps';
+import { comprasAnaliseStepRouterLink } from '../../compras/contratacao-compras.steps';
+import { isContratacaoComprasRoute } from '../../compras/contratacao-compras.context';
 import { AnaliseContratacaoStore } from './analise-contratacao.store';
 import { ApontamentosPanelComponent } from '../components/apontamentos-panel.component';
 import { AprovacaoAcoesBarComponent } from '../components/aprovacao-acoes-bar.component';
@@ -53,7 +55,9 @@ export class AnaliseShellComponent implements OnInit, OnDestroy {
 
   stepLink(routeSlug: string): string[] | null {
     if (!this.store.uuid) return null;
-    return analiseStepRouterLink(this.store.uuid, routeSlug);
+    return isContratacaoComprasRoute(this.router.url)
+      ? comprasAnaliseStepRouterLink(this.store.uuid, routeSlug)
+      : analiseStepRouterLink(this.store.uuid, routeSlug);
   }
 
   isActive(routeSlug: string): boolean {

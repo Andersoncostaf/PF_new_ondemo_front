@@ -11,7 +11,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ContratacaoVendorListApiService {
-  private readonly baseUrl = `${environment.apiUrl}/v1/contratacao/vendor-list`;
+  private readonly baseUrl = `${environment.apiUrl}/v1/contratacao/compras/vendor-list`;
 
   constructor(private readonly http: HttpClient) {}
 

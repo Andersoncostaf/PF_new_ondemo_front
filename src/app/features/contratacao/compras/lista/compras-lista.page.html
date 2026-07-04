@@ -1,4 +1,4 @@
-<p-card header="Aprovar solicitações">
+<p-card header="Solicitações para processamento">
   @if (errorMessage) {
     <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
   }
@@ -22,15 +22,15 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th>Nº</th>
-        <th>Data geração</th>
-        <th>Empresa</th>
-        <th>CNPJ</th>
+        <th>Nº contratação</th>
+        <th>Data de geração</th>
+        <th>Contratante</th>
+        <th>CNPJ contratante</th>
         <th>Departamento</th>
+        <th>Usuário</th>
         <th>Status</th>
-        <th>Solicitante</th>
         <th>Início análise</th>
-        <th>Analista</th>
+        <th>Comprador responsável</th>
         <th style="width: 12rem">Ações</th>
       </tr>
     </ng-template>
@@ -41,28 +41,37 @@
         <td>{{ item.empresa || '—' }}</td>
         <td>{{ item.empresa_cnpj || '—' }}</td>
         <td>{{ item.departamento || '—' }}</td>
+        <td>{{ item.criado_por_nome || '—' }}</td>
         <td>
           <p-tag [value]="statusLabel(item.status)" [severity]="statusSeverity(item.status)" />
         </td>
-        <td>{{ item.criado_por_nome || '—' }}</td>
         <td>{{ formatarData(item.data_inicio_analise) }}</td>
         <td>{{ item.responsavel_analise || '—' }}</td>
         <td>
           @if (podeAssumir(item.status)) {
             <p-button
-              label="Iniciar"
-              icon="pi pi-play"
+              label="Assumir"
+              icon="pi pi-user-plus"
               size="small"
-              (onClick)="iniciarAnalise(item)"
+              (onClick)="assumirVendorList(item)"
             />
           }
-          @if (podeContinuar(item.status)) {
+          @if (emVendorList(item.status)) {
             <p-button
-              label="Continuar"
-              icon="pi pi-arrow-right"
+              icon="pi pi-eye"
               size="small"
-              severity="secondary"
-              (onClick)="continuarAnalise(item)"
+              severity="success"
+              [text]="true"
+              pTooltip="Ver detalhes"
+              (onClick)="verDetalhes(item)"
+            />
+            <p-button
+              icon="pi pi-users"
+              size="small"
+              severity="info"
+              [text]="true"
+              pTooltip="Análise de fornecedores"
+              (onClick)="abrirVendorList(item)"
             />
           }
         </td>
@@ -70,7 +79,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="10">Nenhuma solicitação aguardando aprovação.</td>
+        <td colspan="10">Nenhuma solicitação na fila de Compras.</td>
       </tr>
     </ng-template>
   </p-table>

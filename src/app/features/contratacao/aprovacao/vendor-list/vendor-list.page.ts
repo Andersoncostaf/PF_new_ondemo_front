@@ -92,7 +92,7 @@ export class VendorListPageComponent implements OnInit {
   }
 
   voltarLista(): void {
-    void this.router.navigate(['/contratacao', 'aprovacao']);
+    void this.router.navigate(['/contratacao', 'compras']);
   }
 
   abrirDialog(): void {

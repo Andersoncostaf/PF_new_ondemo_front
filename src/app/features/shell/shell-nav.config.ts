@@ -2,6 +2,7 @@
 export const SHELL_NAV_ICONS: Record<string, string> = {
   contratacao: 'pi pi-file-edit',
   contratacao_aprovacao: 'pi pi-check-square',
+  contratacao_compras: 'pi pi-shopping-cart',
   admin_usuarios: 'pi pi-users',
   nota_fiscal: 'pi pi-file',
   auditoria: 'pi pi-shield',

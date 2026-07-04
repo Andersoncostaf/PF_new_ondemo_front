@@ -9,7 +9,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 
-import { ContratacaoAprovacaoApiService } from '../contratacao-aprovacao-api.service';
+import { ContratacaoComprasApiService } from '../contratacao-compras-api.service';
 import { ContratacaoListItem } from '../../contratacao.models';
 import {
   contratacaoStatusLabel,
@@ -21,10 +21,13 @@ import {
   filtrosToQueryParams,
 } from '../../lista/contratacao-lista.constants';
 import { ContratacaoListaFiltrosComponent } from '../../lista/contratacao-lista-filtros.component';
-import { analiseStepRouterLink } from '../contratacao-aprovacao.steps';
+import {
+  comprasAnaliseStepRouterLink,
+  comprasVendorListRouterLink,
+} from '../contratacao-compras.steps';
 
 @Component({
-  selector: 'app-aprovacao-lista-page',
+  selector: 'app-compras-lista-page',
   standalone: true,
   imports: [
     ButtonModule,
@@ -37,10 +40,10 @@ import { analiseStepRouterLink } from '../contratacao-aprovacao.steps';
     ContratacaoListaFiltrosComponent,
   ],
   providers: [ConfirmationService],
-  templateUrl: './aprovacao-lista.page.html',
-  styleUrl: './aprovacao-lista.page.scss',
+  templateUrl: './compras-lista.page.html',
+  styleUrl: './compras-lista.page.scss',
 })
-export class AprovacaoListaPageComponent implements OnInit {
+export class ComprasListaPageComponent implements OnInit {
   contratacoes: ContratacaoListItem[] = [];
   loading = false;
   errorMessage = '';
@@ -56,7 +59,7 @@ export class AprovacaoListaPageComponent implements OnInit {
   readonly statusSeverity = contratacaoStatusSeverity;
 
   constructor(
-    private readonly aprovacaoApi: ContratacaoAprovacaoApiService,
+    private readonly comprasApi: ContratacaoComprasApiService,
     private readonly router: Router,
     private readonly confirmation: ConfirmationService,
   ) {}
@@ -72,8 +75,8 @@ export class AprovacaoListaPageComponent implements OnInit {
     this.rows = rows;
     this.first = (page - 1) * rows;
 
-    this.aprovacaoApi
-      .listPendentes({
+    this.comprasApi
+      .listFila({
         page,
         per_page: rows,
         ...filtrosToQueryParams(this.filtrosAtivos),
@@ -86,7 +89,7 @@ export class AprovacaoListaPageComponent implements OnInit {
         },
         error: () => {
           this.loading = false;
-          this.errorMessage = 'Não foi possível carregar as solicitações pendentes.';
+          this.errorMessage = 'Não foi possível carregar a fila de Compras.';
         },
       });
   }
@@ -109,37 +112,44 @@ export class AprovacaoListaPageComponent implements OnInit {
     this.load(Math.floor(first / rows) + 1, rows);
   }
 
-  iniciarAnalise(item: ContratacaoListItem): void {
+  assumirVendorList(item: ContratacaoListItem): void {
     this.confirmation.confirm({
-      header: 'Iniciar análise',
-      message: 'Deseja iniciar a análise desta contratação?',
+      header: 'Assumir processamento',
+      message: 'Deseja assumir esta contratação para análise de fornecedores (VendorList)?',
       icon: 'pi pi-question-circle',
       acceptLabel: 'Sim, assumir',
       rejectLabel: 'Cancelar',
       accept: () => {
-        this.aprovacaoApi.assumir(item.uuid).subscribe({
+        this.comprasApi.assumirVendorList(item.uuid).subscribe({
           next: () => {
-            void this.router.navigate(analiseStepRouterLink(item.uuid, 'filial'));
+            void this.router.navigate(comprasVendorListRouterLink(item.uuid));
           },
           error: (err) => {
             this.errorMessage =
-              (err.error as { message?: string })?.message ?? 'Não foi possível assumir a análise.';
+              (err.error as { message?: string })?.message ??
+              'Não foi possível assumir o processamento.';
           },
         });
       },
     });
   }
 
-  continuarAnalise(item: ContratacaoListItem): void {
-    void this.router.navigate(analiseStepRouterLink(item.uuid, 'filial'));
+  verDetalhes(item: ContratacaoListItem): void {
+    void this.router.navigate(comprasAnaliseStepRouterLink(item.uuid, 'filial'), {
+      queryParams: { consulta: '1' },
+    });
+  }
+
+  abrirVendorList(item: ContratacaoListItem): void {
+    void this.router.navigate(comprasVendorListRouterLink(item.uuid));
   }
 
   podeAssumir(status: string): boolean {
-    return status === 'aguardando_analise_compras';
+    return status === 'aprovado_compras';
   }
 
-  podeContinuar(status: string): boolean {
-    return status === 'em_analise';
+  emVendorList(status: string): boolean {
+    return status === 'em_vendor_list';
   }
 
   formatarData(value?: string | null): string {

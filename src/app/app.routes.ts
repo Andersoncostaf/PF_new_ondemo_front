@@ -4,6 +4,7 @@ import { authGuard } from './core/auth/auth.guard';
 import {
   adminTenantGuard,
   contratacaoAprovacaoGuard,
+  contratacaoComprasGuard,
   contratacaoWizardGuard,
 } from './guards/contratacao-aprovacao.guard';
 import { moduloGuard } from './guards/modulo.guard';
@@ -47,6 +48,14 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/contratacao/aprovacao/contratacao-aprovacao.routes').then(
             (m) => m.contratacaoAprovacaoRoutes,
+          ),
+      },
+      {
+        path: 'contratacao/compras',
+        canActivate: [contratacaoComprasGuard],
+        loadChildren: () =>
+          import('./features/contratacao/compras/contratacao-compras.routes').then(
+            (m) => m.contratacaoComprasRoutes,
           ),
       },
       {
