@@ -68,6 +68,10 @@ export class ContratacaoApiService {
     return this.http.delete<void>(`${this.baseUrl}/${uuid}/anexos/${anexoId}`);
   }
 
+  delete(uuid: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${uuid}`);
+  }
+
   listarApontamentos(uuid: string, etapa?: string): Observable<{ data: ContratacaoApontamento[] }> {
     let params = new HttpParams();
     if (etapa) params = params.set('etapa', etapa);

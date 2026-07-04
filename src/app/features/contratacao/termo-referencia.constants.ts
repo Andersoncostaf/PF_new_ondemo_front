@@ -1,3 +1,5 @@
+import { termoCampoHasContent } from './termo-referencia.utils';
+
 export type TermoReferenciaCampoKey =
   | 'objetivo'
   | 'escopo'
@@ -250,5 +252,5 @@ export function countFilledTermoCampos(campos: Partial<TermoReferenciaCampos> | 
     return 0;
   }
 
-  return TERMO_REFERENCIA_KEYS.filter((key) => (campos[key] ?? '').trim().length > 0).length;
+  return TERMO_REFERENCIA_KEYS.filter((key) => termoCampoHasContent(campos[key])).length;
 }

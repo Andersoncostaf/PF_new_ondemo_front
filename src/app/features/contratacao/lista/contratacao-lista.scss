@@ -173,12 +173,13 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #fff;
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .lista-desktop {
   display: block;
+  min-width: min(100%, 72rem);
 }
 
 .lista-mobile {
@@ -252,6 +253,10 @@
 }
 
 :host ::ng-deep .tabela-solicitacoes-listagem {
+  .p-datatable-wrapper {
+    min-height: 28rem;
+  }
+
   .p-datatable-thead > tr > th {
     background: #f8fafc;
     font-size: 0.6875rem;

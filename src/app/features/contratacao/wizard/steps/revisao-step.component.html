@@ -29,7 +29,11 @@
               <span class="review-tr-item__badge">Personalizado</span>
             }
           </h5>
-          <p>{{ item.value }}</p>
+          @if (item.html) {
+            <div class="review-tr-item__html" [innerHTML]="item.value"></div>
+          } @else {
+            <p>{{ item.value }}</p>
+          }
         </article>
       }
     </div>

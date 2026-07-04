@@ -3,12 +3,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { ContratacaoWizardStore } from '../contratacao-wizard.store';
+import { TrCampoEditorComponent } from './tr-campo-editor.component';
 
 @Component({
   selector: 'app-tr-step',
@@ -18,10 +18,10 @@ import { ContratacaoWizardStore } from '../contratacao-wizard.store';
     AccordionModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule,
     ProgressBarModule,
     TagModule,
     TooltipModule,
+    TrCampoEditorComponent,
   ],
   templateUrl: './tr-step.component.html',
   styleUrl: '../contratacao-wizard.shared.scss',

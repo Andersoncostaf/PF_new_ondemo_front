@@ -29,6 +29,7 @@ import {
   TermoReferenciaFieldDef,
   TermoReferenciaGroupDef,
 } from '../termo-referencia.constants';
+import { normalizeTermoCampoValue, termoCampoHasContent } from '../termo-referencia.utils';
 import {
   buildStepMenuItems,
   FIRST_STEP_AFTER_CREATE_SLUG,
@@ -229,8 +230,8 @@ export class ContratacaoWizardStore {
   isCustomTrFieldFilled(index: number): boolean {
     const group = this.trCamposPersonalizados.at(index);
     const titulo = String(group.get('titulo')?.value ?? '').trim();
-    const conteudo = String(group.get('conteudo')?.value ?? '').trim();
-    return titulo.length > 0 && conteudo.length > 0;
+    const conteudo = String(group.get('conteudo')?.value ?? '');
+    return titulo.length > 0 && termoCampoHasContent(conteudo);
   }
 
   createQqpItemGroup(item?: {
@@ -490,7 +491,7 @@ export class ContratacaoWizardStore {
 
   isTrFieldFilled(key: TermoReferenciaCampoKey): boolean {
     const value = this.trCamposGroup.get(key)?.value;
-    return typeof value === 'string' && value.trim().length > 0;
+    return typeof value === 'string' && termoCampoHasContent(value);
   }
 
   groupFilledCount(group: TermoReferenciaGroupDef): number {
@@ -529,16 +530,21 @@ export class ContratacaoWizardStore {
   buildPayload(): ContratacaoPayload {
     const raw = this.form.getRawValue();
     const campos = raw.termo_referencia_campos as TermoReferenciaCampos;
+    const normalizedCampos = TERMO_REFERENCIA_KEYS.reduce((acc, key) => {
+      acc[key] = normalizeTermoCampoValue(campos[key]);
+      return acc;
+    }, {} as TermoReferenciaCampos);
+
     const personalizados = (raw.tr_campos_personalizados as TermoReferenciaCampoPersonalizado[])
-      .filter((item) => item.titulo.trim() && item.conteudo.trim())
+      .filter((item) => item.titulo.trim() && termoCampoHasContent(item.conteudo))
       .map((item, index) => ({
         id: item.id,
         titulo: item.titulo.trim(),
-        conteudo: item.conteudo.trim(),
+        conteudo: normalizeTermoCampoValue(item.conteudo),
         ordem: index,
       }));
 
-    const termoReferenciaCampos: TermoReferenciaCamposPayload = { ...campos };
+    const termoReferenciaCampos: TermoReferenciaCamposPayload = { ...normalizedCampos };
 
     if (personalizados.length > 0) {
       termoReferenciaCampos.campos_personalizados = personalizados;
@@ -707,22 +713,24 @@ export class ContratacaoWizardStore {
     });
   }
 
-  trCamposForReview(): { label: string; value: string; custom?: boolean }[] {
+  trCamposForReview(): { label: string; value: string; html?: boolean; custom?: boolean }[] {
     const campos = this.trCamposGroup.getRawValue() as TermoReferenciaCampos;
     const standard = this.trGroups.flatMap((group) =>
       group.fields.map((field) => ({
         label: field.label,
-        value: (campos[field.key] ?? '').trim() || '—',
+        value: normalizeTermoCampoValue(campos[field.key]) || '—',
+        html: termoCampoHasContent(campos[field.key]),
       })),
     );
 
     const personalizados = (
       this.trCamposPersonalizados.getRawValue() as TermoReferenciaCampoPersonalizado[]
     )
-      .filter((item) => item.titulo.trim() || item.conteudo.trim())
+      .filter((item) => item.titulo.trim() || termoCampoHasContent(item.conteudo))
       .map((item) => ({
         label: item.titulo.trim() || 'Campo personalizado',
-        value: item.conteudo.trim() || '—',
+        value: normalizeTermoCampoValue(item.conteudo) || '—',
+        html: termoCampoHasContent(item.conteudo),
         custom: true,
       }));
 

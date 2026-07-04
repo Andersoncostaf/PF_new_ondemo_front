@@ -75,17 +75,15 @@
                     [formControlName]="field.key"
                     class="w-full"
                     [placeholder]="field.hint"
+                    spellcheck="false"
                   />
                 } @else {
-                  <textarea
-                    [id]="'tr-' + field.key"
-                    pInputTextarea
+                  <app-tr-campo-editor
                     [formControlName]="field.key"
+                    [readOnly]="store.readOnly"
                     [rows]="field.rows"
-                    [autoResize]="true"
-                    class="w-full tr-textarea"
                     [placeholder]="field.hint"
-                  ></textarea>
+                  />
                 }
 
                 @if (store.trFieldControl(field)?.invalid && store.trFieldControl(field)?.touched) {
@@ -140,11 +138,15 @@
             </div>
             <div class="field">
               <label [for]="'custom-title-' + i">Nome do campo *</label>
-              <input [id]="'custom-title-' + i" pInputText formControlName="titulo" class="w-full" />
+              <input [id]="'custom-title-' + i" pInputText formControlName="titulo" class="w-full" spellcheck="false" />
             </div>
             <div class="field">
               <label [for]="'custom-body-' + i">Conteúdo *</label>
-              <textarea [id]="'custom-body-' + i" pInputTextarea formControlName="conteudo" rows="4" [autoResize]="true" class="w-full tr-textarea"></textarea>
+              <app-tr-campo-editor
+                formControlName="conteudo"
+                [readOnly]="store.readOnly"
+                [rows]="4"
+              />
             </div>
           </article>
         }

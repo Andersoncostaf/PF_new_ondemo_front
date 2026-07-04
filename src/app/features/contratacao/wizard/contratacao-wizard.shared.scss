@@ -376,6 +376,10 @@
   background: #fff;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 
+  app-tr-campo-editor {
+    width: 100%;
+  }
+
   &:hover {
     border-color: rgba(37, 99, 235, 0.2);
     box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
@@ -810,12 +814,25 @@
     flex-wrap: wrap;
   }
 
-  p {
+  p,
+  .review-tr-item__html {
     margin: 0;
     white-space: pre-wrap;
     font-size: 0.875rem;
     line-height: 1.45;
     color: #334155;
+  }
+
+  .review-tr-item__html {
+    white-space: normal;
+
+    p {
+      margin: 0 0 0.35rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 

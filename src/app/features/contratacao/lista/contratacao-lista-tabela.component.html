@@ -4,7 +4,7 @@
       [value]="contratacoes"
       [loading]="loading"
       [scrollable]="true"
-      scrollHeight="flex"
+      scrollDirection="horizontal"
       styleClass="p-datatable-sm tabela-solicitacoes-listagem"
       [tableStyle]="{ 'min-width': '72rem' }"
       [paginator]="true"
@@ -178,6 +178,18 @@
         severity="secondary"
         [outlined]="true"
         (onClick)="editar.emit(item)"
+      />
+    }
+    @if (podeExcluir(item)) {
+      <p-button
+        [rounded]="true"
+        pTooltip="Excluir rascunho"
+        tooltipPosition="top"
+        icon="pi pi-trash"
+        styleClass="tabela-acao-btn"
+        severity="danger"
+        [outlined]="true"
+        (onClick)="excluir.emit(item)"
       />
     }
     @if (podeVisualizar(item)) {

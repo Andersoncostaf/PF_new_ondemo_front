@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
 
 import { ContratacaoApiService } from '../contratacao-api.service';
@@ -19,10 +21,12 @@ import { ContratacaoListaTabelaComponent } from './contratacao-lista-tabela.comp
   standalone: true,
   imports: [
     ButtonModule,
+    ConfirmDialogModule,
     MessageModule,
     ContratacaoListaFiltrosComponent,
     ContratacaoListaTabelaComponent,
   ],
+  providers: [ConfirmationService],
   templateUrl: './contratacao-lista.page.html',
   styleUrl: './contratacao-lista.scss',
 })
@@ -41,6 +45,7 @@ export class ContratacaoListaPageComponent {
   constructor(
     private readonly contratacaoApi: ContratacaoApiService,
     private readonly router: Router,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   load(page = this.currentPage, rows = this.rows): void {
@@ -100,6 +105,33 @@ export class ContratacaoListaPageComponent {
 
   ajustes(contratacao: ContratacaoListItem): void {
     void this.router.navigate(['/contratacao', 'ajustes', contratacao.uuid]);
+  }
+
+  excluir(contratacao: ContratacaoListItem): void {
+    const numero = contratacao.numero_exibicao || contratacao.uuid.substring(0, 8).toUpperCase();
+
+    this.confirmationService.confirm({
+      header: 'Excluir rascunho',
+      message: `Deseja excluir a solicitação ${numero}? Esta ação não pode ser desfeita.`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.contratacaoApi.delete(contratacao.uuid).subscribe({
+          next: () => {
+            const paginaAtual =
+              this.contratacoes.length === 1 && this.currentPage > 1
+                ? this.currentPage - 1
+                : this.currentPage;
+            this.load(paginaAtual, this.rows);
+          },
+          error: () => {
+            this.errorMessage = 'Não foi possível excluir a solicitação.';
+          },
+        });
+      },
+    });
   }
 
   private normalizeListItem(item: ContratacaoListItem): ContratacaoListItem {

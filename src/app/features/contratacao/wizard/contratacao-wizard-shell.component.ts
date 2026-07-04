@@ -13,6 +13,7 @@ import {
   WIZARD_STEPS,
 } from './contratacao-wizard.steps';
 import { ContratacaoWizardStore } from './contratacao-wizard.store';
+import { DisableSpellcheckDirective } from './disable-spellcheck.directive';
 
 @Component({
   selector: 'app-contratacao-wizard-shell',
@@ -24,6 +25,7 @@ import { ContratacaoWizardStore } from './contratacao-wizard.store';
     ButtonModule,
     CardModule,
     MessageModule,
+    DisableSpellcheckDirective,
   ],
   providers: [ContratacaoWizardStore],
   templateUrl: './contratacao-wizard-shell.component.html',

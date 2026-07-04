@@ -40,6 +40,10 @@ export function contratacaoPodeEditar(status: string): boolean {
   return status === 'rascunho';
 }
 
+export function contratacaoPodeExcluir(status: string): boolean {
+  return status === 'rascunho';
+}
+
 export function contratacaoPodeVisualizar(status: string): boolean {
   return status !== 'rascunho' && status !== 'aguardando_ajuste_area';
 }

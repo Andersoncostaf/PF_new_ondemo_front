@@ -10,6 +10,7 @@ import { ContratacaoListItem } from '../contratacao.models';
 import {
   contratacaoPodeAjustes,
   contratacaoPodeEditar,
+  contratacaoPodeExcluir,
   contratacaoPodeVisualizar,
   contratacaoStatusLabel,
   contratacaoStatusSeverity,
@@ -19,6 +20,7 @@ import {
   displayOrDash,
   LISTA_COLUNAS_LARGURAS,
   LISTA_ROWS_PER_PAGE_OPTIONS,
+  MIN_LISTA_PAGE_SIZE,
 } from './contratacao-lista.constants';
 
 @Component({
@@ -47,6 +49,7 @@ export class ContratacaoListaTabelaComponent {
   @Output() editar = new EventEmitter<ContratacaoListItem>();
   @Output() visualizar = new EventEmitter<ContratacaoListItem>();
   @Output() ajustes = new EventEmitter<ContratacaoListItem>();
+  @Output() excluir = new EventEmitter<ContratacaoListItem>();
 
   readonly colunasLarguras = LISTA_COLUNAS_LARGURAS;
   readonly rowsPerPageOptions = [...LISTA_ROWS_PER_PAGE_OPTIONS];
@@ -60,7 +63,8 @@ export class ContratacaoListaTabelaComponent {
   }
 
   onPaginatorChange(event: PaginatorState): void {
-    this.emitPage(event.first ?? 0, event.rows ?? this.rows);
+    const rows = Math.max(MIN_LISTA_PAGE_SIZE, event.rows ?? this.rows);
+    this.emitPage(event.first ?? 0, rows);
   }
 
   apontamentosLabel(item: ContratacaoListItem): string {
@@ -87,8 +91,13 @@ export class ContratacaoListaTabelaComponent {
     return contratacaoPodeAjustes(item.status);
   }
 
+  podeExcluir(item: ContratacaoListItem): boolean {
+    return contratacaoPodeExcluir(item.status);
+  }
+
   private emitPage(first: number, rows: number): void {
-    const page = Math.floor(first / rows) + 1;
-    this.pageChange.emit({ page, rows });
+    const safeRows = Math.max(MIN_LISTA_PAGE_SIZE, rows);
+    const page = Math.floor(first / safeRows) + 1;
+    this.pageChange.emit({ page, rows: safeRows });
   }
 }
