@@ -110,6 +110,30 @@ export interface ContratacaoListResponse {
   };
 }
 
+export interface ContratacaoFornecedorListItem {
+  uuid: string;
+  cnpj: string;
+  razao_social: string;
+  telefone: string | null;
+  email: string | null;
+  vendedor: string | null;
+  aceite: boolean;
+  status_participacao: string;
+  created_at?: string;
+}
+
+export interface ContratacaoVendorListDetail extends Contratacao {
+  fornecedores?: ContratacaoFornecedorListItem[];
+}
+
+export interface CadastrarFornecedorPayload {
+  cnpj: string;
+  razao_social: string;
+  telefone?: string;
+  email?: string;
+  vendedor?: string;
+}
+
 export interface ContratacaoPayload {
   titulo?: string | null;
   categoria_servico?: string | null;

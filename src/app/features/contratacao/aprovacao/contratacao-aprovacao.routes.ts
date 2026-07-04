@@ -42,4 +42,9 @@ export const contratacaoAprovacaoRoutes: Routes = [
       },
     ],
   },
+  {
+    path: 'vendor-list/:uuid',
+    loadComponent: () =>
+      import('./vendor-list/vendor-list.page').then((m) => m.VendorListPageComponent),
+  },
 ];

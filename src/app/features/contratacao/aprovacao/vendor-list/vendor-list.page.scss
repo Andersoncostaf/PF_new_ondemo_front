@@ -1,0 +1,31 @@
+.vendor-list-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.vendor-list-subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--text-color-secondary);
+}
+
+.vendor-list-resumo {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.vendor-list-actions {
+  margin-bottom: 0.5rem;
+}
+
+.vendor-list-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}

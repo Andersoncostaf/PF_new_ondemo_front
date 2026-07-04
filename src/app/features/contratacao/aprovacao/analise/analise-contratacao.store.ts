@@ -23,9 +23,11 @@ export class AnaliseContratacaoStore {
   errorMessage = '';
   apontamentos: ContratacaoApontamento[] = [];
   apontamentosLoading = false;
+  somenteLeitura = false;
 
-  async init(uuid: string): Promise<void> {
+  async init(uuid: string, somenteLeitura = false): Promise<void> {
     this.uuid = uuid;
+    this.somenteLeitura = somenteLeitura;
     await this.reloadContratacao();
   }
 
@@ -52,7 +54,7 @@ export class AnaliseContratacaoStore {
   }
 
   get emAnalise(): boolean {
-    return this.contratacao?.status === 'em_analise';
+    return this.contratacao?.status === 'em_analise' && !this.somenteLeitura;
   }
 
   async loadApontamentos(): Promise<void> {

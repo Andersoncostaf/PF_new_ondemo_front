@@ -6,6 +6,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 
 import { ContratacaoAprovacaoApiService } from '../contratacao-aprovacao-api.service';
@@ -32,6 +33,7 @@ import { analiseStepRouterLink } from '../contratacao-aprovacao.steps';
     MessageModule,
     TableModule,
     TagModule,
+    TooltipModule,
     ContratacaoListaFiltrosComponent,
   ],
   providers: [ConfirmationService],
@@ -71,7 +73,7 @@ export class AprovacaoListaPageComponent implements OnInit {
     this.first = (page - 1) * rows;
 
     this.aprovacaoApi
-      .listPendentes({
+      .listFila({
         page,
         per_page: rows,
         ...filtrosToQueryParams(this.filtrosAtivos),
@@ -132,11 +134,30 @@ export class AprovacaoListaPageComponent implements OnInit {
     void this.router.navigate(analiseStepRouterLink(item.uuid, 'filial'));
   }
 
+  verDetalhes(item: ContratacaoListItem): void {
+    void this.router.navigate(analiseStepRouterLink(item.uuid, 'filial'), {
+      queryParams: { consulta: '1' },
+    });
+  }
+
+  abrirVendorList(item: ContratacaoListItem): void {
+    void this.router.navigate(['/contratacao', 'aprovacao', 'vendor-list', item.uuid]);
+  }
+
   podeAssumir(status: string): boolean {
     return status === 'aguardando_analise_compras';
   }
 
   podeContinuar(status: string): boolean {
     return status === 'em_analise';
+  }
+
+  emVendorList(status: string): boolean {
+    return status === 'em_vendor_list';
+  }
+
+  formatarData(value?: string | null): string {
+    if (!value) return '—';
+    return new Date(value).toLocaleString('pt-BR');
   }
 }

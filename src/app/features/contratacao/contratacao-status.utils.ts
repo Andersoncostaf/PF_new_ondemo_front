@@ -3,7 +3,8 @@ export type ContratacaoStatus =
   | 'aguardando_analise_compras'
   | 'em_analise'
   | 'aguardando_ajuste_area'
-  | 'aprovado_compras';
+  | 'aprovado_compras'
+  | 'em_vendor_list';
 
 export const CONTRATACAO_STATUS_LABELS: Record<ContratacaoStatus, string> = {
   rascunho: 'Rascunho',
@@ -11,6 +12,7 @@ export const CONTRATACAO_STATUS_LABELS: Record<ContratacaoStatus, string> = {
   em_analise: 'Em análise',
   aguardando_ajuste_area: 'Aguardando ajuste',
   aprovado_compras: 'Aprovado (Compras)',
+  em_vendor_list: 'Análise de fornecedores',
 };
 
 export function contratacaoStatusLabel(status: string): string {
@@ -31,6 +33,8 @@ export function contratacaoStatusSeverity(
       return 'danger';
     case 'aprovado_compras':
       return 'success';
+    case 'em_vendor_list':
+      return 'info';
     default:
       return 'secondary';
   }

@@ -2,7 +2,7 @@
   <div class="analise-header">
     <p-button icon="pi pi-arrow-left" label="Voltar" [text]="true" (onClick)="store.voltarLista()" />
     <div>
-      <h2>Análise de contratação</h2>
+      <h2>{{ store.somenteLeitura ? 'Detalhes da contratação' : 'Análise de contratação' }}</h2>
       @if (store.contratacao?.titulo) {
         <p class="analise-subtitle">{{ store.contratacao?.titulo }}</p>
       }

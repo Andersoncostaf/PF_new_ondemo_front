@@ -23,26 +23,34 @@
     <ng-template pTemplate="header">
       <tr>
         <th>Nº</th>
+        <th>Data geração</th>
         <th>Empresa</th>
+        <th>CNPJ</th>
         <th>Departamento</th>
         <th>Status</th>
         <th>Solicitante</th>
-        <th style="width: 10rem">Ações</th>
+        <th>Início análise</th>
+        <th>Comprador</th>
+        <th style="width: 12rem">Ações</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-item>
       <tr>
         <td>{{ item.numero_exibicao }}</td>
+        <td>{{ formatarData(item.created_at) }}</td>
         <td>{{ item.empresa || '—' }}</td>
+        <td>{{ item.empresa_cnpj || '—' }}</td>
         <td>{{ item.departamento || '—' }}</td>
         <td>
           <p-tag [value]="statusLabel(item.status)" [severity]="statusSeverity(item.status)" />
         </td>
         <td>{{ item.criado_por_nome || '—' }}</td>
+        <td>{{ formatarData(item.data_inicio_analise) }}</td>
+        <td>{{ item.responsavel_analise || '—' }}</td>
         <td>
           @if (podeAssumir(item.status)) {
             <p-button
-              label="Iniciar análise"
+              label="Iniciar"
               icon="pi pi-play"
               size="small"
               (onClick)="iniciarAnalise(item)"
@@ -57,12 +65,30 @@
               (onClick)="continuarAnalise(item)"
             />
           }
+          @if (emVendorList(item.status)) {
+            <p-button
+              icon="pi pi-eye"
+              size="small"
+              severity="success"
+              [text]="true"
+              pTooltip="Ver detalhes"
+              (onClick)="verDetalhes(item)"
+            />
+            <p-button
+              icon="pi pi-users"
+              size="small"
+              severity="info"
+              [text]="true"
+              pTooltip="Análise de fornecedores"
+              (onClick)="abrirVendorList(item)"
+            />
+          }
         </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6">Nenhuma solicitação pendente de análise.</td>
+        <td colspan="10">Nenhuma solicitação na fila de Compras.</td>
       </tr>
     </ng-template>
   </p-table>

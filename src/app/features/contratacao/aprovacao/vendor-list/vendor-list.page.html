@@ -1,0 +1,117 @@
+<p-card>
+  <div class="vendor-list-header">
+    <p-button icon="pi pi-arrow-left" label="Voltar" [text]="true" (onClick)="voltarLista()" />
+    <div>
+      <h2>Análise de fornecedores</h2>
+      @if (contratacao?.titulo) {
+        <p class="vendor-list-subtitle">{{ contratacao?.titulo }}</p>
+      }
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
+  }
+
+  @if (loading) {
+    <p>Carregando...</p>
+  } @else if (contratacao) {
+    <div class="vendor-list-resumo">
+      <p><strong>Empresa:</strong> {{ contratacao.empresa || '—' }}</p>
+      <p><strong>CNPJ:</strong> {{ contratacao.empresa_cnpj || '—' }}</p>
+      <p><strong>Departamento:</strong> {{ contratacao.departamento || '—' }}</p>
+      <p>
+        <strong>Status:</strong>
+        <p-tag
+          class="ml-2"
+          [value]="statusLabel(contratacao.status)"
+          [severity]="statusSeverity(contratacao.status)"
+        />
+      </p>
+    </div>
+
+    <div class="vendor-list-actions">
+      <p-button
+        label="Cadastrar fornecedor"
+        icon="pi pi-plus"
+        (onClick)="abrirDialog()"
+      />
+    </div>
+
+    <p-table
+      [value]="fornecedores"
+      styleClass="p-datatable-gridlines mt-3"
+      [paginator]="fornecedores.length > 10"
+      [rows]="10"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>CNPJ</th>
+          <th>Razão social</th>
+          <th>Telefone</th>
+          <th>Vendedor</th>
+          <th>Aceite</th>
+          <th style="width: 6rem">Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.cnpj }}</td>
+          <td>{{ item.razao_social }}</td>
+          <td>{{ item.telefone || '—' }}</td>
+          <td>{{ item.vendedor || '—' }}</td>
+          <td>
+            <p-tag
+              [value]="item.aceite ? 'Aceito' : 'Pendente'"
+              [severity]="item.aceite ? 'success' : 'warning'"
+            />
+          </td>
+          <td>
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              [text]="true"
+              (onClick)="confirmarExclusao(item)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">Nenhum fornecedor cadastrado. Use o botão acima para adicionar.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</p-card>
+
+<p-dialog
+  header="Cadastrar fornecedor"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+>
+  <div class="vendor-list-form">
+    <label>CNPJ</label>
+    <input pInputText class="w-full mb-3" [(ngModel)]="form.cnpj" placeholder="00.000.000/0000-00" />
+
+    <label>Razão social</label>
+    <input pInputText class="w-full mb-3" [(ngModel)]="form.razao_social" />
+
+    <label>Telefone</label>
+    <input pInputText class="w-full mb-3" [(ngModel)]="form.telefone" />
+
+    <label>E-mail</label>
+    <input pInputText class="w-full mb-3" [(ngModel)]="form.email" />
+
+    <label>Vendedor</label>
+    <input pInputText class="w-full mb-3" [(ngModel)]="form.vendedor" />
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="dialogVisible = false" />
+    <p-button label="Salvar" icon="pi pi-check" [loading]="salvando" (onClick)="salvarFornecedor()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog />

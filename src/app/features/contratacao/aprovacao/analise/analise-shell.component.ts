@@ -37,8 +37,9 @@ export class AnaliseShellComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const uuid = this.route.snapshot.paramMap.get('uuid');
+    const consulta = this.route.snapshot.queryParamMap.get('consulta') === '1';
     if (uuid) {
-      void this.store.init(uuid);
+      void this.store.init(uuid, consulta);
     }
     this.syncFromRoute();
     this.routeSub = this.router.events
