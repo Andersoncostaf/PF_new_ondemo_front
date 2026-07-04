@@ -174,6 +174,14 @@ export class ContratacaoWizardStore {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value ?? 0);
   }
 
+  valorServicoFromQqp(): string {
+    return this.formatCurrency(this.qqpPrecoTotal);
+  }
+
+  syncValorServicoFromQqp(): void {
+    this.ssGroup.patchValue({ valor_servico: this.valorServicoFromQqp() }, { emitEvent: false });
+  }
+
   qqpItemTotal(index: number): number {
     const group = this.qqpItens.at(index);
     const qty = Number(group.get('quantidade')?.value ?? 0);
@@ -206,7 +214,7 @@ export class ContratacaoWizardStore {
       conta_financeira: [''],
       conta_contabil: [''],
       transacao: [''],
-      valor_servico: [''],
+      valor_servico: [{ value: '', disabled: true }],
       observacao_ss: [''],
     });
   }
@@ -271,6 +279,7 @@ export class ContratacaoWizardStore {
       }),
     );
     this.limparQqpDraft();
+    this.syncValorServicoFromQqp();
     this.errorMessage = '';
   }
 
@@ -285,6 +294,7 @@ export class ContratacaoWizardStore {
 
   removeQqpItem(index: number): void {
     this.qqpItens.removeAt(index);
+    this.syncValorServicoFromQqp();
   }
 
   onAnexoFileSelected(event: Event): void {
@@ -456,9 +466,9 @@ export class ContratacaoWizardStore {
       conta_financeira: ss.conta_financeira ?? '',
       conta_contabil: ss.conta_contabil ?? '',
       transacao: ss.transacao ?? '',
-      valor_servico: ss.valor_servico ?? '',
       observacao_ss: ss.observacao_ss ?? '',
     });
+    this.syncValorServicoFromQqp();
 
     this.trAccordionIndex = this.firstIncompleteGroupIndex();
   }
@@ -551,11 +561,20 @@ export class ContratacaoWizardStore {
     let hasValue = false;
 
     for (const key of Object.keys(this.ssLabels) as (keyof SolicitacaoServico)[]) {
+      if (key === 'valor_servico') {
+        continue;
+      }
+
       const value = String(raw[key] ?? '').trim();
       if (value) {
         normalized[key] = value;
         hasValue = true;
       }
+    }
+
+    if (this.qqpPrecoTotal > 0) {
+      normalized.valor_servico = this.valorServicoFromQqp();
+      hasValue = true;
     }
 
     return hasValue ? normalized : null;

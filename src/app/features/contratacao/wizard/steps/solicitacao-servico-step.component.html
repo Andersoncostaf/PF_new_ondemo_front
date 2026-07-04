@@ -31,9 +31,18 @@
       <label for="ss-transacao">Transação</label>
       <input id="ss-transacao" pInputText formControlName="transacao" class="w-full" placeholder="Pesquisar..." />
     </div>
-    <div class="field">
+    <div class="field ss-valor-field">
       <label for="ss-valor">Valor do serviço</label>
-      <input id="ss-valor" pInputText formControlName="valor_servico" class="w-full" placeholder="R$ 0,00" />
+      <input
+        id="ss-valor"
+        pInputText
+        formControlName="valor_servico"
+        class="w-full ss-valor-field__input"
+        readonly
+        tabindex="-1"
+        aria-readonly="true"
+      />
+      <small class="ss-valor-field__hint">Calculado automaticamente pelo total do QQP.</small>
     </div>
   </div>
 

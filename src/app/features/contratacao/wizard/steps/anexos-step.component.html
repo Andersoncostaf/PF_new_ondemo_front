@@ -15,7 +15,8 @@
     </div>
 
     <div class="field anexo-upload-field">
-      <span class="anexo-upload-field__label">Arquivo</span>
+      <label class="anexo-upload-field__label" for="anexo-arquivo">Anexo</label>
+      <p class="anexo-upload-field__hint">PDF com até {{ anexoLimiteLabel }} por arquivo.</p>
 
       <div
         class="anexo-dropzone"
@@ -24,6 +25,7 @@
         [class.anexo-dropzone--error]="!!store.anexoArquivoErro"
         role="button"
         tabindex="0"
+        aria-label="Selecionar ou arrastar anexo em PDF"
         (click)="abrirSeletorArquivo()"
         (keydown.enter)="abrirSeletorArquivo()"
         (keydown.space)="abrirSeletorArquivo(); $event.preventDefault()"
@@ -45,15 +47,15 @@
           <i class="pi pi-file-pdf anexo-dropzone__icon" aria-hidden="true"></i>
 
           @if (store.anexoArquivo) {
-            <p class="anexo-dropzone__title">Arquivo selecionado</p>
+            <p class="anexo-dropzone__title">Anexo selecionado</p>
             <p class="anexo-dropzone__filename">{{ store.anexoArquivoLabel() }}</p>
             <span class="anexo-dropzone__hint">Clique ou arraste outro PDF para substituir</span>
           } @else {
             <p class="anexo-dropzone__title">Arraste o PDF aqui</p>
-            <p class="anexo-dropzone__subtitle">ou clique para selecionar do computador</p>
+            <p class="anexo-dropzone__subtitle">ou clique para escolher o anexo no computador</p>
           }
 
-          <span class="anexo-dropzone__limit">Limite de {{ anexoLimiteLabel }} por arquivo</span>
+          <span class="anexo-dropzone__limit">Limite máximo: {{ anexoLimiteLabel }} por anexo</span>
         </div>
       </div>
 

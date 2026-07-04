@@ -7,10 +7,16 @@
 
   &__label {
     display: block;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
     font-weight: 600;
     font-size: 0.875rem;
     color: #0f172a;
+  }
+
+  &__hint {
+    margin: 0 0 0.65rem;
+    font-size: 0.8125rem;
+    color: #64748b;
   }
 }
 
@@ -55,11 +61,7 @@
   }
 
   &__input {
-    position: absolute;
-    width: 0;
-    height: 0;
-    opacity: 0;
-    pointer-events: none;
+    display: none !important;
   }
 
   &__content {

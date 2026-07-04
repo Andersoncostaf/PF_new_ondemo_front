@@ -602,6 +602,22 @@
   margin-bottom: 1rem;
 }
 
+.ss-valor-field {
+  &__input {
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 600;
+    cursor: not-allowed;
+  }
+
+  &__hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+}
+
 .ss-meta-panel {
   display: grid;
   gap: 0.35rem;
