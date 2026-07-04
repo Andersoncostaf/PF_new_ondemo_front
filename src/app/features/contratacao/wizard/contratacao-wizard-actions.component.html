@@ -30,7 +30,11 @@
       />
 
       @if (store.isLastStep) {
-        <p-button label="Submeter" (onClick)="store.submeter()" [loading]="store.saving" />
+        <p-button
+          label="Finalizar contratação"
+          (onClick)="store.submeter()"
+          [loading]="store.saving"
+        />
       }
     }
   </div>

@@ -1,7 +1,17 @@
 <div class="step-panel step-panel--review">
-  <div class="step-panel__intro">
-    <h3>Revisão final</h3>
-    <p>Confira os dados antes de submeter a solicitação.</p>
+  <div class="step-panel__intro step-panel__intro--review">
+    <div>
+      <h3>Revisão final</h3>
+      <p>Confira os dados antes de finalizar a contratação.</p>
+    </div>
+    <p-button
+      label="Baixar PDF da revisão"
+      icon="pi pi-download"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="baixarPdfRevisao()"
+      [loading]="gerandoPdf"
+    />
   </div>
 
   <section class="review-section">

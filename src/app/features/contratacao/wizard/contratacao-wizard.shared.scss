@@ -655,6 +655,14 @@
   flex: 1 1 12rem;
 }
 
+.step-panel__intro--review {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .review-section {
   margin-bottom: 1.5rem;
 

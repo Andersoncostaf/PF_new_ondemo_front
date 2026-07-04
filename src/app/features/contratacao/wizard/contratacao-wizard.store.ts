@@ -41,6 +41,7 @@ import {
   stepRouterLink,
   WIZARD_STEPS,
 } from './contratacao-wizard.steps';
+import { RevisaoPdfData } from './contratacao-revisao-pdf.service';
 
 export interface SalvarRascunhoOptions {
   advanceOnSuccess?: boolean;
@@ -848,6 +849,41 @@ export class ContratacaoWizardStore {
 
   statusLabel(): string {
     return contratacaoStatusLabel(this.status);
+  }
+
+  buildRevisaoPdfData(): RevisaoPdfData {
+    const form = this.form.getRawValue();
+    return {
+      titulo: String(form.titulo ?? '').trim() || 'Solicitação sem título',
+      statusLabel: this.statusLabel(),
+      solicitanteNome: this.solicitanteNome,
+      numeroSolicitacao: null,
+      dadosGerais: [
+        { label: 'Empresa', value: String(form.empresa ?? '') },
+        { label: 'CNPJ', value: String(form.empresa_cnpj ?? '') },
+        { label: 'Local ou Endereço', value: String(form.empresa_endereco ?? '') },
+        { label: 'Departamento', value: String(form.departamento ?? '') },
+        { label: 'Título', value: String(form.titulo ?? '') },
+        { label: 'Categoria', value: String(form.categoria_servico ?? '') },
+        { label: 'Local', value: String(form.local ?? '') },
+        { label: 'Prazo desejado', value: String(form.prazo_desejado ?? '') },
+      ],
+      trCampos: this.trCamposForReview().map((item) => ({
+        label: item.label,
+        value: item.html ? this.stripHtml(item.value) : item.value,
+        custom: item.custom,
+      })),
+      qqpItens: this.qqpItensForReview().map((item) => ({
+        descricao: this.stripHtml(item.descricao),
+        quantidade: item.quantidade,
+        unidade: item.unidade,
+        valorUnitario: this.formatCurrency(item.valor_unitario),
+        total: this.formatCurrency(item.quantidade * item.valor_unitario),
+      })),
+      qqpPrecoTotal: this.formatCurrency(this.qqpPrecoTotal),
+      anexos: this.anexos.map((anexo) => anexo.nome_arquivo),
+      ssCampos: this.ssCamposForReview(),
+    };
   }
 
   private extractError(err: { error?: ApiErrorBody }): string {
