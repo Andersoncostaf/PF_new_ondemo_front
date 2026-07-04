@@ -13,20 +13,39 @@
     <nav class="wizard-stepper" aria-label="Passos da contratação">
       @for (step of wizardSteps; track step.slug) {
         @if (stepLink(step.slug); as link) {
-          <a
-            [routerLink]="link"
-            class="wizard-stepper__item"
-            [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
-            [class.wizard-stepper__item--done]="step.index < activeIndex"
-          >
-            <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
-            <span class="wizard-stepper__content">
-              <span class="wizard-stepper__label">{{ step.label }}</span>
-              @if (step.index === 0) {
-                <span class="wizard-stepper__hint">Preencha as informações</span>
-              }
-            </span>
-          </a>
+          @if (store.readOnly) {
+            <a
+              [routerLink]="link"
+              class="wizard-stepper__item"
+              [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+              [class.wizard-stepper__item--done]="step.index < activeIndex"
+            >
+              <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+              <span class="wizard-stepper__content">
+                <span class="wizard-stepper__label">{{ step.label }}</span>
+                @if (step.index === 0) {
+                  <span class="wizard-stepper__hint">Preencha as informações</span>
+                }
+              </span>
+            </a>
+          } @else {
+            <button
+              type="button"
+              class="wizard-stepper__item"
+              [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+              [class.wizard-stepper__item--done]="step.index < activeIndex"
+              [disabled]="store.saving"
+              (click)="store.navegarComSalvamento(step.slug)"
+            >
+              <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+              <span class="wizard-stepper__content">
+                <span class="wizard-stepper__label">{{ step.label }}</span>
+                @if (step.index === 0) {
+                  <span class="wizard-stepper__hint">Preencha as informações</span>
+                }
+              </span>
+            </button>
+          }
         } @else {
           <span
             class="wizard-stepper__item wizard-stepper__item--disabled"

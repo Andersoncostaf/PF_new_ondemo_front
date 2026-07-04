@@ -485,7 +485,28 @@ export class ContratacaoWizardStore {
     if (!previous) {
       return;
     }
-    void this.navigateToStep(previous);
+    if (this.readOnly) {
+      void this.navigateToStep(previous);
+      return;
+    }
+    this.salvarRascunho({ targetSlug: previous, silent: true });
+  }
+
+  navegarComSalvamento(slug: string): void {
+    if (slug === this.currentSlug) {
+      return;
+    }
+
+    if (this.readOnly) {
+      void this.navigateToStep(slug);
+      return;
+    }
+
+    this.salvarRascunho({ targetSlug: slug });
+  }
+
+  private possuiIdentificacaoMinima(): boolean {
+    return this.markControls(['empresa', 'titulo', 'categoria_servico']);
   }
 
   validateCurrentStep(): boolean {
@@ -581,6 +602,8 @@ export class ContratacaoWizardStore {
   }
 
   buildPayload(): ContratacaoPayload {
+    this.syncValorServicoFromQqp();
+
     const raw = this.form.getRawValue();
     const campos = raw.termo_referencia_campos as TermoReferenciaCampos;
     const normalizedCampos = TERMO_REFERENCIA_KEYS.reduce((acc, key) => {
@@ -623,11 +646,12 @@ export class ContratacaoWizardStore {
       empresa_endereco: raw.empresa_endereco || null,
       departamento: raw.departamento || null,
       termo_referencia_campos: termoReferenciaCampos,
-      solicitacao_servico: this.buildSolicitacaoServicoPayload(),
+      qqp_itens: qqpItens,
     };
 
-    if (qqpItens.length > 0) {
-      payload.qqp_itens = qqpItens;
+    const solicitacaoServico = this.buildSolicitacaoServicoPayload();
+    if (solicitacaoServico) {
+      payload.solicitacao_servico = solicitacaoServico;
     }
 
     return payload;
@@ -635,6 +659,12 @@ export class ContratacaoWizardStore {
 
   salvarRascunho(options: SalvarRascunhoOptions = {}): void {
     if (this.readOnly) {
+      return;
+    }
+
+    if (!this.possuiIdentificacaoMinima()) {
+      this.errorMessage =
+        'Informe empresa, título e categoria de serviço para salvar o rascunho.';
       return;
     }
 
@@ -658,20 +688,22 @@ export class ContratacaoWizardStore {
         this.isNova = false;
         this.status = data.status;
         this.anexos = data.anexos ?? this.anexos;
+        this.syncValorServicoFromQqp();
 
         if (!options.silent) {
           this.successMessage = 'Rascunho salvo com sucesso.';
         }
 
-        if (options.advanceOnSuccess) {
-          const target =
-            options.targetSlug ??
-            (!hadUuid && this.currentSlug === FIRST_STEP_SLUG
+        const target =
+          options.targetSlug ??
+          (options.advanceOnSuccess
+            ? !hadUuid && this.currentSlug === FIRST_STEP_SLUG
               ? FIRST_STEP_AFTER_CREATE_SLUG
-              : nextSlug(this.currentSlug));
-          if (target) {
-            void this.navigateToStep(target, data.uuid);
-          }
+              : nextSlug(this.currentSlug)
+            : null);
+
+        if (target) {
+          void this.navigateToStep(target, data.uuid);
         } else if (!hadUuid && data.uuid) {
           void this.router.navigate(['/contratacao', 'nova', data.uuid, this.currentSlug], {
             replaceUrl: true,

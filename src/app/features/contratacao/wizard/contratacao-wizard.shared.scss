@@ -47,6 +47,17 @@
   min-width: 0;
   text-decoration: none;
   color: inherit;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
 }
 
 .wizard-stepper__item--disabled {
