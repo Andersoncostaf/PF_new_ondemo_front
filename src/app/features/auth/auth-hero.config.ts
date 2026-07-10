@@ -41,14 +41,6 @@ export const AUTH_HERO_CONFIG: Record<AuthHeroVariant, AuthHeroConfig> = {
         icon: 'pi pi-link',
         text: 'Endereço exclusivo: portalfornecedor.sua-empresa.local',
       },
-      {
-        icon: 'pi pi-users',
-        text: 'Primeiro usuário como administrador do tenant',
-      },
-      {
-        icon: 'pi pi-bolt',
-        text: 'Acesso imediato ao módulo de Contratação no trial',
-      },
     ],
     mediaClass: 'auth-hero__media--cadastro',
   },
@@ -70,11 +62,11 @@ export const AUTH_HERO_CONFIG: Record<AuthHeroVariant, AuthHeroConfig> = {
       },
       {
         icon: 'pi pi-send',
-        text: 'Cotações e RFQ com fornecedores qualificados',
+        text: 'Cotações com fornecedores qualificados',
       },
       {
         icon: 'pi pi-shield',
-        text: 'Multi-tenant seguro, cada empresa no seu ambiente',
+        text: 'Sua empresa em um ambiente seguro e exclusivo',
       },
     ],
     mediaClass: 'auth-hero__media--login',
