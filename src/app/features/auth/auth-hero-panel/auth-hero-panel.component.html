@@ -1,0 +1,48 @@
+<aside class="auth-hero" aria-hidden="false">
+  <div class="auth-hero__media" [class]="config.mediaClass"></div>
+  <div class="auth-hero__grid-overlay" aria-hidden="true"></div>
+  <div class="auth-hero__shade"></div>
+
+  <div class="auth-hero__content">
+    <img
+      src="assets/branding/logo-inverted.png"
+      alt=""
+      class="auth-hero__logo"
+      width="440"
+      height="208"
+    />
+
+    @if (config.showTrialBadge) {
+      <div class="auth-hero__trial-badge">
+        <i class="pi pi-gift" aria-hidden="true"></i>
+        <span>15 dias grátis para começar</span>
+      </div>
+    }
+
+    <h2 class="auth-hero__headline">{{ config.headline }}</h2>
+    <p class="auth-hero__subheadline">{{ config.subheadline }}</p>
+
+    <div class="auth-hero__flow" aria-label="Fluxo do portal">
+      @for (step of config.flowSteps; track step.label; let last = $last) {
+        <div class="auth-hero__flow-step">
+          <span class="auth-hero__flow-icon" aria-hidden="true">
+            <i [class]="step.icon"></i>
+          </span>
+          <span class="auth-hero__flow-label">{{ step.label }}</span>
+        </div>
+        @if (!last) {
+          <span class="auth-hero__flow-arrow" aria-hidden="true">→</span>
+        }
+      }
+    </div>
+
+    <ul class="auth-hero__benefits">
+      @for (benefit of config.benefits; track benefit.text) {
+        <li [class.auth-hero__benefit--highlight]="benefit.highlight">
+          <i [class]="benefit.icon" aria-hidden="true"></i>
+          <span>{{ benefit.text }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</aside>

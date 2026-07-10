@@ -26,6 +26,7 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { IdentidadeApiService } from '../../../core/identidade/identidade-api.service';
 import { TenantService } from '../../../core/tenant/tenant.service';
+import { AuthHeroPanelComponent } from '../auth-hero-panel/auth-hero-panel.component';
 import { formatCnpj, isValidCnpj, normalizeCnpj, slugify } from './cnpj.util';
 
 type SlugStatus = 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid';
@@ -53,6 +54,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     PasswordModule,
     MessageModule,
     StepsModule,
+    AuthHeroPanelComponent,
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',

@@ -8,6 +8,7 @@ import { MessageModule } from 'primeng/message';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { TenantService } from '../../../core/tenant/tenant.service';
+import { AuthHeroPanelComponent } from '../auth-hero-panel/auth-hero-panel.component';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ import { TenantService } from '../../../core/tenant/tenant.service';
     InputTextModule,
     PasswordModule,
     MessageModule,
+    AuthHeroPanelComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
