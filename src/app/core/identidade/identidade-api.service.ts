@@ -8,6 +8,8 @@ import {
   CadastroPayload,
   ModulosResponse,
   PerfilResponse,
+  PreferenciasPayload,
+  PreferenciasResponse,
   SlugDisponivelResponse,
 } from './identidade.models';
 
@@ -34,6 +36,10 @@ export class IdentidadeApiService {
 
   getPerfil(): Observable<PerfilResponse> {
     return this.http.get<PerfilResponse>(`${this.baseUrl}/v1/me`);
+  }
+
+  patchPreferencias(payload: PreferenciasPayload): Observable<PreferenciasResponse> {
+    return this.http.patch<PreferenciasResponse>(`${this.baseUrl}/v1/me/preferencias`, payload);
   }
 
   cadastro(payload: CadastroPayload): Observable<AuthResponse> {

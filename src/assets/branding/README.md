@@ -7,9 +7,10 @@ Arquivos gerados a partir da folha de logos (`logo-sheet-original.png`).
 | `logo-horizontal.png` | Sidebar, login |
 | `logo-icon.png` | Topbar mobile, ícone quadrado |
 | `logo-monochrome.png` | Impressão / fundo claro |
-| `logo-inverted.png` | Fundo escuro (footer, dark mode futuro) |
+| `logo-inverted.png` | Fundo escuro / dark mode |
 | `favicon-32.png` | Favicon do browser |
 | `apple-touch-icon.png` | Atalho iOS |
+| `mascote-portal-peek.png` | Mascote (hover do botão Próximo no wizard) |
 
 Regenerar após trocar a folha original:
 

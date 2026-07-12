@@ -2,7 +2,15 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  background: #f8fafc;
+  background: var(--surface-ground, #f8fafc);
+  position: relative;
+}
+
+.login-theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 5;
 }
 
 .login-main {
@@ -18,7 +26,11 @@
   animation: fadeSlideUp 0.55s ease-out 0.1s both;
 
   &--wide {
-    max-width: 34rem;
+    max-width: 42rem;
+  }
+
+  &--review {
+    max-width: 44rem;
   }
 
   &--shake {
@@ -31,13 +43,13 @@
 }
 
 .login-card {
-  background: #fff;
+  background: var(--surface-elevated, #fff);
   border-radius: 16px;
   padding: clamp(1.5rem, 4vw, 2rem);
   box-shadow:
-    0 4px 6px -1px rgba(15, 23, 42, 0.05),
-    0 20px 40px -12px rgba(15, 23, 42, 0.1);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+    0 4px 6px -1px var(--shadow-color),
+    0 20px 40px -12px var(--shadow-color);
+  border: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.2));
   transition: box-shadow 0.25s ease;
 
   &:focus-within {
@@ -74,9 +86,13 @@
   margin-bottom: 1.25rem;
   padding: 0.5rem 0.875rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #eff6ff 0%, #ecfdf5 100%);
-  border: 1px solid #bfdbfe;
-  color: #334155;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-panel-start) 0%,
+    var(--surface-muted) 100%
+  );
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
   font-size: 0.875rem;
 
   i {
@@ -84,7 +100,7 @@
   }
 
   strong {
-    color: #0f172a;
+    color: var(--text-primary);
     text-transform: lowercase;
   }
 }
@@ -103,12 +119,12 @@
   label {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #475569;
+    color: var(--text-secondary, #475569);
   }
 
   .p-input-icon-left > i {
     left: 0.85rem;
-    color: #94a3b8;
+    color: var(--text-secondary, #94a3b8);
   }
 
   .p-input-icon-left > .p-inputtext {
@@ -123,13 +139,13 @@
 
   &--invalid {
     label {
-      color: #dc2626;
+      color: var(--danger, #dc2626);
     }
   }
 }
 
 .field-error {
-  color: #dc2626;
+  color: var(--danger, #dc2626);
   font-size: 0.75rem;
 }
 
@@ -159,8 +175,8 @@
   gap: 0.5rem;
   margin: 1.25rem 0 0;
   padding-top: 1rem;
-  border-top: 1px dashed #e2e8f0;
-  color: #94a3b8;
+  border-top: 1px dashed var(--border-subtle, #e2e8f0);
+  color: var(--text-secondary, #94a3b8);
   font-size: 0.75rem;
 
   i {
@@ -172,7 +188,7 @@
   margin-top: 1.25rem;
   text-align: center;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
 }
 
 .w-full {
@@ -220,6 +236,11 @@
     width: min(100%, 14rem);
     height: auto;
     margin: 0 auto 1rem;
+  }
+
+  .login-theme-toggle {
+    top: 0.75rem;
+    right: 0.75rem;
   }
 }
 

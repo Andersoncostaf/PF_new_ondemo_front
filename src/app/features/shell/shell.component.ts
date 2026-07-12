@@ -1,10 +1,12 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ModulosService } from '../../core/identidade/modulos.service';
+import { ThemeService } from '../../core/theme/theme.service';
+import { ThemeToggleComponent } from '../../core/theme/theme-toggle.component';
 import {
   SHELL_HOME_ICON,
   shellNavBadge,
@@ -14,22 +16,29 @@ import {
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, AsyncPipe, ButtonModule],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    AsyncPipe,
+    ButtonModule,
+    ThemeToggleComponent,
+  ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
 export class ShellComponent {
+  private readonly authService = inject(AuthService);
+  private readonly modulosService = inject(ModulosService);
+  private readonly themeService = inject(ThemeService);
+
   readonly modulos$ = this.modulosService.modulos$;
   readonly sidebarOpen = signal(false);
   readonly homeIcon = SHELL_HOME_ICON;
+  readonly logoSrc = computed(() => this.themeService.logoHorizontalSrc());
 
   readonly moduloIcon = shellNavIcon;
   readonly moduloBadge = shellNavBadge;
-
-  constructor(
-    private readonly authService: AuthService,
-    private readonly modulosService: ModulosService,
-  ) {}
 
   get usuarioNome(): string {
     return this.authService.getUsuario()?.nome ?? 'Usuário';

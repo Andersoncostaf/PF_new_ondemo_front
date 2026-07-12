@@ -1,10 +1,14 @@
 <div class="login-page">
+  <div class="login-theme-toggle">
+    <app-theme-toggle [compact]="true" />
+  </div>
+
   <app-auth-hero-panel variant="login" />
 
   <main class="login-main">
     <div class="login-panel" [class.login-panel--shake]="shakeForm">
       <img
-        src="assets/branding/logo-horizontal.png"
+        [src]="logoSrc()"
         alt="Portal Fornecedor On Demand"
         class="login-logo login-logo--mobile"
         width="620"
@@ -25,7 +29,7 @@
         } @else {
           <p-message
             severity="warn"
-            text="Host não reconhecido. Use portalfornecedor.{slug}.local"
+            text="Host não reconhecido. Use portalfornecedor.{slug}.local:4200 ou 127.0.0.1:4200/auth/login?tenant={slug}"
             styleClass="w-full mb-3"
           />
         }

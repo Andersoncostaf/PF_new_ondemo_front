@@ -1,4 +1,5 @@
-:root {
+:root,
+[data-theme='light'] {
   --font-family-display: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-family-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --brand-blue: #3b82f6;
@@ -6,6 +7,34 @@
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --surface-ground: #f4f6f8;
+  --surface-elevated: #ffffff;
+  --surface-muted: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --danger: #ef4444;
+  --shadow-color: rgba(15, 23, 42, 0.12);
+  --overlay-scrim: rgba(15, 23, 42, 0.4);
+  --gradient-panel-start: #eff6ff;
+  --gradient-panel-end: #f8fafc;
+  --wizard-header-start: #f0f9ff;
+  --wizard-header-end: #ffffff;
+}
+
+[data-theme='dark'] {
+  --brand-blue: #60a5fa;
+  --brand-green: #4ade80;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --surface-ground: #0f172a;
+  --surface-elevated: #1e293b;
+  --surface-muted: #334155;
+  --border-subtle: #334155;
+  --danger: #f87171;
+  --shadow-color: rgba(0, 0, 0, 0.45);
+  --overlay-scrim: rgba(2, 6, 23, 0.65);
+  --gradient-panel-start: #1e293b;
+  --gradient-panel-end: #0f172a;
+  --wizard-header-start: #1e3a5f;
+  --wizard-header-end: #1e293b;
 }
 
 html,
@@ -14,11 +43,48 @@ body {
   min-height: 100%;
   font-family: var(--font-family-body);
   background: var(--surface-ground, #f4f6f8);
-  color: var(--text-color, #334155);
+  color: var(--text-color, var(--text-primary, #334155));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Quill editor — dark mode overrides */
+[data-theme='dark'] {
+  .ql-toolbar.ql-snow,
+  .ql-container.ql-snow {
+    border-color: var(--border-subtle);
+  }
+
+  .ql-toolbar.ql-snow {
+    background: var(--surface-muted);
+  }
+
+  .ql-container.ql-snow {
+    background: var(--surface-elevated);
+  }
+
+  .ql-editor {
+    color: var(--text-primary);
+  }
+
+  .ql-snow .ql-stroke {
+    stroke: var(--text-secondary);
+  }
+
+  .ql-snow .ql-fill {
+    fill: var(--text-secondary);
+  }
+
+  .ql-snow .ql-picker {
+    color: var(--text-secondary);
+  }
+
+  .ql-snow .ql-picker-options {
+    background: var(--surface-elevated);
+    border-color: var(--border-subtle);
+  }
 }

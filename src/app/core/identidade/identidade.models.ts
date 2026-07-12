@@ -9,12 +9,17 @@ export interface ModulosResponse {
   modulos: ModuloItem[];
 }
 
+export interface UsuarioPreferencias {
+  theme?: 'light' | 'dark' | 'system';
+}
+
 export interface AuthUsuario {
   id: string;
   nome: string;
   email: string;
   perfil: string;
   cargo?: string | null;
+  preferencias?: UsuarioPreferencias | null;
 }
 
 export interface AuthTenant {
@@ -58,4 +63,12 @@ export interface PerfilResponse {
     nome_fantasia?: string | null;
     trial_starts_at?: string | null;
   };
+}
+
+export interface PreferenciasPayload {
+  theme: 'light' | 'dark' | 'system';
+}
+
+export interface PreferenciasResponse {
+  preferencias: UsuarioPreferencias;
 }

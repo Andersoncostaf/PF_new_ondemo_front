@@ -11,6 +11,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/branding/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/branding/apple-touch-icon.png">
+  <script>
+    (function () {
+      try {
+        var key = 'pf_theme_preference';
+        var pref = localStorage.getItem(key);
+        if (pref !== 'light' && pref !== 'dark' && pref !== 'system') pref = 'system';
+        var dark = pref === 'dark' || (pref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var theme = dark ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        var link = document.createElement('link');
+        link.id = 'app-theme';
+        link.rel = 'stylesheet';
+        link.href = dark
+          ? 'assets/themes/lara-dark-blue/theme.css'
+          : 'assets/themes/lara-light-blue/theme.css';
+        document.head.appendChild(link);
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>
