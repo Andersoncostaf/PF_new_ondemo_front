@@ -7,6 +7,9 @@ import {
   CadastrarFornecedorPayload,
   ContratacaoFornecedorListItem,
   ContratacaoVendorListDetail,
+  FornecedorBuscaResponse,
+  GerarSugestoesFornecedorPayload,
+  SugestoesFornecedorResponse,
 } from '../../contratacao.models';
 
 @Injectable({ providedIn: 'root' })
@@ -35,9 +38,35 @@ export class ContratacaoVendorListApiService {
     );
   }
 
+  registrarAceite(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<ContratacaoFornecedorListItem> {
+    return this.http.post<ContratacaoFornecedorListItem>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/aceite`,
+      {},
+    );
+  }
+
+  buscarFornecedorPorCnpj(uuid: string, cnpj: string): Observable<FornecedorBuscaResponse> {
+    return this.http.get<FornecedorBuscaResponse>(`${this.baseUrl}/${uuid}/fornecedores/buscar`, {
+      params: { cnpj },
+    });
+  }
+
   removerFornecedor(uuid: string, fornecedorUuid: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(
       `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}`,
+    );
+  }
+
+  gerarSugestoesFornecedores(
+    uuid: string,
+    payload?: GerarSugestoesFornecedorPayload,
+  ): Observable<SugestoesFornecedorResponse> {
+    return this.http.post<SugestoesFornecedorResponse>(
+      `${this.baseUrl}/${uuid}/sugestoes-fornecedores`,
+      payload ?? {},
     );
   }
 }

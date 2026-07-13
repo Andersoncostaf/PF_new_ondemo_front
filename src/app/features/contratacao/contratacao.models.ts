@@ -131,7 +131,58 @@ export interface CadastrarFornecedorPayload {
   razao_social: string;
   telefone?: string;
   email?: string;
-  vendedor?: string;
+  vendedor: string;
+}
+
+export interface FornecedorBuscaResponse {
+  encontrado: boolean;
+  origem?: SugestaoFornecedorOrigem;
+  cnpj?: string;
+  razao_social?: string;
+  telefone?: string | null;
+  email?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+}
+
+export type SugestaoFornecedorOrigem = 'historico_tenant' | 'catalogo_tenant' | 'ia_externa';
+
+export interface SugestaoFornecedorItem {
+  id: string;
+  rank: number;
+  score: number;
+  origem: SugestaoFornecedorOrigem;
+  cnpj: string;
+  razao_social: string;
+  telefone: string | null;
+  email: string | null;
+  cidade: string | null;
+  uf: string | null;
+  motivo: string;
+  ja_cadastrado: boolean;
+}
+
+export interface SugestoesFornecedorResponse {
+  contratacao_uuid: string;
+  gerado_em: string;
+  fonte: string;
+  aviso: string;
+  contexto_resumido: {
+    categoria_servico: string | null;
+    local: string | null;
+    titulo: string | null;
+  };
+  sugestoes: SugestaoFornecedorItem[];
+  meta: {
+    total_encontrado: number;
+    retornados: number;
+    cache_hit: boolean;
+  };
+}
+
+export interface GerarSugestoesFornecedorPayload {
+  limite?: number;
+  forcar_regeneracao?: boolean;
 }
 
 export interface ContratacaoPayload {

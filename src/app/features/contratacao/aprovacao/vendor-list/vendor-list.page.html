@@ -1,11 +1,14 @@
-<p-card>
+<p-card styleClass="vendor-list-card">
   <div class="vendor-list-header">
     <p-button icon="pi pi-arrow-left" label="Voltar" [text]="true" (onClick)="voltarLista()" />
-    <div>
+    <div class="vendor-list-header__titles">
       <h2>Análise de fornecedores</h2>
       @if (contratacao?.titulo) {
         <p class="vendor-list-subtitle">{{ contratacao?.titulo }}</p>
       }
+      <p class="vendor-list-lead">
+        Monte a lista, confirme o aceite de participação e exclua convidados que não seguirão na cotação.
+      </p>
     </div>
   </div>
 
@@ -13,105 +16,198 @@
     <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
   }
 
+  @if (successMessage) {
+    <p-message severity="success" [text]="successMessage" styleClass="mb-3 w-full" />
+  }
+
   @if (loading) {
-    <p>Carregando...</p>
+    <div class="vendor-list-loading">
+      <p-progressSpinner strokeWidth="4" [style]="{ width: '2.5rem', height: '2.5rem' }" />
+      <span>Carregando análise de fornecedores…</span>
+    </div>
   } @else if (contratacao) {
-    <div class="vendor-list-resumo">
-      <p><strong>Empresa:</strong> {{ contratacao.empresa || '—' }}</p>
-      <p><strong>CNPJ:</strong> {{ contratacao.empresa_cnpj || '—' }}</p>
-      <p><strong>Departamento:</strong> {{ contratacao.departamento || '—' }}</p>
-      <p>
-        <strong>Status:</strong>
+    <section class="vendor-list-resumo" aria-label="Resumo da contratação">
+      <div class="resumo-item">
+        <span class="resumo-item__label">Empresa</span>
+        <span class="resumo-item__value">{{ contratacao.empresa || '—' }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-item__label">CNPJ</span>
+        <span class="resumo-item__value">{{ contratacao.empresa_cnpj || '—' }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-item__label">Departamento</span>
+        <span class="resumo-item__value">{{ contratacao.departamento || '—' }}</span>
+      </div>
+      <div class="resumo-item">
+        <span class="resumo-item__label">Status</span>
         <p-tag
-          class="ml-2"
           [value]="statusLabel(contratacao.status)"
           [severity]="statusSeverity(contratacao.status)"
         />
-      </p>
-    </div>
+      </div>
+    </section>
 
-    <div class="vendor-list-actions">
-      <p-button
-        label="Cadastrar fornecedor"
-        icon="pi pi-plus"
-        (onClick)="abrirDialog()"
-      />
-    </div>
+    <section class="vendor-list-sugestoes" aria-labelledby="sugestoes-titulo">
+      <div class="vendor-list-sugestoes__header">
+        <div>
+          <p class="section-step">Passo 1 · Opcional</p>
+          <h3 id="sugestoes-titulo">Sugestões para esta contratação</h3>
+          <p class="vendor-list-sugestoes__contexto">
+            Use o histórico e o catálogo da empresa para acelerar o convite.
+            @if (contratacao.categoria_servico || contratacao.local) {
+              <span>
+                Contexto:
+                {{ contratacao.categoria_servico || 'Serviço' }}
+                @if (contratacao.local) {
+                  · {{ contratacao.local }}
+                }
+              </span>
+            }
+          </p>
+        </div>
+        <p-button
+          label="Gerar sugestões"
+          icon="pi pi-sparkles"
+          [loading]="gerandoSugestoes"
+          (onClick)="gerarSugestoes()"
+        />
+      </div>
 
-    <p-table
-      [value]="fornecedores"
-      styleClass="p-datatable-gridlines mt-3"
-      [paginator]="fornecedores.length > 10"
-      [rows]="10"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>CNPJ</th>
-          <th>Razão social</th>
-          <th>Telefone</th>
-          <th>Vendedor</th>
-          <th>Aceite</th>
-          <th style="width: 6rem">Ações</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-item>
-        <tr>
-          <td>{{ item.cnpj }}</td>
-          <td>{{ item.razao_social }}</td>
-          <td>{{ item.telefone || '—' }}</td>
-          <td>{{ item.vendedor || '—' }}</td>
-          <td>
-            <p-tag
-              [value]="item.aceite ? 'Aceito' : 'Pendente'"
-              [severity]="item.aceite ? 'success' : 'warning'"
-            />
-          </td>
-          <td>
-            <p-button
-              icon="pi pi-trash"
-              severity="danger"
-              [text]="true"
-              (onClick)="confirmarExclusao(item)"
-            />
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="6">Nenhum fornecedor cadastrado. Use o botão acima para adicionar.</td>
-        </tr>
-      </ng-template>
-    </p-table>
+      @if (sugestoesAviso) {
+        <p-message severity="warn" [text]="sugestoesAviso" styleClass="mb-3 w-full" />
+      }
+
+      @if (gerandoSugestoes) {
+        <div class="vendor-list-sugestoes__grid">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="sugestao-card sugestao-card--skeleton">
+              <p-skeleton width="70%" height="1.25rem" styleClass="mb-2" />
+              <p-skeleton width="50%" height="1rem" styleClass="mb-2" />
+              <p-skeleton width="100%" height="3rem" />
+            </div>
+          }
+        </div>
+      } @else if (sugestoesGeradas && sugestoesVazio) {
+        <p class="vendor-list-sugestoes__vazio">
+          Nenhuma sugestão encontrada. Cadastre manualmente ou enriqueça o catálogo de fornecedores do cliente.
+        </p>
+      } @else if (sugestoes.length > 0) {
+        <div class="vendor-list-sugestoes__grid">
+          @for (item of sugestoes; track item.id) {
+            <article class="sugestao-card" [class.sugestao-card--disabled]="item.ja_cadastrado">
+              <div class="sugestao-card__top">
+                <p-tag [value]="labelOrigem(item.origem)" severity="info" />
+                <span class="sugestao-card__score">{{ formatarScore(item.score) }}</span>
+              </div>
+              <h4 class="sugestao-card__nome">{{ item.razao_social }}</h4>
+              <p class="sugestao-card__meta">CNPJ: {{ formatarCnpj(item.cnpj) }}</p>
+              <p class="sugestao-card__meta">{{ formatarLocalidade(item) }}</p>
+              <p class="sugestao-card__motivo">{{ item.motivo }}</p>
+              @if (item.ja_cadastrado) {
+                <p-tag value="Já cadastrado" severity="secondary" />
+              } @else {
+                <p-button
+                  label="Usar este"
+                  icon="pi pi-check"
+                  size="small"
+                  (onClick)="usarSugestao(item)"
+                />
+              }
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="vendor-list-fornecedores" aria-labelledby="fornecedores-titulo">
+      <div class="vendor-list-fornecedores__header">
+        <div>
+          <p class="section-step">Passo 2 · Lista convidada</p>
+          <h3 id="fornecedores-titulo">Fornecedores desta contratação</h3>
+          <p class="vendor-list-fornecedores__hint">
+            Cadastre o fornecedor, registre o aceite de participação e exclua quem não permanecerá na cotação.
+          </p>
+        </div>
+        <p-button
+          label="Cadastrar fornecedor"
+          icon="pi pi-plus"
+          (onClick)="abrirDialog()"
+        />
+      </div>
+
+      <p-table
+        [value]="fornecedores"
+        styleClass="p-datatable-gridlines vendor-list-table"
+        [paginator]="fornecedores.length > 10"
+        [rows]="10"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>CNPJ</th>
+            <th>Razão social</th>
+            <th>Telefone</th>
+            <th>Vendedor</th>
+            <th style="min-width: 12rem">Participação</th>
+            <th style="width: 9rem">Ações</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{ formatarCnpj(item.cnpj) }}</td>
+            <td>{{ item.razao_social }}</td>
+            <td>{{ formatarTelefone(item.telefone) }}</td>
+            <td>{{ item.vendedor || '—' }}</td>
+            <td>
+              <div class="aceite-cell">
+                @if (item.aceite) {
+                  <p-tag value="Aceitou participar" severity="success" icon="pi pi-check" />
+                } @else {
+                  <p-button
+                    label="Registrar aceite"
+                    icon="pi pi-check-circle"
+                    size="small"
+                    severity="success"
+                    [outlined]="true"
+                    [loading]="aceiteEmAndamento === item.uuid"
+                    [disabled]="!!aceiteEmAndamento || !!exclusaoEmAndamento"
+                    (onClick)="confirmarAceite(item)"
+                  />
+                }
+              </div>
+            </td>
+            <td>
+              <p-button
+                label="Excluir"
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                [text]="true"
+                [loading]="exclusaoEmAndamento === item.uuid"
+                [disabled]="!!exclusaoEmAndamento || !!aceiteEmAndamento"
+                (onClick)="confirmarExclusao(item)"
+              />
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+              Nenhum fornecedor cadastrado. Use “Cadastrar fornecedor” ou uma sugestão acima.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
   }
 </p-card>
 
-<p-dialog
-  header="Cadastrar fornecedor"
+<app-cadastrar-fornecedor-dialog
+  [contratacaoUuid]="uuid"
+  [cnpjsCadastrados]="cnpjsCadastrados"
+  [prefill]="prefillFornecedor"
   [(visible)]="dialogVisible"
-  [modal]="true"
-  [style]="{ width: '32rem' }"
->
-  <div class="vendor-list-form">
-    <label>CNPJ</label>
-    <input pInputText class="w-full mb-3" [(ngModel)]="form.cnpj" placeholder="00.000.000/0000-00" />
-
-    <label>Razão social</label>
-    <input pInputText class="w-full mb-3" [(ngModel)]="form.razao_social" />
-
-    <label>Telefone</label>
-    <input pInputText class="w-full mb-3" [(ngModel)]="form.telefone" />
-
-    <label>E-mail</label>
-    <input pInputText class="w-full mb-3" [(ngModel)]="form.email" />
-
-    <label>Vendedor</label>
-    <input pInputText class="w-full mb-3" [(ngModel)]="form.vendedor" />
-  </div>
-
-  <ng-template pTemplate="footer">
-    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="dialogVisible = false" />
-    <p-button label="Salvar" icon="pi pi-check" [loading]="salvando" (onClick)="salvarFornecedor()" />
-  </ng-template>
-</p-dialog>
+  (saved)="onFornecedorSalvo($event)"
+/>
 
 <p-confirmDialog />
