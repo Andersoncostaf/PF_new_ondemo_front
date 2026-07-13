@@ -93,7 +93,7 @@ export class VendorListPageComponent implements OnInit {
         this.loading = false;
         this.errorMessage =
           (err.error as { message?: string })?.message ??
-          'Não foi possível carregar a análise de fornecedores.';
+          'Não foi possível carregar a seleção de fornecedores.';
       },
     });
   }

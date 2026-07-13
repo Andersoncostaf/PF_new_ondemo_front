@@ -115,7 +115,7 @@ export class ComprasListaPageComponent implements OnInit {
   assumirVendorList(item: ContratacaoListItem): void {
     this.confirmation.confirm({
       header: 'Assumir processamento',
-      message: 'Deseja assumir esta contratação para análise de fornecedores (VendorList)?',
+      message: 'Deseja assumir esta contratação para seleção de fornecedores?',
       icon: 'pi pi-question-circle',
       acceptLabel: 'Sim, assumir',
       rejectLabel: 'Cancelar',

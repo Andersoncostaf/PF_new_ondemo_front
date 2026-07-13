@@ -2,7 +2,7 @@
   <div class="vendor-list-header">
     <p-button icon="pi pi-arrow-left" label="Voltar" [text]="true" (onClick)="voltarLista()" />
     <div class="vendor-list-header__titles">
-      <h2>Análise de fornecedores</h2>
+      <h2>Seleção de Fornecedores</h2>
       @if (contratacao?.titulo) {
         <p class="vendor-list-subtitle">{{ contratacao?.titulo }}</p>
       }
@@ -23,7 +23,7 @@
   @if (loading) {
     <div class="vendor-list-loading">
       <p-progressSpinner strokeWidth="4" [style]="{ width: '2.5rem', height: '2.5rem' }" />
-      <span>Carregando análise de fornecedores…</span>
+      <span>Carregando seleção de fornecedores…</span>
     </div>
   } @else if (contratacao) {
     <section class="vendor-list-resumo" aria-label="Resumo da contratação">

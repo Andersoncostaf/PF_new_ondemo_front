@@ -12,7 +12,7 @@ export const CONTRATACAO_STATUS_LABELS: Record<ContratacaoStatus, string> = {
   em_analise: 'Em análise',
   aguardando_ajuste_area: 'Aguardando ajuste',
   aprovado_compras: 'Aprovado (Compras)',
-  em_vendor_list: 'VendorList',
+  em_vendor_list: 'Seleção de Fornecedores',
 };
 
 export function contratacaoStatusLabel(status: string): string {
