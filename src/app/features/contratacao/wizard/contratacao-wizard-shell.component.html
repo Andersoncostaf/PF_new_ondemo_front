@@ -81,12 +81,22 @@
         }
 
         @if (!store.isLastStep) {
-          <p-button
-            label="Próximo"
-            (onClick)="store.nextStep()"
-            [loading]="store.saving"
-            [disabled]="store.uploadingAnexo"
-          />
+          <div class="wizard-next-btn">
+            <img
+              class="wizard-next-btn__mascot"
+              src="assets/branding/mascote-portal-peek.png"
+              alt=""
+              aria-hidden="true"
+              width="64"
+              height="64"
+            />
+            <p-button
+              label="Próximo"
+              (onClick)="store.nextStep()"
+              [loading]="store.saving"
+              [disabled]="store.uploadingAnexo"
+            />
+          </div>
         }
 
         @if (!store.readOnly) {

@@ -41,6 +41,23 @@ describe('TenantService', () => {
     expect(service.getSlugFromHostname('localhost')).toBeNull();
   });
 
+  it('accepts ?tenant= on localdev host', () => {
+    sessionStorage.clear();
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: {
+        protocol: 'http:',
+        hostname: '127.0.0.1',
+        port: '4200',
+        pathname: '/auth/login',
+        search: '?tenant=meuprojetodofox',
+      },
+    });
+
+    expect(service.getSlug()).toBe('meuprojetodofox');
+    expect(sessionStorage.getItem('pf_dev_tenant_slug')).toBe('meuprojetodofox');
+  });
+
   it('redirects handoff to cadastro.local in dev (sem hosts por tenant)', () => {
     Object.defineProperty(window, 'location', {
       configurable: true,

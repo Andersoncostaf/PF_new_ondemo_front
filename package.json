@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 127.0.0.1 --port 4200 --allowed-hosts .local --allowed-hosts portalfornecedor.clientex.local --allowed-hosts portalfornecedor.cadastro.local",
+    "start": "ng serve --host 127.0.0.1 --port 4200 --allowed-hosts .local --allowed-hosts portalfornecedor.clientex.local --allowed-hosts portalfornecedor.cadastro.local --allowed-hosts portalfornecedor.meuprojetodofox.local",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
