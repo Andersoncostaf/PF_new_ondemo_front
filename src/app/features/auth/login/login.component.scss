@@ -13,10 +13,10 @@
   margin: 1rem 0 0;
   text-align: center;
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
 
   a {
-    color: #3b82f6;
+    color: var(--brand-blue, #3b82f6);
     font-weight: 600;
     text-decoration: none;
 

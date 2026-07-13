@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -8,6 +8,9 @@ import { MessageModule } from 'primeng/message';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { TenantService } from '../../../core/tenant/tenant.service';
+import { ThemeService } from '../../../core/theme/theme.service';
+import { ThemeToggleComponent } from '../../../core/theme/theme-toggle.component';
+import { AuthHeroPanelComponent } from '../auth-hero-panel/auth-hero-panel.component';
 
 @Component({
   selector: 'app-login',
@@ -18,26 +21,28 @@ import { TenantService } from '../../../core/tenant/tenant.service';
     InputTextModule,
     PasswordModule,
     MessageModule,
+    AuthHeroPanelComponent,
+    ThemeToggleComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly tenantService = inject(TenantService);
+  private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+
   errorMessage = '';
   loading = false;
   shakeForm = false;
+  readonly logoSrc = computed(() => this.themeService.logoHorizontalSrc());
 
   readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly authService: AuthService,
-    private readonly tenantService: TenantService,
-    private readonly router: Router,
-  ) {}
 
   ngOnInit(): void {
     if (this.tenantService.isCadastroHost()) {

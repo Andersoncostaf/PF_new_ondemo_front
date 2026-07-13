@@ -1,0 +1,46 @@
+<section class="lista-page">
+  <header class="lista-header">
+    <div class="lista-header__intro">
+      <h1 class="lista-header__title">Contratação de Serviços</h1>
+      <p class="lista-header__subtitle">
+        Acompanhe rascunhos, solicitações em análise e responda apontamentos da equipe.
+      </p>
+    </div>
+    <div class="lista-header__actions">
+      @if (totalRecords > 0) {
+        <span class="lista-header__count">{{ totalRecords }} solicitações</span>
+      }
+      <p-button
+        label="Nova solicitação"
+        icon="pi pi-plus"
+        styleClass="lista-header__cta"
+        (onClick)="nova()"
+      />
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <p-message severity="error" [text]="errorMessage" styleClass="lista-alert w-full" />
+  }
+
+  <app-contratacao-lista-filtros
+    [loading]="loading"
+    (filtrar)="onFiltrar($event)"
+    (limpar)="onLimparFiltros()"
+  />
+
+  <app-contratacao-lista-tabela
+    [contratacoes]="contratacoes"
+    [loading]="loading"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [first]="first"
+    (pageChange)="onPageChange($event)"
+    (editar)="editar($event)"
+    (visualizar)="visualizar($event)"
+    (ajustes)="ajustes($event)"
+    (excluir)="excluir($event)"
+  />
+
+  <p-confirmDialog />
+</section>

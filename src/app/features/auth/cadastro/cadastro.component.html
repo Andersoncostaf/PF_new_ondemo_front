@@ -1,43 +1,18 @@
 <div class="login-page">
-  <aside class="login-hero" aria-hidden="false">
-    <div class="login-hero__media login-hero__media--cadastro"></div>
-    <div class="login-hero__shade"></div>
-    <div class="login-hero__content">
-      <img
-        src="assets/branding/logo-inverted.png"
-        alt=""
-        class="login-hero__logo"
-        width="440"
-        height="208"
-      />
-      <div class="trial-badge">
-        <i class="pi pi-gift" aria-hidden="true"></i>
-        <span>15 dias grátis para começar</span>
-      </div>
-      <p class="login-hero__tagline">
-        Crie o portal da sua empresa em minutos e centralize compras, fornecedores e contratações.
-      </p>
-      <ul class="login-hero__features">
-        <li>
-          <i class="pi pi-check-circle" aria-hidden="true"></i>
-          <span>Seu endereço exclusivo: portalfornecedor.sua-empresa.local</span>
-        </li>
-        <li>
-          <i class="pi pi-users" aria-hidden="true"></i>
-          <span>Primeiro usuário como administrador do tenant</span>
-        </li>
-        <li>
-          <i class="pi pi-bolt" aria-hidden="true"></i>
-          <span>Acesso imediato ao módulo de Contratação no trial</span>
-        </li>
-      </ul>
-    </div>
-  </aside>
+  <div class="login-theme-toggle">
+    <app-theme-toggle [compact]="true" />
+  </div>
+
+  <app-auth-hero-panel variant="cadastro" />
 
   <main class="login-main">
-    <div class="login-panel login-panel--wide" [class.login-panel--shake]="shakeForm">
+    <div
+      class="login-panel login-panel--wide"
+      [class.login-panel--review]="activeStep === 2"
+      [class.login-panel--shake]="shakeForm"
+    >
       <img
-        src="assets/branding/logo-horizontal.png"
+        [src]="logoSrc()"
         alt="Portal Fornecedor On Demand"
         class="login-logo login-logo--mobile"
         width="620"
@@ -225,18 +200,41 @@
             <div class="step-panel review-panel">
               <h2 class="review-title">Revise antes de criar</h2>
               <dl class="review-list">
-                <div><dt>Empresa</dt><dd>{{ form.controls.razao_social.value }}</dd></div>
-                <div><dt>CNPJ</dt><dd>{{ form.controls.cnpj.value }}</dd></div>
-                <div><dt>Portal</dt><dd>{{ portalPreview }}</dd></div>
-                <div><dt>Administrador</dt><dd>{{ form.controls.nome.value }}</dd></div>
-                <div><dt>E-mail</dt><dd>{{ form.controls.email.value }}</dd></div>
+                <div class="review-list__item">
+                  <dt>Empresa</dt>
+                  <dd>{{ form.controls.razao_social.value }}</dd>
+                </div>
+                <div class="review-list__item">
+                  <dt>CNPJ</dt>
+                  <dd>{{ form.controls.cnpj.value }}</dd>
+                </div>
+                <div class="review-list__item review-list__item--portal">
+                  <dt>Portal</dt>
+                  <dd><span class="review-portal-url">{{ portalPreview }}</span></dd>
+                </div>
+                <div class="review-list__item">
+                  <dt>Administrador</dt>
+                  <dd>{{ form.controls.nome.value }}</dd>
+                </div>
+                <div class="review-list__item">
+                  <dt>E-mail</dt>
+                  <dd>{{ form.controls.email.value }}</dd>
+                </div>
               </dl>
-              <p class="review-note">
-                <i class="pi pi-info-circle" aria-hidden="true"></i>
-                Ao confirmar, você inicia o trial de 15 dias e entra no portal
-                <strong>{{ form.controls.razao_social.value }}</strong>.
-                Em produção o endereço será <strong>{{ portalPreview }}</strong>.
-              </p>
+
+              <div class="review-note" role="note">
+                <i class="pi pi-info-circle review-note__icon" aria-hidden="true"></i>
+                <div class="review-note__body">
+                  <p>
+                    Ao confirmar, você começa com <strong>15 dias grátis</strong> e entra no portal da
+                    <strong>{{ form.controls.razao_social.value }}</strong>.
+                  </p>
+                  <p class="review-note__production">
+                    <span class="review-note__production-label">Em produção, o endereço será:</span>
+                    <span class="review-note__production-url">{{ portalPreview }}</span>
+                  </p>
+                </div>
+              </div>
             </div>
           }
 
@@ -280,7 +278,7 @@
         <p class="auth-link">
           Já tem conta?
           @if (loginUrl) {
-            <a [href]="loginUrl">Entrar em {{ portalPreview }}</a>
+            <a [href]="loginUrl" class="auth-link__portal">Entrar em {{ portalPreview }}</a>
           } @else {
             <span>Use o endereço <strong>portalfornecedor.sua-empresa.local</strong> da sua empresa.</span>
           }

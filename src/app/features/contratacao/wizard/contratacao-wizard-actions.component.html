@@ -1,0 +1,51 @@
+<div class="wizard-actions">
+  <a routerLink="/contratacao">Voltar à lista</a>
+
+  <div class="wizard-actions-right">
+    @if (!store.isFirstStep) {
+      <p-button
+        label="Anterior"
+        severity="secondary"
+        (onClick)="store.prevStep()"
+        [disabled]="store.saving || store.uploadingAnexo"
+      />
+    }
+
+    @if (!store.isLastStep) {
+      <div class="wizard-next-btn">
+        <img
+          class="wizard-next-btn__mascot"
+          src="assets/branding/mascote-portal-peek.png"
+          alt=""
+          aria-hidden="true"
+          width="64"
+          height="64"
+        />
+        <p-button
+          label="Próximo"
+          (onClick)="store.nextStep()"
+          [loading]="store.saving"
+          [disabled]="store.uploadingAnexo"
+        />
+      </div>
+    }
+
+    @if (!store.readOnly) {
+      <p-button
+        label="Salvar rascunho"
+        severity="secondary"
+        (onClick)="store.salvarRascunho()"
+        [loading]="store.saving"
+        [disabled]="store.uploadingAnexo"
+      />
+
+      @if (store.isLastStep) {
+        <p-button
+          label="Finalizar contratação"
+          (onClick)="store.submeter()"
+          [loading]="store.saving"
+        />
+      }
+    }
+  </div>
+</div>

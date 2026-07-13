@@ -1,0 +1,76 @@
+<div class="analise-etapa">
+  @switch (store.currentRouteSlug) {
+    @case ('filial') {
+      <section>
+        <h3>Dados gerais / filial</h3>
+        <dl class="review-grid">
+          <div><dt>Empresa</dt><dd>{{ store.contratacao?.empresa || '—' }}</dd></div>
+          <div><dt>CNPJ</dt><dd>{{ store.contratacao?.empresa_cnpj || '—' }}</dd></div>
+          <div><dt>Endereço</dt><dd>{{ store.contratacao?.empresa_endereco || '—' }}</dd></div>
+          <div><dt>Departamento</dt><dd>{{ store.contratacao?.departamento || '—' }}</dd></div>
+          <div><dt>Título</dt><dd>{{ store.contratacao?.titulo || '—' }}</dd></div>
+          <div><dt>Categoria</dt><dd>{{ store.contratacao?.categoria_servico || '—' }}</dd></div>
+          <div><dt>Local</dt><dd>{{ store.contratacao?.local || '—' }}</dd></div>
+          <div><dt>Prazo desejado</dt><dd>{{ store.contratacao?.prazo_desejado || '—' }}</dd></div>
+        </dl>
+      </section>
+    }
+    @case ('tr') {
+      <section>
+        <h3>Termo de referência</h3>
+        @if (store.trCamposForReview().length === 0) {
+          <p>Sem campos preenchidos.</p>
+        } @else {
+          <ul class="review-list">
+            @for (item of store.trCamposForReview(); track item.label) {
+              <li><strong>{{ item.label }}:</strong> {{ item.value }}</li>
+            }
+          </ul>
+        }
+      </section>
+    }
+    @case ('qqp') {
+      <section>
+        <h3>QQP</h3>
+        <ul class="review-list">
+          @for (item of store.contratacao?.qqp_itens ?? []; track item.descricao; let i = $index) {
+            <li>
+              {{ i + 1 }}. {{ store.stripHtml(item.descricao) }} —
+              {{ item.quantidade }} {{ item.unidade }} —
+              {{ store.formatCurrency(item.valor_unitario) }}
+            </li>
+          }
+        </ul>
+        <p><strong>Total:</strong> {{ store.formatCurrency(store.qqpTotal()) }}</p>
+      </section>
+    }
+    @case ('anexos') {
+      <section>
+        <h3>Anexos</h3>
+        @if ((store.contratacao?.anexos?.length ?? 0) === 0) {
+          <p>Nenhum anexo.</p>
+        } @else {
+          <ul class="review-list">
+            @for (anexo of store.contratacao?.anexos ?? []; track anexo.id) {
+              <li>{{ anexo.descricao }} — {{ anexo.nome_arquivo }}</li>
+            }
+          </ul>
+        }
+      </section>
+    }
+    @case ('solicitacao-servico') {
+      <section>
+        <h3>Solicitação de serviço</h3>
+        @if (store.ssCamposForReview().length === 0) {
+          <p>Sem dados de SS.</p>
+        } @else {
+          <dl class="review-grid">
+            @for (item of store.ssCamposForReview(); track item.label) {
+              <div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>
+            }
+          </dl>
+        }
+      </section>
+    }
+  }
+</div>

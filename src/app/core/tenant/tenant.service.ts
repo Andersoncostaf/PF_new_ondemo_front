@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { AuthResponse } from '../identidade/identidade.models';
 
+const DEV_TENANT_SLUG_KEY = 'pf_dev_tenant_slug';
+
 @Injectable({ providedIn: 'root' })
 export class TenantService {
   getSlugFromHostname(hostname: string = window.location.hostname): string | null {
@@ -13,7 +15,34 @@ export class TenantService {
   }
 
   getSlug(): string | null {
-    return this.getSlugFromHostname();
+    const fromHost = this.getSlugFromHostname();
+    if (fromHost) {
+      return fromHost;
+    }
+
+    // Dev em 127.0.0.1/localhost: permite ?tenant={slug} (ou último slug usado).
+    if (!this.isLocalDevHost()) {
+      return null;
+    }
+
+    const fromQuery = this.getSlugFromQueryParam();
+    if (fromQuery) {
+      sessionStorage.setItem(DEV_TENANT_SLUG_KEY, fromQuery);
+      return fromQuery;
+    }
+
+    return sessionStorage.getItem(DEV_TENANT_SLUG_KEY);
+  }
+
+  /** Slug efetivo para header X-Tenant-Slug nas chamadas à API. */
+  getSlugForApi(): string | null {
+    return this.getSlug();
+  }
+
+  private getSlugFromQueryParam(): string | null {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('tenant')?.trim().toLowerCase() ?? '';
+    return /^[a-z0-9-]+$/.test(raw) ? raw : null;
   }
 
   /** Dev sem entrada no hosts: localhost/127.0.0.1 na rota de cadastro. */

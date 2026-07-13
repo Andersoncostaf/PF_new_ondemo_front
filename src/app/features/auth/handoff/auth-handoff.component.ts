@@ -29,8 +29,8 @@ import { AuthService } from '../../../core/auth/auth.service';
         justify-content: center;
         gap: 1rem;
         padding: 2rem;
-        background: #f8fafc;
-        color: #475569;
+        background: var(--surface-ground, #f8fafc);
+        color: var(--text-secondary, #475569);
       }
     `,
   ],

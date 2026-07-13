@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, tap, catchError, throwError, switchMap, of
 import { IdentidadeApiService } from '../identidade/identidade-api.service';
 import { ModulosService } from '../identidade/modulos.service';
 import { AuthResponse, AuthTenant, AuthUsuario, CadastroPayload } from '../identidade/identidade.models';
+import { ThemeService } from '../theme/theme.service';
 
 const TOKEN_KEY = 'pf_jwt_token';
 
@@ -19,6 +20,7 @@ export class AuthService {
   constructor(
     private readonly identidadeApi: IdentidadeApiService,
     private readonly modulosService: ModulosService,
+    private readonly themeService: ThemeService,
     private readonly router: Router,
   ) {}
 
@@ -63,6 +65,7 @@ export class AuthService {
       tap((perfil) => {
         this.usuarioSubject.next(perfil.usuario);
         this.tenantSubject.next(perfil.tenant);
+        this.themeService.applyFromUsuario(perfil.usuario.preferencias);
       }),
       switchMap(() =>
         this.modulosService.load().pipe(
@@ -74,6 +77,18 @@ export class AuthService {
         this.clearSession();
         return throwError(() => err);
       }),
+    );
+  }
+
+  /** Recarrega perfil autenticado (/me) e sincroniza tema do servidor. */
+  loadPerfil(): Observable<void> {
+    return this.identidadeApi.getPerfil().pipe(
+      tap((perfil) => {
+        this.usuarioSubject.next(perfil.usuario);
+        this.tenantSubject.next(perfil.tenant);
+        this.themeService.applyFromUsuario(perfil.usuario.preferencias);
+      }),
+      switchMap(() => of(undefined)),
     );
   }
 
@@ -120,6 +135,7 @@ export class AuthService {
     this.tokenSubject.next(response.token);
     this.usuarioSubject.next(response.usuario);
     this.tenantSubject.next(response.tenant);
+    this.themeService.applyFromUsuario(response.usuario.preferencias);
   }
 
   private readStoredToken(): string | null {

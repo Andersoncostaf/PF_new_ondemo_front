@@ -1,0 +1,41 @@
+<p-editor
+  [(ngModel)]="value"
+  [readonly]="readOnly"
+  [disabled]="disabled"
+  [style]="{ height: editorHeight }"
+  styleClass="tr-campo-editor"
+  [placeholder]="placeholder"
+  (ngModelChange)="onEditorChange($event)"
+>
+  <ng-template pTemplate="header">
+    <span class="tr-editor-toolbar">
+      <span class="ql-formats">
+        <button type="button" class="ql-bold" aria-label="Negrito"></button>
+        <button type="button" class="ql-strike" aria-label="Tachado"></button>
+      </span>
+      <span class="ql-formats">
+        <select class="ql-color" aria-label="Cor do texto"></select>
+      </span>
+      <span class="ql-formats tr-editor-toolbar__size">
+        <button
+          type="button"
+          class="tr-editor-size-btn"
+          title="Diminuir tamanho da letra"
+          aria-label="Diminuir tamanho da letra"
+          (mousedown)="decreaseFontSize($event)"
+        >
+          A−
+        </button>
+        <button
+          type="button"
+          class="tr-editor-size-btn"
+          title="Aumentar tamanho da letra"
+          aria-label="Aumentar tamanho da letra"
+          (mousedown)="increaseFontSize($event)"
+        >
+          A+
+        </button>
+      </span>
+    </span>
+  </ng-template>
+</p-editor>

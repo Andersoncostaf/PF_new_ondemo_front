@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .tr-campo-editor {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  background: var(--surface-elevated, #fff);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+  }
+
+  &:focus-within {
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .p-editor-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+    background: linear-gradient(
+      180deg,
+      var(--surface-muted, #f8fafc) 0%,
+      var(--surface-muted, #f1f5f9) 100%
+    );
+    padding: 0.35rem 0.5rem;
+  }
+
+  .p-editor-content {
+    border: none;
+  }
+
+  .ql-container {
+    border: none !important;
+    font-family: inherit;
+    font-size: 0.9375rem;
+  }
+
+  .ql-editor {
+    min-height: inherit;
+    line-height: 1.55;
+    color: var(--text-primary, #334155);
+    padding: 0.75rem 0.875rem;
+
+    &.ql-blank::before {
+      color: var(--text-secondary, #94a3b8);
+      font-style: normal;
+    }
+  }
+
+  .ql-editor .ql-size-small {
+    font-size: 0.8125rem;
+  }
+
+  .ql-editor .ql-size-large {
+    font-size: 1.125rem;
+  }
+
+  .ql-editor .ql-size-huge {
+    font-size: 1.375rem;
+  }
+}
+
+.tr-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.tr-editor-toolbar__size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-left: 0.15rem;
+}
+
+.tr-editor-size-btn {
+  min-width: 2rem;
+  height: 1.75rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  border-radius: 6px;
+  background: var(--surface-elevated, #fff);
+  color: var(--text-primary, #334155);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--gradient-panel-start, #eff6ff);
+    border-color: #93c5fd;
+    color: var(--brand-blue, #1d4ed8);
+  }
+}

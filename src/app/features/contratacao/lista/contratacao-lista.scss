@@ -1,0 +1,447 @@
+:host {
+  display: block;
+}
+
+.lista-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 100%;
+}
+
+.lista-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-panel-end, #f8fafc) 0%,
+    var(--gradient-panel-start, #eff6ff) 55%,
+    var(--wizard-header-start, #ecfdf5) 100%
+  );
+  border: 1px solid var(--border-subtle, #dbeafe);
+}
+
+.lista-header__title {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.lista-header__subtitle {
+  margin: 0;
+  max-width: 38rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #64748b);
+}
+
+.lista-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lista-header__count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: var(--surface-elevated, #fff);
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+:host ::ng-deep .lista-header__cta .p-button {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.lista-alert {
+  margin: 0;
+}
+
+.contratacao-filtros-panel {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 12px;
+  background: var(--surface-elevated, #fff);
+  box-shadow: 0 1px 2px var(--shadow-color, rgba(15, 23, 42, 0.04));
+}
+
+.filtros-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.875rem;
+}
+
+.filtros-panel-head__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary, #334155);
+
+  i {
+    color: var(--brand-blue, #3b82f6);
+  }
+}
+
+.filtros-panel-head__badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-blue, #3b82f6) 18%, var(--surface-elevated, #fff));
+  color: var(--brand-blue, #1d4ed8);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filtros-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.875rem 1rem;
+  align-items: end;
+}
+
+.filtros-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.filtros-field--actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filtros-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.filtros-input-wrap {
+  position: relative;
+  display: block;
+
+  i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary, #94a3b8);
+    font-size: 0.875rem;
+    pointer-events: none;
+  }
+}
+
+.filtros-input-line {
+  width: 100%;
+  padding: 0.55rem 0.75rem 0.55rem 2.25rem;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  background: var(--surface-elevated, #fff);
+  color: var(--text-primary, #0f172a);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--brand-blue, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+}
+
+:host ::ng-deep .filtros-btn .p-button {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.lista-data-shell {
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 12px;
+  background: var(--surface-elevated, #fff);
+  overflow-x: auto;
+  box-shadow: 0 1px 2px var(--shadow-color, rgba(15, 23, 42, 0.04));
+}
+
+.lista-desktop {
+  display: block;
+  min-width: min(100%, 72rem);
+}
+
+.lista-mobile {
+  display: none;
+}
+
+.lista-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-secondary, #64748b);
+
+  i {
+    font-size: 2rem;
+    color: var(--text-secondary, #94a3b8);
+    margin-bottom: 0.35rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, #334155);
+  }
+
+  span {
+    font-size: 0.875rem;
+  }
+}
+
+.cell-numero {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--brand-blue, #1e40af);
+}
+
+.col-usuario {
+  max-width: 14rem;
+}
+
+.col-fornecedor-vencedor {
+  max-width: 13rem;
+}
+
+.col-fornecedor-vencedor__text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-acoes {
+  min-width: 6.5rem;
+}
+
+.tabela-solicitacoes-acoes {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep .tabela-acao-btn.p-button {
+  width: 2.125rem;
+  height: 2.125rem;
+}
+
+:host ::ng-deep .tabela-solicitacoes-listagem {
+  .p-datatable-wrapper {
+    min-height: 28rem;
+  }
+
+  .p-datatable-thead > tr > th {
+    background: var(--surface-muted, #f8fafc);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary, #64748b);
+    border-color: var(--border-subtle, #e2e8f0);
+  }
+
+  .p-datatable-tbody > tr > td {
+    border-color: var(--border-subtle, #eef2f7);
+    font-size: 0.875rem;
+    vertical-align: middle;
+  }
+
+  .p-datatable-tbody > tr:nth-child(even) > td {
+    background: var(--surface-muted, #fafbfc);
+  }
+
+  .p-datatable-tbody > tr:hover > td {
+    background: var(--gradient-panel-start, #eff6ff) !important;
+  }
+
+  .p-paginator {
+    border-top: 1px solid var(--border-subtle, #e2e8f0);
+    padding: 0.65rem 1rem;
+  }
+}
+
+.contratacao-card {
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.contratacao-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.contratacao-card__numero {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--brand-blue, #1d4ed8);
+}
+
+.contratacao-card__titulo {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.35;
+}
+
+.contratacao-card__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem 0.75rem;
+  margin: 0 0 0.875rem;
+
+  div {
+    min-width: 0;
+  }
+
+  dt {
+    margin: 0 0 0.15rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary, #94a3b8);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--text-primary, #334155);
+    word-break: break-word;
+  }
+}
+
+.contratacao-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lista-mobile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 2rem 1rem;
+  color: var(--text-secondary, #64748b);
+  font-size: 0.9375rem;
+
+  i {
+    color: var(--brand-blue, #3b82f6);
+  }
+}
+
+:host ::ng-deep .lista-mobile-paginator.p-paginator {
+  border-top: 1px solid var(--border-subtle, #e2e8f0);
+  padding: 0.75rem 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+  .filtros-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filtros-field--actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .lista-header {
+    padding: 1rem;
+  }
+
+  .lista-header__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  :host ::ng-deep .lista-header__cta {
+    flex: 1;
+
+    .p-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .lista-desktop {
+    display: none;
+  }
+
+  .lista-mobile {
+    display: block;
+  }
+
+  .filtros-row {
+    grid-template-columns: 1fr;
+  }
+
+  .filtros-field--actions {
+    grid-column: auto;
+  }
+
+  :host ::ng-deep .filtros-field--actions .filtros-btn {
+    flex: 1;
+
+    .p-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .contratacao-card__meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .lista-page {
+    gap: 1rem;
+  }
+
+  .contratacao-filtros-panel {
+    padding: 0.875rem;
+  }
+}

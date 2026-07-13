@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -26,6 +26,9 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { IdentidadeApiService } from '../../../core/identidade/identidade-api.service';
 import { TenantService } from '../../../core/tenant/tenant.service';
+import { ThemeService } from '../../../core/theme/theme.service';
+import { ThemeToggleComponent } from '../../../core/theme/theme-toggle.component';
+import { AuthHeroPanelComponent } from '../auth-hero-panel/auth-hero-panel.component';
 import { formatCnpj, isValidCnpj, normalizeCnpj, slugify } from './cnpj.util';
 
 type SlugStatus = 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid';
@@ -53,17 +56,22 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     PasswordModule,
     MessageModule,
     StepsModule,
+    AuthHeroPanelComponent,
+    ThemeToggleComponent,
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
 export class CadastroComponent implements OnInit, OnDestroy {
+  private readonly themeService = inject(ThemeService);
+
   activeStep = 0;
   loading = false;
   shakeForm = false;
   errorMessage = '';
   slugStatus: SlugStatus = 'idle';
   slugSuggestion: string | null = null;
+  readonly logoSrc = computed(() => this.themeService.logoHorizontalSrc());
 
   readonly steps: MenuItem[] = [
     { label: 'Empresa' },

@@ -1,4 +1,25 @@
-export type ContratacaoStatus = 'rascunho' | 'submetido';
+import type { ContratacaoStatus } from './contratacao-status.utils';
+
+export type { ContratacaoStatus };
+
+export type ApontamentoEtapa = 'filial' | 'tr' | 'qqp' | 'anexos' | 'solicitacao_servico';
+
+export type ApontamentoStatus = 'pendente' | 'respondido' | 'cancelado';
+
+export interface ContratacaoApontamento {
+  id: string;
+  uuid: string;
+  etapa: ApontamentoEtapa;
+  descricao: string | null;
+  status: ApontamentoStatus;
+  resposta: string | null;
+  autor_nome?: string | null;
+  respondedor_nome?: string | null;
+  nome_arquivo?: string | null;
+  tamanho_bytes?: number;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export type { TermoReferenciaCampoKey, TermoReferenciaCampos } from './termo-referencia.constants';
 
@@ -55,11 +76,28 @@ export interface Contratacao {
 
 export interface ContratacaoListItem {
   uuid: string;
+  numero_exibicao: string;
   titulo: string | null;
+  empresa: string | null;
+  empresa_cnpj: string | null;
+  departamento: string | null;
+  criado_por_nome: string | null;
   categoria_servico: string | null;
   status: ContratacaoStatus;
   created_at?: string;
   updated_at?: string;
+  fornecedor_vencedor?: string | null;
+  data_inicio_analise?: string | null;
+  responsavel_analise?: string | null;
+  apontamentos_pendentes?: number | null;
+}
+
+export interface ContratacaoListQuery {
+  page?: number;
+  per_page?: number;
+  data_inicio?: string;
+  data_fim?: string;
+  numero?: string;
 }
 
 export interface ContratacaoListResponse {
@@ -70,6 +108,81 @@ export interface ContratacaoListResponse {
     per_page: number;
     total: number;
   };
+}
+
+export interface ContratacaoFornecedorListItem {
+  uuid: string;
+  cnpj: string;
+  razao_social: string;
+  telefone: string | null;
+  email: string | null;
+  vendedor: string | null;
+  aceite: boolean;
+  status_participacao: string;
+  created_at?: string;
+}
+
+export interface ContratacaoVendorListDetail extends Contratacao {
+  fornecedores?: ContratacaoFornecedorListItem[];
+}
+
+export interface CadastrarFornecedorPayload {
+  cnpj: string;
+  razao_social: string;
+  telefone?: string;
+  email?: string;
+  vendedor: string;
+}
+
+export interface FornecedorBuscaResponse {
+  encontrado: boolean;
+  origem?: SugestaoFornecedorOrigem;
+  cnpj?: string;
+  razao_social?: string;
+  telefone?: string | null;
+  email?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+}
+
+export type SugestaoFornecedorOrigem = 'historico_tenant' | 'catalogo_tenant' | 'ia_externa';
+
+export interface SugestaoFornecedorItem {
+  id: string;
+  rank: number;
+  score: number;
+  origem: SugestaoFornecedorOrigem;
+  cnpj: string;
+  razao_social: string;
+  telefone: string | null;
+  email: string | null;
+  cidade: string | null;
+  uf: string | null;
+  motivo: string;
+  ja_cadastrado: boolean;
+}
+
+export interface SugestoesFornecedorResponse {
+  contratacao_uuid: string;
+  gerado_em: string;
+  fonte: string;
+  aviso: string;
+  contexto_resumido: {
+    categoria_servico: string | null;
+    local: string | null;
+    titulo: string | null;
+  };
+  sugestoes: SugestaoFornecedorItem[];
+  meta: {
+    total_encontrado: number;
+    retornados: number;
+    cache_hit: boolean;
+  };
+}
+
+export interface GerarSugestoesFornecedorPayload {
+  limite?: number;
+  forcar_regeneracao?: boolean;
 }
 
 export interface ContratacaoPayload {

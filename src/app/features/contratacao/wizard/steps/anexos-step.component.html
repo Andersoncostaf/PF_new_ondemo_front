@@ -1,0 +1,109 @@
+<div class="step-panel step-panel--anexos">
+  <p class="section-eyebrow">Preencha as informações</p>
+
+  <div [formGroup]="store.anexoDraftForm" class="anexo-entry-form">
+    <div class="field anexo-descricao-field">
+      <label for="anexo-descricao">Descrição</label>
+      <input
+        id="anexo-descricao"
+        pInputText
+        formControlName="descricao"
+        class="w-full"
+        placeholder="Ex.: TR e QQP — manutenção elétrica"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="field anexo-upload-field">
+      <label class="anexo-upload-field__label" for="anexo-arquivo">Anexo</label>
+      <p class="anexo-upload-field__hint">PDF com até {{ anexoLimiteLabel }} por arquivo.</p>
+
+      <div
+        class="anexo-dropzone"
+        [class.anexo-dropzone--dragging]="arrastando"
+        [class.anexo-dropzone--selected]="!!store.anexoArquivo"
+        [class.anexo-dropzone--error]="!!store.anexoArquivoErro"
+        role="button"
+        tabindex="0"
+        aria-label="Selecionar ou arrastar anexo em PDF"
+        (click)="abrirSeletorArquivo()"
+        (keydown.enter)="abrirSeletorArquivo()"
+        (keydown.space)="abrirSeletorArquivo(); $event.preventDefault()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
+        <input
+          #anexoFileInput
+          id="anexo-arquivo"
+          type="file"
+          class="anexo-dropzone__input"
+          accept=".pdf,application/pdf"
+          [disabled]="store.readOnly"
+          (change)="onArquivoInputChange($event)"
+        />
+
+        <div class="anexo-dropzone__content">
+          <i class="pi pi-file-pdf anexo-dropzone__icon" aria-hidden="true"></i>
+
+          @if (store.anexoArquivo) {
+            <p class="anexo-dropzone__title">Anexo selecionado</p>
+            <p class="anexo-dropzone__filename">{{ store.anexoArquivoLabel() }}</p>
+            <span class="anexo-dropzone__hint">Clique ou arraste outro PDF para substituir</span>
+          } @else {
+            <p class="anexo-dropzone__title">Arraste o PDF aqui</p>
+            <p class="anexo-dropzone__subtitle">ou clique para escolher o anexo no computador</p>
+          }
+
+          <span class="anexo-dropzone__limit">Limite máximo: {{ anexoLimiteLabel }} por anexo</span>
+        </div>
+      </div>
+
+      @if (store.anexoArquivoErro) {
+        <small class="anexo-dropzone__error">{{ store.anexoArquivoErro }}</small>
+      }
+    </div>
+
+    @if (!store.readOnly) {
+      <div class="anexo-entry-actions">
+        <p-button label="Limpar" icon="pi pi-trash" severity="warning" (onClick)="store.limparAnexoDraft()" />
+        <p-button
+          label="Anexar"
+          icon="pi pi-check"
+          styleClass="anexo-save-btn"
+          [loading]="store.uploadingAnexo"
+          [disabled]="!store.anexoArquivo || !!store.anexoArquivoErro"
+          (onClick)="store.anexarArquivo()"
+        />
+      </div>
+    }
+  </div>
+
+  <div class="anexo-table-wrap">
+    <table class="anexo-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Opções</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (store.anexos.length === 0) {
+          <tr>
+            <td colspan="2" class="anexo-table__empty">Nenhum anexo adicionado.</td>
+          </tr>
+        }
+        @for (anexo of store.anexos; track anexo.id) {
+          <tr>
+            <td>{{ anexo.descricao ? anexo.descricao + ' — ' : '' }}{{ anexo.nome_arquivo }}</td>
+            <td>
+              @if (!store.readOnly) {
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="store.removerAnexo(anexo.id)" />
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

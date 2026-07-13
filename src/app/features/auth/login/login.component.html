@@ -1,39 +1,14 @@
 <div class="login-page">
-  <aside class="login-hero" aria-hidden="false">
-    <div class="login-hero__media"></div>
-    <div class="login-hero__shade"></div>
-    <div class="login-hero__content">
-      <img
-        src="assets/branding/logo-inverted.png"
-        alt=""
-        class="login-hero__logo"
-        width="440"
-        height="208"
-      />
-      <p class="login-hero__tagline">
-        Conecte compras, fornecedores e contratações em um só portal — simples para PMEs.
-      </p>
-      <ul class="login-hero__features">
-        <li>
-          <i class="pi pi-send" aria-hidden="true"></i>
-          <span>Cotações e RFQ com fornecedores qualificados</span>
-        </li>
-        <li>
-          <i class="pi pi-file-edit" aria-hidden="true"></i>
-          <span>Contratação de serviços com fluxo guiado</span>
-        </li>
-        <li>
-          <i class="pi pi-shield" aria-hidden="true"></i>
-          <span>Multi-tenant seguro, cada empresa no seu ambiente</span>
-        </li>
-      </ul>
-    </div>
-  </aside>
+  <div class="login-theme-toggle">
+    <app-theme-toggle [compact]="true" />
+  </div>
+
+  <app-auth-hero-panel variant="login" />
 
   <main class="login-main">
     <div class="login-panel" [class.login-panel--shake]="shakeForm">
       <img
-        src="assets/branding/logo-horizontal.png"
+        [src]="logoSrc()"
         alt="Portal Fornecedor On Demand"
         class="login-logo login-logo--mobile"
         width="620"
@@ -54,7 +29,7 @@
         } @else {
           <p-message
             severity="warn"
-            text="Host não reconhecido. Use portalfornecedor.{slug}.local"
+            text="Host não reconhecido. Use portalfornecedor.{slug}.local:4200 ou 127.0.0.1:4200/auth/login?tenant={slug}"
             styleClass="w-full mb-3"
           />
         }

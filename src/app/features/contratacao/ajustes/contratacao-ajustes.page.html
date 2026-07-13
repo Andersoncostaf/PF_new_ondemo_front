@@ -1,0 +1,65 @@
+<p-card header="Responder apontamentos">
+  <div class="ajustes-header">
+    <p-button icon="pi pi-arrow-left" label="Voltar" [text]="true" (onClick)="voltar()" />
+    @if (contratacao) {
+      <p-tag [value]="statusLabel(contratacao.status)" severity="danger" />
+    }
+  </div>
+
+  @if (errorMessage) {
+    <p-message severity="error" [text]="errorMessage" styleClass="mb-3 w-full" />
+  }
+  @if (successMessage) {
+    <p-message severity="success" [text]="successMessage" styleClass="mb-3 w-full" />
+  }
+
+  @if (loading) {
+    <p>Carregando...</p>
+  } @else {
+    @if (apontamentos.length === 0) {
+      <p>Nenhum apontamento encontrado.</p>
+    } @else {
+      <ul class="ajustes-list">
+        @for (item of apontamentos; track item.id) {
+          <li>
+            <div class="ajustes-list__meta">
+              <strong>{{ item.etapa }}</strong>
+              <p-tag [value]="item.status" [severity]="item.status === 'pendente' ? 'danger' : 'success'" />
+            </div>
+            @if (item.descricao) {
+              <div class="ajustes-list__descricao" [innerHTML]="item.descricao"></div>
+            }
+            @if (item.status === 'pendente') {
+              <textarea
+                pInputTextarea
+                rows="4"
+                class="w-full"
+                [(ngModel)]="respostas[item.id]"
+                placeholder="Sua resposta ao apontamento"
+              ></textarea>
+              <p-button
+                label="Enviar resposta"
+                icon="pi pi-send"
+                [loading]="savingId === item.id"
+                (onClick)="responder(item)"
+              />
+            } @else if (item.resposta) {
+              <p class="ajustes-resposta"><strong>Resposta:</strong> {{ item.resposta }}</p>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    @if (pendentes === 0 && apontamentos.length > 0) {
+      <div class="ajustes-reenviar">
+        <p-button
+          label="Reenviar solicitação"
+          icon="pi pi-check"
+          [loading]="reenviando"
+          (onClick)="reenviar()"
+        />
+      </div>
+    }
+  }
+</p-card>

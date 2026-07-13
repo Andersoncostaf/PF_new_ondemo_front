@@ -1,0 +1,122 @@
+<p-card [header]="store.isNova ? 'Nova solicitação' : 'Editar solicitação'">
+  @if (store.loading) {
+    <p>Carregando...</p>
+  } @else {
+    @if (store.errorMessage) {
+      <p-message severity="error" [text]="store.errorMessage" styleClass="mb-3 w-full" />
+    }
+
+    @if (store.successMessage) {
+      <p-message severity="success" [text]="store.successMessage" styleClass="mb-3 w-full" />
+    }
+
+    <nav class="wizard-stepper" aria-label="Passos da contratação">
+      @for (step of wizardSteps; track step.slug) {
+        @if (stepLink(step.slug); as link) {
+          @if (store.readOnly) {
+            <a
+              [routerLink]="link"
+              class="wizard-stepper__item"
+              [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+              [class.wizard-stepper__item--done]="step.index < activeIndex"
+            >
+              <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+              <span class="wizard-stepper__content">
+                <span class="wizard-stepper__label">{{ step.label }}</span>
+                @if (step.index === 0) {
+                  <span class="wizard-stepper__hint">Preencha as informações</span>
+                }
+              </span>
+            </a>
+          } @else {
+            <button
+              type="button"
+              class="wizard-stepper__item"
+              [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+              [class.wizard-stepper__item--done]="step.index < activeIndex"
+              [disabled]="store.saving"
+              (click)="store.navegarComSalvamento(step.slug)"
+            >
+              <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+              <span class="wizard-stepper__content">
+                <span class="wizard-stepper__label">{{ step.label }}</span>
+                @if (step.index === 0) {
+                  <span class="wizard-stepper__hint">Preencha as informações</span>
+                }
+              </span>
+            </button>
+          }
+        } @else {
+          <span
+            class="wizard-stepper__item wizard-stepper__item--disabled"
+            [class.wizard-stepper__item--active]="step.slug === store.currentSlug"
+          >
+            <span class="wizard-stepper__number">{{ step.index + 1 }}</span>
+            <span class="wizard-stepper__content">
+              <span class="wizard-stepper__label">{{ step.label }}</span>
+              @if (step.index === 0) {
+                <span class="wizard-stepper__hint">Preencha as informações</span>
+              }
+            </span>
+          </span>
+        }
+      }
+    </nav>
+
+    <div class="wizard-form" appDisableSpellcheck>
+      <router-outlet />
+    </div>
+
+    <div class="wizard-actions">
+      <a routerLink="/contratacao">Voltar à lista</a>
+
+      <div class="wizard-actions-right">
+        @if (!store.isFirstStep) {
+          <p-button
+            label="Anterior"
+            severity="secondary"
+            (onClick)="store.prevStep()"
+            [disabled]="store.saving || store.uploadingAnexo"
+          />
+        }
+
+        @if (!store.isLastStep) {
+          <div class="wizard-next-btn">
+            <img
+              class="wizard-next-btn__mascot"
+              src="assets/branding/mascote-portal-peek.png"
+              alt=""
+              aria-hidden="true"
+              width="64"
+              height="64"
+            />
+            <p-button
+              label="Próximo"
+              (onClick)="store.nextStep()"
+              [loading]="store.saving"
+              [disabled]="store.uploadingAnexo"
+            />
+          </div>
+        }
+
+        @if (!store.readOnly) {
+          <p-button
+            label="Salvar rascunho"
+            severity="secondary"
+            (onClick)="store.salvarRascunho()"
+            [loading]="store.saving"
+            [disabled]="store.uploadingAnexo"
+          />
+
+          @if (store.isLastStep) {
+            <p-button
+              label="Finalizar contratação"
+              (onClick)="store.submeter()"
+              [loading]="store.saving"
+            />
+          }
+        }
+      </div>
+    </div>
+  }
+</p-card>

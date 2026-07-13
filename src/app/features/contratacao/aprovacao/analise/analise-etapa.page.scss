@@ -1,0 +1,23 @@
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.review-grid dt {
+  font-weight: 600;
+  margin: 0;
+}
+
+.review-grid dd {
+  margin: 0.15rem 0 0;
+}
+
+.review-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.analise-etapa h3 {
+  margin-top: 0;
+}

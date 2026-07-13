@@ -1,0 +1,184 @@
+<p-dialog
+  header="Cadastrar fornecedor"
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [breakpoints]="{ '960px': '92vw', '640px': '96vw' }"
+  [style]="{ width: '44rem', maxWidth: '100%' }"
+  styleClass="cadastrar-fornecedor-dialog"
+>
+  <p class="dialog-intro">
+    Preencha os dados para convidar o fornecedor a esta cotação. Campos com
+    <span class="required-mark">*</span> são obrigatórios — inclusive o responsável comercial.
+  </p>
+
+  @if (formError) {
+    <p-message severity="error" [text]="formError" styleClass="mb-3 w-full" />
+  }
+
+  <form [formGroup]="form" class="fornecedor-form" (ngSubmit)="salvar()" novalidate>
+    <section class="form-section" aria-labelledby="sec-identificacao">
+      <h3 id="sec-identificacao" class="form-section__title">
+        <i class="pi pi-building" aria-hidden="true"></i>
+        Identificação
+      </h3>
+
+      <div class="field" [class.field--invalid]="invalid('cnpj')">
+        <label for="fornecedor-cnpj">CNPJ <span class="required-mark">*</span></label>
+        <div class="field-input-row">
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-id-card" aria-hidden="true"></i>
+            <input
+              pInputText
+              id="fornecedor-cnpj"
+              formControlName="cnpj"
+              placeholder="00.000.000/0000-00"
+              inputmode="numeric"
+              autocomplete="off"
+              class="w-full"
+              [class.p-invalid]="invalid('cnpj')"
+              (input)="onCnpjInput($event)"
+            />
+          </span>
+          @if (buscandoCnpj) {
+            <p-progressSpinner
+              styleClass="cnpj-spinner"
+              strokeWidth="4"
+              [style]="{ width: '1.5rem', height: '1.5rem' }"
+              ariaLabel="Buscando CNPJ"
+            />
+          }
+        </div>
+        @if (invalid('cnpj')) {
+          <small class="field-error">{{ errorMessage('cnpj') }}</small>
+        } @else {
+          <small class="field-hint">Digite os 14 dígitos — buscamos no catálogo e histórico da empresa.</small>
+        }
+      </div>
+
+      @if (lookupMessage) {
+        <p-message [severity]="lookupSeverity" [text]="lookupMessage" styleClass="w-full mb-2" />
+      }
+
+      <div class="field" [class.field--invalid]="invalid('razao_social')">
+        <label for="fornecedor-razao">Razão social <span class="required-mark">*</span></label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-briefcase" aria-hidden="true"></i>
+          <input
+            pInputText
+            id="fornecedor-razao"
+            formControlName="razao_social"
+            placeholder="Nome legal da empresa"
+            class="w-full"
+            [class.p-invalid]="invalid('razao_social')"
+          />
+        </span>
+        @if (invalid('razao_social')) {
+          <small class="field-error">{{ errorMessage('razao_social') }}</small>
+        }
+      </div>
+    </section>
+
+    <p-divider />
+
+    <section class="form-section" aria-labelledby="sec-contato">
+      <h3 id="sec-contato" class="form-section__title">
+        <i class="pi pi-phone" aria-hidden="true"></i>
+        Contato
+      </h3>
+
+      <div class="form-grid">
+        <div class="field" [class.field--invalid]="invalid('telefone')">
+          <label for="fornecedor-telefone">Telefone</label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-mobile" aria-hidden="true"></i>
+            <input
+              pInputText
+              id="fornecedor-telefone"
+              formControlName="telefone"
+              placeholder="(00) 00000-0000"
+              inputmode="tel"
+              autocomplete="tel"
+              class="w-full"
+              [class.p-invalid]="invalid('telefone')"
+              (input)="onTelefoneInput($event)"
+            />
+          </span>
+          @if (invalid('telefone')) {
+            <small class="field-error">{{ errorMessage('telefone') }}</small>
+          }
+        </div>
+
+        <div class="field" [class.field--invalid]="invalid('email')">
+          <label for="fornecedor-email">E-mail</label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-envelope" aria-hidden="true"></i>
+            <input
+              pInputText
+              id="fornecedor-email"
+              formControlName="email"
+              type="email"
+              placeholder="contato@empresa.com.br"
+              autocomplete="email"
+              class="w-full"
+              [class.p-invalid]="invalid('email')"
+            />
+          </span>
+          @if (invalid('email')) {
+            <small class="field-error">{{ errorMessage('email') }}</small>
+          }
+        </div>
+      </div>
+    </section>
+
+    <p-divider />
+
+    <section class="form-section" aria-labelledby="sec-responsavel">
+      <h3 id="sec-responsavel" class="form-section__title">
+        <i class="pi pi-user" aria-hidden="true"></i>
+        Responsável comercial
+      </h3>
+
+      <div class="field" [class.field--invalid]="invalid('vendedor')">
+        <label for="fornecedor-vendedor">Vendedor / representante <span class="required-mark">*</span></label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-user-edit" aria-hidden="true"></i>
+          <input
+            pInputText
+            id="fornecedor-vendedor"
+            formControlName="vendedor"
+            placeholder="Nome do contato comercial"
+            class="w-full"
+            [class.p-invalid]="invalid('vendedor')"
+          />
+        </span>
+        @if (invalid('vendedor')) {
+          <small class="field-error">{{ errorMessage('vendedor') }}</small>
+        } @else {
+          <small class="field-hint">Obrigatório — quem representará o fornecedor nesta cotação.</small>
+        }
+      </div>
+    </section>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="salvando"
+        (onClick)="onVisibleChange(false)"
+      />
+      <p-button
+        label="Cadastrar fornecedor"
+        icon="pi pi-check"
+        [loading]="salvando"
+        [disabled]="form.invalid || salvando"
+        (onClick)="salvar()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
