@@ -1,0 +1,126 @@
+<p-dialog
+  [header]="titulo"
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [breakpoints]="{ '960px': '94vw', '640px': '98vw' }"
+  [style]="{ width: '44rem', maxWidth: '100%' }"
+>
+  <p class="dialog-intro">
+    Cadastre contatos do fornecedor para esta contratação (perfil Padrão ou Admin). Limite usual: 10 ativos.
+  </p>
+
+  @if (formError) {
+    <p-message severity="error" [text]="formError" styleClass="mb-3 w-full" />
+  }
+
+  @if (loading) {
+    <div class="dialog-loading">
+      <p-progressSpinner strokeWidth="4" [style]="{ width: '2rem', height: '2rem' }" />
+      <span>Carregando usuários…</span>
+    </div>
+  } @else {
+    <p-table
+      [value]="usuarios"
+      styleClass="p-datatable-gridlines vendor-list-table"
+      [paginator]="usuarios.length > 8"
+      [rows]="8"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Telefone</th>
+          <th>Perfil</th>
+          <th>Status</th>
+          @if (!readonly) {
+            <th style="width: 7rem"></th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.nome }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ formatarTelefone(item.telefone) }}</td>
+          <td>{{ labelPerfil(item.perfil) }}</td>
+          <td>
+            <p-tag
+              [value]="item.ativo ? 'Ativo' : 'Inativo'"
+              [severity]="item.ativo ? 'success' : 'secondary'"
+            />
+          </td>
+          @if (!readonly) {
+            <td>
+              @if (item.ativo) {
+                <p-button
+                  label="Inativar"
+                  icon="pi pi-user-minus"
+                  size="small"
+                  severity="danger"
+                  [text]="true"
+                  [loading]="inativandoUuid === item.uuid"
+                  [disabled]="!!inativandoUuid"
+                  (onClick)="inativar(item)"
+                />
+              }
+            </td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="readonly ? 5 : 6">Nenhum usuário cadastrado.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    @if (!readonly) {
+      <form class="usuario-form" [formGroup]="form" (ngSubmit)="cadastrar()" novalidate>
+        <h4 class="form-title">Cadastrar usuário</h4>
+        <div class="form-grid">
+          <div class="field">
+            <label for="usu-nome">Nome *</label>
+            <input pInputText id="usu-nome" formControlName="nome" class="w-full" />
+          </div>
+          <div class="field">
+            <label for="usu-email">E-mail *</label>
+            <input pInputText id="usu-email" formControlName="email" class="w-full" />
+          </div>
+          <div class="field">
+            <label for="usu-tel">Telefone</label>
+            <input
+              pInputText
+              id="usu-tel"
+              formControlName="telefone"
+              class="w-full"
+              (input)="onTelefoneInput($event)"
+            />
+          </div>
+          <div class="field">
+            <label for="usu-perfil">Perfil *</label>
+            <p-dropdown
+              inputId="usu-perfil"
+              formControlName="perfil"
+              [options]="perfis"
+              optionLabel="label"
+              optionValue="value"
+              styleClass="w-full"
+            />
+          </div>
+        </div>
+        <div class="form-actions">
+          <p-button
+            type="submit"
+            label="Cadastrar"
+            icon="pi pi-plus"
+            [loading]="salvando"
+            [disabled]="ativos.length >= 10"
+          />
+        </div>
+      </form>
+    }
+  }
+</p-dialog>

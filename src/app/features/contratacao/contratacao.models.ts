@@ -110,6 +110,23 @@ export interface ContratacaoListResponse {
   };
 }
 
+export type AberturaContratoStatus =
+  | 'nao_iniciada'
+  | 'aguardando_envio'
+  | 'enviado_pelo_fornecedor'
+  | 'em_ajuste'
+  | 'aceito';
+
+export type AberturaItemStatusAnalise = 'pendente' | 'sim' | 'nao' | 'na';
+
+export type AvaliacaoTecnicaStatus = 'rascunho' | 'aguardando_area' | 'concluida';
+
+export type FornecedorUsuarioPerfil = 'PADRAO' | 'ADMIN';
+
+export type PropostaApontamentoStatus = 'aberto' | 'respondido' | 'encerrado';
+
+export type PropostaApontamentoAutor = 'COMPRAS' | 'FORNECEDOR';
+
 export interface ContratacaoFornecedorListItem {
   uuid: string;
   cnpj: string;
@@ -119,11 +136,134 @@ export interface ContratacaoFornecedorListItem {
   vendedor: string | null;
   aceite: boolean;
   status_participacao: string;
+  proposta_inicial?: number | null;
+  proposta_equalizada?: number | null;
+  proposta_final?: number | null;
+  condicao_pagamento_dias?: number | null;
+  observacao_proposta?: string | null;
+  vencedor?: boolean;
+  abertura_contrato_status?: AberturaContratoStatus | string;
+  abertura_solicitada_em?: string | null;
+  abertura_enviada_em?: string | null;
+  abertura_confirmada_em?: string | null;
+  optante_simples?: boolean;
   created_at?: string;
 }
 
 export interface ContratacaoVendorListDetail extends Contratacao {
   fornecedores?: ContratacaoFornecedorListItem[];
+  fornecedor_vencedor_uuid?: string | null;
+}
+
+export interface SalvarPropostaPayload {
+  proposta_inicial?: number | null;
+  proposta_equalizada?: number | null;
+  proposta_final?: number | null;
+  condicao_pagamento_dias?: number | null;
+  observacao_proposta?: string | null;
+}
+
+export interface AvaliacaoTecnicaItem {
+  uuid: string;
+  codigo: string;
+  label: string;
+  peso_percentual: number;
+  nota: number | null;
+  observacao?: string | null;
+}
+
+export interface AvaliacaoTecnica {
+  uuid: string;
+  status: AvaliacaoTecnicaStatus | string;
+  fornecedor_vencedor_uuid?: string | null;
+  indice_percentual: number | null;
+  observacao?: string | null;
+  itens: AvaliacaoTecnicaItem[];
+}
+
+export interface SalvarAvaliacaoTecnicaPayload {
+  observacao?: string | null;
+  itens: Array<{
+    uuid: string;
+    nota: number | null;
+    observacao?: string | null;
+  }>;
+}
+
+export interface AberturaContratoItem {
+  uuid: string;
+  codigo: string;
+  label: string;
+  ordem: number;
+  obrigatorio: boolean;
+  condicional?: boolean;
+  condicao?: string | null;
+  controla_vencimento?: boolean;
+  validade_dias?: number | null;
+  parent_codigo?: string | null;
+  padrao?: boolean;
+  status_analise: AberturaItemStatusAnalise | string;
+  observacao_analise?: string | null;
+  vencimento?: string | null;
+  nome_arquivo?: string | null;
+}
+
+export interface AberturaContrato {
+  status: AberturaContratoStatus | string;
+  itens: AberturaContratoItem[];
+  total_obrigatorios?: number;
+  conformes?: number;
+}
+
+export interface AnalisarAberturaItemPayload {
+  status_analise: 'sim' | 'nao' | 'na';
+  observacao?: string | null;
+}
+
+export interface FornecedorUsuario {
+  uuid: string;
+  nome: string;
+  email: string;
+  telefone: string | null;
+  perfil: FornecedorUsuarioPerfil | string;
+  ativo: boolean;
+  created_at?: string;
+}
+
+export interface CadastrarFornecedorUsuarioPayload {
+  nome: string;
+  email: string;
+  telefone?: string | null;
+  perfil: FornecedorUsuarioPerfil;
+}
+
+export interface AtualizarFornecedorUsuarioPayload {
+  nome?: string;
+  email?: string;
+  telefone?: string | null;
+  perfil?: FornecedorUsuarioPerfil;
+}
+
+export interface PropostaApontamento {
+  uuid: string;
+  descricao: string;
+  status: PropostaApontamentoStatus | string;
+  autor_origem: PropostaApontamentoAutor | string;
+  resposta?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const ABERTURA_CONTRATO_STATUS_LABELS: Record<AberturaContratoStatus, string> = {
+  nao_iniciada: 'Não iniciada',
+  aguardando_envio: 'Aguardando envio',
+  enviado_pelo_fornecedor: 'Enviado pelo fornecedor',
+  em_ajuste: 'Em ajuste',
+  aceito: 'Documentação OK',
+};
+
+export function aberturaContratoStatusLabel(status: string): string {
+  return ABERTURA_CONTRATO_STATUS_LABELS[status as AberturaContratoStatus] ?? status;
 }
 
 export interface CadastrarFornecedorPayload {
@@ -132,17 +272,42 @@ export interface CadastrarFornecedorPayload {
   telefone?: string;
   email?: string;
   vendedor: string;
+  site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
 }
 
 export interface FornecedorBuscaResponse {
   encontrado: boolean;
-  origem?: SugestaoFornecedorOrigem;
+  origem?: SugestaoFornecedorOrigem | 'brasil_api';
   cnpj?: string;
   razao_social?: string;
   telefone?: string | null;
   email?: string | null;
+  vendedor?: string | null;
   cidade?: string | null;
   uf?: string | null;
+}
+
+export interface FornecedorEnrichmentResponse {
+  encontrado: boolean;
+  fonte: string;
+  cnpj?: string | null;
+  razao_social?: string | null;
+  telefone?: string | null;
+  email?: string | null;
+  vendedor?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  campos_preenchidos: string[];
+  aviso: string;
 }
 
 export type SugestaoFornecedorOrigem = 'historico_tenant' | 'catalogo_tenant' | 'ia_externa';
@@ -158,6 +323,10 @@ export interface SugestaoFornecedorItem {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
   motivo: string;
   ja_cadastrado: boolean;
 }

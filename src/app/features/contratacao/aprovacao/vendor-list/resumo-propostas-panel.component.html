@@ -1,0 +1,149 @@
+<section class="vl-section" aria-labelledby="propostas-titulo">
+  <div class="vl-section__header">
+    <div>
+      <p class="section-step">Passo 3 · Cotação</p>
+      <h3 id="propostas-titulo">Resumo das propostas</h3>
+      <p class="vl-section__hint">
+        Informe valores inicial, equalizado e final, condição de pagamento e defina o vencedor.
+      </p>
+    </div>
+  </div>
+
+  @if (rows.length === 0) {
+    <p class="vl-section__empty">Cadastre fornecedores no passo 2 para registrar propostas.</p>
+  } @else {
+    <p-table
+      [value]="rows"
+      styleClass="p-datatable-gridlines vendor-list-table"
+      [tableStyle]="{ 'min-width': '64rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Fornecedor</th>
+          <th>Proposta inicial</th>
+          <th>Equalizada</th>
+          <th>Proposta final</th>
+          <th>Economia (R$)</th>
+          <th>Economia (%)</th>
+          <th>Pgto (dias)</th>
+          <th>Vencedor</th>
+          <th>Observação</th>
+          @if (!readonly) {
+            <th style="width: 7rem"></th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr [class.row-vencedor]="row.vencedor">
+          <td>
+            <div class="fornecedor-cell">
+              @if (row.vencedor) {
+                <p-tag value="Vencedor" severity="success" icon="pi pi-trophy" />
+              }
+              <span>{{ row.razao_social }}</span>
+            </div>
+          </td>
+          <td>
+            @if (readonly) {
+              {{ formatCurrency(row.proposta_inicial) }}
+            } @else {
+              <p-inputNumber
+                [(ngModel)]="row.proposta_inicial"
+                mode="currency"
+                currency="BRL"
+                locale="pt-BR"
+                [min]="0"
+                inputStyleClass="w-full"
+              />
+            }
+          </td>
+          <td>
+            @if (readonly) {
+              {{ formatCurrency(row.proposta_equalizada) }}
+            } @else {
+              <p-inputNumber
+                [(ngModel)]="row.proposta_equalizada"
+                mode="currency"
+                currency="BRL"
+                locale="pt-BR"
+                [min]="0"
+                inputStyleClass="w-full"
+              />
+            }
+          </td>
+          <td>
+            @if (readonly) {
+              {{ formatCurrency(row.proposta_final) }}
+            } @else {
+              <p-inputNumber
+                [(ngModel)]="row.proposta_final"
+                mode="currency"
+                currency="BRL"
+                locale="pt-BR"
+                [min]="0"
+                inputStyleClass="w-full"
+              />
+            }
+          </td>
+          <td>{{ formatCurrency(economiaValor(row)) }}</td>
+          <td>{{ formatPercent(economiaPercentual(row)) }}</td>
+          <td>
+            @if (readonly) {
+              {{ row.condicao_pagamento_dias ?? '—' }}
+            } @else {
+              <p-inputNumber
+                [(ngModel)]="row.condicao_pagamento_dias"
+                [min]="0"
+                [max]="365"
+                [useGrouping]="false"
+                inputStyleClass="w-full"
+              />
+            }
+          </td>
+          <td>
+            @if (readonly) {
+              @if (row.vencedor) {
+                <p-tag value="Sim" severity="success" />
+              } @else {
+                <span>—</span>
+              }
+            } @else {
+              <p-radioButton
+                name="vencedor"
+                [value]="row.uuid"
+                [(ngModel)]="vencedorUuid"
+                [disabled]="definindoVencedor"
+                (ngModelChange)="onSelecionarVencedor($event)"
+              />
+            }
+          </td>
+          <td>
+            @if (readonly) {
+              {{ row.observacao_proposta || '—' }}
+            } @else {
+              <input
+                pInputText
+                class="w-full"
+                [(ngModel)]="row.observacao_proposta"
+                maxlength="500"
+                placeholder="Opcional"
+              />
+            }
+          </td>
+          @if (!readonly) {
+            <td>
+              <p-button
+                label="Salvar"
+                icon="pi pi-save"
+                size="small"
+                [loading]="row.salvando"
+                [disabled]="definindoVencedor"
+                (onClick)="salvarProposta(row)"
+              />
+            </td>
+          }
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</section>

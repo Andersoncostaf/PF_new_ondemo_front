@@ -7,7 +7,8 @@
         <p class="vendor-list-subtitle">{{ contratacao?.titulo }}</p>
       }
       <p class="vendor-list-lead">
-        Monte a lista, confirme o aceite de participação e exclua convidados que não seguirão na cotação.
+        Monte a lista, registre propostas da cotação, conduza a avaliação técnica e a documentação
+        da abertura de contrato até aprovar o fornecedor vencedor.
       </p>
     </div>
   </div>
@@ -70,6 +71,7 @@
           label="Gerar sugestões"
           icon="pi pi-sparkles"
           [loading]="gerandoSugestoes"
+          [disabled]="workflowReadonly"
           (onClick)="gerarSugestoes()"
         />
       </div>
@@ -103,6 +105,12 @@
               <h4 class="sugestao-card__nome">{{ item.razao_social }}</h4>
               <p class="sugestao-card__meta">CNPJ: {{ formatarCnpj(item.cnpj) }}</p>
               <p class="sugestao-card__meta">{{ formatarLocalidade(item) }}</p>
+              @if (item.telefone) {
+                <p class="sugestao-card__meta">Tel.: {{ formatarTelefone(item.telefone) }}</p>
+              }
+              @if (item.email) {
+                <p class="sugestao-card__meta">{{ item.email }}</p>
+              }
               <p class="sugestao-card__motivo">{{ item.motivo }}</p>
               @if (item.ja_cadastrado) {
                 <p-tag value="Já cadastrado" severity="secondary" />
@@ -111,6 +119,7 @@
                   label="Usar este"
                   icon="pi pi-check"
                   size="small"
+                  [disabled]="workflowReadonly"
                   (onClick)="usarSugestao(item)"
                 />
               }
@@ -126,12 +135,13 @@
           <p class="section-step">Passo 2 · Lista convidada</p>
           <h3 id="fornecedores-titulo">Fornecedores desta contratação</h3>
           <p class="vendor-list-fornecedores__hint">
-            Cadastre o fornecedor, registre o aceite de participação e exclua quem não permanecerá na cotação.
+            Cadastre o fornecedor, registre o aceite e use as ações de documentação, usuários e apontamentos.
           </p>
         </div>
         <p-button
           label="Cadastrar fornecedor"
           icon="pi pi-plus"
+          [disabled]="workflowReadonly"
           (onClick)="abrirDialog()"
         />
       </div>
@@ -141,6 +151,7 @@
         styleClass="p-datatable-gridlines vendor-list-table"
         [paginator]="fornecedores.length > 10"
         [rows]="10"
+        [tableStyle]="{ 'min-width': '56rem' }"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -148,21 +159,29 @@
             <th>Razão social</th>
             <th>Telefone</th>
             <th>Vendedor</th>
-            <th style="min-width: 12rem">Participação</th>
-            <th style="width: 9rem">Ações</th>
+            <th style="min-width: 10rem">Participação</th>
+            <th style="min-width: 8rem">Documentação</th>
+            <th style="min-width: 16rem">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-item>
           <tr>
             <td>{{ formatarCnpj(item.cnpj) }}</td>
-            <td>{{ item.razao_social }}</td>
+            <td>
+              <div class="fornecedor-nome-cell">
+                @if (item.vencedor) {
+                  <p-tag value="Vencedor" severity="success" icon="pi pi-trophy" />
+                }
+                <span>{{ item.razao_social }}</span>
+              </div>
+            </td>
             <td>{{ formatarTelefone(item.telefone) }}</td>
             <td>{{ item.vendedor || '—' }}</td>
             <td>
               <div class="aceite-cell">
                 @if (item.aceite) {
                   <p-tag value="Aceitou participar" severity="success" icon="pi pi-check" />
-                } @else {
+                } @else if (!workflowReadonly) {
                   <p-button
                     label="Registrar aceite"
                     icon="pi pi-check-circle"
@@ -173,31 +192,103 @@
                     [disabled]="!!aceiteEmAndamento || !!exclusaoEmAndamento"
                     (onClick)="confirmarAceite(item)"
                   />
+                } @else {
+                  <p-tag value="Sem aceite" severity="secondary" />
                 }
               </div>
             </td>
             <td>
-              <p-button
-                label="Excluir"
-                icon="pi pi-trash"
-                severity="danger"
-                size="small"
-                [text]="true"
-                [loading]="exclusaoEmAndamento === item.uuid"
-                [disabled]="!!exclusaoEmAndamento || !!aceiteEmAndamento"
-                (onClick)="confirmarExclusao(item)"
+              <p-tag
+                [value]="aberturaStatusLabel(item.abertura_contrato_status || 'nao_iniciada')"
+                severity="info"
               />
+            </td>
+            <td>
+              <div class="acoes-cell">
+                <p-button
+                  label="Documentação"
+                  icon="pi pi-folder-open"
+                  size="small"
+                  [text]="true"
+                  (onClick)="abrirDocumentacao(item)"
+                />
+                <p-button
+                  label="Usuários"
+                  icon="pi pi-users"
+                  size="small"
+                  [text]="true"
+                  (onClick)="abrirUsuarios(item)"
+                />
+                <p-button
+                  label="Apontamentos"
+                  icon="pi pi-comments"
+                  size="small"
+                  [text]="true"
+                  (onClick)="abrirApontamentos(item)"
+                />
+                @if (!workflowReadonly) {
+                  <p-button
+                    label="Excluir"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    size="small"
+                    [text]="true"
+                    [loading]="exclusaoEmAndamento === item.uuid"
+                    [disabled]="!!exclusaoEmAndamento || !!aceiteEmAndamento"
+                    (onClick)="confirmarExclusao(item)"
+                  />
+                }
+              </div>
             </td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="6">
+            <td colspan="7">
               Nenhum fornecedor cadastrado. Use “Cadastrar fornecedor” ou uma sugestão acima.
             </td>
           </tr>
         </ng-template>
       </p-table>
+    </section>
+
+    <app-resumo-propostas-panel
+      [contratacaoUuid]="uuid"
+      [fornecedores]="fornecedores"
+      [readonly]="workflowReadonly"
+      (changed)="onPropostasChanged()"
+      (error)="onPanelError($event)"
+      (success)="onPanelSuccess($event)"
+    />
+
+    <app-avaliacao-tecnica-panel
+      [contratacaoUuid]="uuid"
+      [temVencedor]="temVencedor"
+      [readonly]="workflowReadonly"
+      [reloadToken]="avaliacaoReloadToken"
+      (changed)="onAvaliacaoChanged($event)"
+      (error)="onPanelError($event)"
+      (success)="onPanelSuccess($event)"
+    />
+
+    <section class="vendor-list-aprovacao" aria-labelledby="aprovacao-titulo">
+      <div class="vendor-list-aprovacao__header">
+        <div>
+          <p class="section-step">Ação final</p>
+          <h3 id="aprovacao-titulo">Aprovar seleção / definir vencedor</h3>
+          <p class="vendor-list-aprovacao__hint">
+            Exige um vencedor com proposta final informada. Se houver avaliação técnica, ela precisa estar concluída.
+          </p>
+        </div>
+        <p-button
+          label="Aprovar seleção / definir vencedor"
+          icon="pi pi-verified"
+          severity="success"
+          [loading]="aprovando"
+          [disabled]="!podeAprovarVendorList"
+          (onClick)="confirmarAprovarVendorList()"
+        />
+      </div>
     </section>
   }
 </p-card>
@@ -206,8 +297,41 @@
   [contratacaoUuid]="uuid"
   [cnpjsCadastrados]="cnpjsCadastrados"
   [prefill]="prefillFornecedor"
-  [(visible)]="dialogVisible"
+  [enriquecerAoAbrir]="enriquecerAoAbrir"
+  [visible]="dialogVisible"
+  (visibleChange)="onDialogVisibleChange($event)"
   (saved)="onFornecedorSalvo($event)"
+/>
+
+<app-abertura-contrato-dialog
+  [contratacaoUuid]="uuid"
+  [fornecedor]="fornecedorDialog"
+  [visible]="aberturaDialogVisible"
+  [readonly]="posCotacaoReadonly"
+  (visibleChange)="aberturaDialogVisible = $event"
+  (changed)="onAberturaChanged()"
+  (error)="onPanelError($event)"
+  (success)="onPanelSuccess($event)"
+/>
+
+<app-fornecedor-usuarios-dialog
+  [contratacaoUuid]="uuid"
+  [fornecedor]="fornecedorDialog"
+  [visible]="usuariosDialogVisible"
+  [readonly]="posCotacaoReadonly"
+  (visibleChange)="usuariosDialogVisible = $event"
+  (error)="onPanelError($event)"
+  (success)="onPanelSuccess($event)"
+/>
+
+<app-proposta-apontamentos-dialog
+  [contratacaoUuid]="uuid"
+  [fornecedor]="fornecedorDialog"
+  [visible]="apontamentosDialogVisible"
+  [readonly]="posCotacaoReadonly"
+  (visibleChange)="apontamentosDialogVisible = $event"
+  (error)="onPanelError($event)"
+  (success)="onPanelSuccess($event)"
 />
 
 <p-confirmDialog />
