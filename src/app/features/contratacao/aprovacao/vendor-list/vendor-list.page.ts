@@ -11,13 +11,20 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ConfirmationService } from 'primeng/api';
 
+import { AberturaContratoDialogComponent } from './abertura-contrato-dialog.component';
+import { AvaliacaoTecnicaPanelComponent } from './avaliacao-tecnica-panel.component';
 import { CadastrarFornecedorDialogComponent } from './cadastrar-fornecedor-dialog.component';
 import { ContratacaoVendorListApiService } from './contratacao-vendor-list-api.service';
+import { FornecedorUsuariosDialogComponent } from './fornecedor-usuarios-dialog.component';
+import { PropostaApontamentosDialogComponent } from './proposta-apontamentos-dialog.component';
+import { ResumoPropostasPanelComponent } from './resumo-propostas-panel.component';
 import {
+  AvaliacaoTecnica,
   CadastrarFornecedorPayload,
   ContratacaoFornecedorListItem,
   ContratacaoVendorListDetail,
   SugestaoFornecedorItem,
+  aberturaContratoStatusLabel,
 } from '../../contratacao.models';
 import { contratacaoStatusLabel, contratacaoStatusSeverity } from '../../contratacao-status.utils';
 import { formatCnpj, formatTelefone } from '../../../../core/utils/br/br-document.util';
@@ -35,7 +42,12 @@ import { formatCnpj, formatTelefone } from '../../../../core/utils/br/br-documen
     SkeletonModule,
     TableModule,
     TagModule,
+    AberturaContratoDialogComponent,
+    AvaliacaoTecnicaPanelComponent,
     CadastrarFornecedorDialogComponent,
+    FornecedorUsuariosDialogComponent,
+    PropostaApontamentosDialogComponent,
+    ResumoPropostasPanelComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './vendor-list.page.html',
@@ -53,6 +65,7 @@ export class VendorListPageComponent implements OnInit {
   enriquecerAoAbrir = false;
   aceiteEmAndamento: string | null = null;
   exclusaoEmAndamento: string | null = null;
+  aprovando = false;
 
   gerandoSugestoes = false;
   sugestoes: SugestaoFornecedorItem[] = [];
@@ -60,8 +73,17 @@ export class VendorListPageComponent implements OnInit {
   sugestoesVazio = false;
   sugestoesGeradas = false;
 
+  avaliacao: AvaliacaoTecnica | null = null;
+  avaliacaoReloadToken = 0;
+
+  fornecedorDialog: ContratacaoFornecedorListItem | null = null;
+  aberturaDialogVisible = false;
+  usuariosDialogVisible = false;
+  apontamentosDialogVisible = false;
+
   readonly statusLabel = contratacaoStatusLabel;
   readonly statusSeverity = contratacaoStatusSeverity;
+  readonly aberturaStatusLabel = aberturaContratoStatusLabel;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -81,6 +103,44 @@ export class VendorListPageComponent implements OnInit {
     return this.fornecedores.map((f) => f.cnpj);
   }
 
+  get temVencedor(): boolean {
+    return this.fornecedores.some((f) => f.vencedor);
+  }
+
+  get vencedor(): ContratacaoFornecedorListItem | null {
+    return this.fornecedores.find((f) => f.vencedor) ?? null;
+  }
+
+  get workflowReadonly(): boolean {
+    return this.contratacao?.status === 'vencedor_definido';
+  }
+
+  /** Documentação, usuários e apontamentos seguem editáveis após o vencedor. */
+  get posCotacaoReadonly(): boolean {
+    return false;
+  }
+
+  get podeAprovarVendorList(): boolean {
+    if (!this.contratacao || this.workflowReadonly || this.aprovando) {
+      return false;
+    }
+    if (this.contratacao.status !== 'em_vendor_list') {
+      return false;
+    }
+    const vencedores = this.fornecedores.filter((f) => f.vencedor);
+    if (vencedores.length !== 1) {
+      return false;
+    }
+    const propostaFinal = Number(vencedores[0].proposta_final ?? 0);
+    if (!(propostaFinal > 0)) {
+      return false;
+    }
+    if (this.avaliacao && this.avaliacao.status !== 'concluida') {
+      return false;
+    }
+    return true;
+  }
+
   load(): void {
     this.loading = true;
     this.errorMessage = '';
@@ -89,6 +149,7 @@ export class VendorListPageComponent implements OnInit {
         this.contratacao = data;
         this.fornecedores = data.fornecedores ?? [];
         this.loading = false;
+        this.avaliacaoReloadToken += 1;
       },
       error: (err) => {
         this.loading = false;
@@ -194,8 +255,62 @@ export class VendorListPageComponent implements OnInit {
     );
   }
 
+  onPanelError(message: string): void {
+    this.errorMessage = message;
+    this.successMessage = '';
+  }
+
+  onPanelSuccess(message: string): void {
+    this.successMessage = message;
+    this.errorMessage = '';
+  }
+
+  onPropostasChanged(): void {
+    this.load();
+  }
+
+  onAvaliacaoChanged(avaliacao: AvaliacaoTecnica | null): void {
+    this.avaliacao = avaliacao;
+  }
+
+  abrirDocumentacao(fornecedor: ContratacaoFornecedorListItem): void {
+    this.fornecedorDialog = fornecedor;
+    this.aberturaDialogVisible = true;
+  }
+
+  abrirUsuarios(fornecedor: ContratacaoFornecedorListItem): void {
+    this.fornecedorDialog = fornecedor;
+    this.usuariosDialogVisible = true;
+  }
+
+  abrirApontamentos(fornecedor: ContratacaoFornecedorListItem): void {
+    this.fornecedorDialog = fornecedor;
+    this.apontamentosDialogVisible = true;
+  }
+
+  onAberturaChanged(): void {
+    this.load();
+  }
+
+  confirmarAprovarVendorList(): void {
+    if (!this.podeAprovarVendorList) {
+      return;
+    }
+
+    const nome = this.vencedor?.razao_social ?? 'o fornecedor vencedor';
+    this.confirmation.confirm({
+      header: 'Aprovar seleção de fornecedores',
+      message: `Confirmar a aprovação da Vendor List com ${nome} como vencedor? Os demais serão desqualificados.`,
+      icon: 'pi pi-check-circle',
+      acceptLabel: 'Aprovar seleção',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-success',
+      accept: () => this.aprovarVendorList(),
+    });
+  }
+
   confirmarAceite(fornecedor: ContratacaoFornecedorListItem): void {
-    if (fornecedor.aceite || this.aceiteEmAndamento) {
+    if (fornecedor.aceite || this.aceiteEmAndamento || this.workflowReadonly) {
       return;
     }
 
@@ -211,7 +326,7 @@ export class VendorListPageComponent implements OnInit {
   }
 
   confirmarExclusao(fornecedor: ContratacaoFornecedorListItem): void {
-    if (this.exclusaoEmAndamento) {
+    if (this.exclusaoEmAndamento || this.workflowReadonly) {
       return;
     }
 
@@ -236,6 +351,26 @@ export class VendorListPageComponent implements OnInit {
   formatarTelefone(value?: string | null): string {
     if (!value) return '—';
     return formatTelefone(value);
+  }
+
+  private aprovarVendorList(): void {
+    this.aprovando = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.api.aprovarVendorList(this.uuid).subscribe({
+      next: (data) => {
+        this.aprovando = false;
+        this.contratacao = data;
+        this.fornecedores = data.fornecedores ?? this.fornecedores;
+        this.successMessage = 'Seleção aprovada. Vencedor definido.';
+      },
+      error: (err) => {
+        this.aprovando = false;
+        this.errorMessage =
+          (err.error as { message?: string })?.message ??
+          'Não foi possível aprovar a seleção de fornecedores.';
+      },
+    });
   }
 
   private registrarAceite(fornecedor: ContratacaoFornecedorListItem): void {

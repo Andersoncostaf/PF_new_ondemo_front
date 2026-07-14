@@ -4,12 +4,22 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../../../environments/environment';
 import {
+  AberturaContrato,
+  AberturaContratoItem,
+  AnalisarAberturaItemPayload,
+  AtualizarFornecedorUsuarioPayload,
+  AvaliacaoTecnica,
   CadastrarFornecedorPayload,
+  CadastrarFornecedorUsuarioPayload,
   ContratacaoFornecedorListItem,
   ContratacaoVendorListDetail,
   FornecedorBuscaResponse,
   FornecedorEnrichmentResponse,
+  FornecedorUsuario,
   GerarSugestoesFornecedorPayload,
+  PropostaApontamento,
+  SalvarAvaliacaoTecnicaPayload,
+  SalvarPropostaPayload,
   SugestoesFornecedorResponse,
 } from '../../contratacao.models';
 
@@ -78,6 +88,179 @@ export class ContratacaoVendorListApiService {
     return this.http.post<SugestoesFornecedorResponse>(
       `${this.baseUrl}/${uuid}/sugestoes-fornecedores`,
       payload ?? {},
+    );
+  }
+
+  salvarProposta(
+    uuid: string,
+    fornecedorUuid: string,
+    payload: SalvarPropostaPayload,
+  ): Observable<ContratacaoFornecedorListItem> {
+    return this.http.put<ContratacaoFornecedorListItem>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/proposta`,
+      payload,
+    );
+  }
+
+  definirVencedor(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<ContratacaoVendorListDetail | ContratacaoFornecedorListItem[]> {
+    return this.http.put<ContratacaoVendorListDetail | ContratacaoFornecedorListItem[]>(
+      `${this.baseUrl}/${uuid}/fornecedor-vencedor`,
+      { fornecedor_uuid: fornecedorUuid },
+    );
+  }
+
+  aprovarVendorList(uuid: string): Observable<ContratacaoVendorListDetail> {
+    return this.http.post<ContratacaoVendorListDetail>(
+      `${this.baseUrl}/${uuid}/aprovar-vendor-list`,
+      {},
+    );
+  }
+
+  obterAvaliacaoTecnica(uuid: string): Observable<AvaliacaoTecnica> {
+    return this.http.get<AvaliacaoTecnica>(`${this.baseUrl}/${uuid}/avaliacao-tecnica`);
+  }
+
+  salvarAvaliacaoTecnica(
+    uuid: string,
+    payload: SalvarAvaliacaoTecnicaPayload,
+  ): Observable<AvaliacaoTecnica> {
+    return this.http.put<AvaliacaoTecnica>(`${this.baseUrl}/${uuid}/avaliacao-tecnica`, payload);
+  }
+
+  concluirAvaliacaoTecnica(uuid: string): Observable<AvaliacaoTecnica> {
+    return this.http.post<AvaliacaoTecnica>(
+      `${this.baseUrl}/${uuid}/avaliacao-tecnica/concluir`,
+      {},
+    );
+  }
+
+  obterAberturaContrato(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<AberturaContrato> {
+    return this.http.get<AberturaContrato>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato`,
+    );
+  }
+
+  solicitarAberturaContrato(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<AberturaContrato> {
+    return this.http.post<AberturaContrato>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato/solicitar`,
+      {},
+    );
+  }
+
+  analisarItemAbertura(
+    uuid: string,
+    fornecedorUuid: string,
+    itemUuid: string,
+    payload: AnalisarAberturaItemPayload,
+  ): Observable<AberturaContrato | AberturaContratoItem> {
+    return this.http.post<AberturaContrato | AberturaContratoItem>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato/itens/${itemUuid}/analisar`,
+      payload,
+    );
+  }
+
+  confirmarAberturaContrato(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<AberturaContrato | ContratacaoFornecedorListItem> {
+    return this.http.post<AberturaContrato | ContratacaoFornecedorListItem>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato/confirmar`,
+      {},
+    );
+  }
+
+  listarUsuariosFornecedor(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<{ data: FornecedorUsuario[] }> {
+    return this.http.get<{ data: FornecedorUsuario[] }>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/usuarios`,
+    );
+  }
+
+  cadastrarUsuarioFornecedor(
+    uuid: string,
+    fornecedorUuid: string,
+    payload: CadastrarFornecedorUsuarioPayload,
+  ): Observable<FornecedorUsuario> {
+    return this.http.post<FornecedorUsuario>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/usuarios`,
+      payload,
+    );
+  }
+
+  atualizarUsuarioFornecedor(
+    uuid: string,
+    fornecedorUuid: string,
+    usuarioUuid: string,
+    payload: AtualizarFornecedorUsuarioPayload,
+  ): Observable<FornecedorUsuario> {
+    return this.http.patch<FornecedorUsuario>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/usuarios/${usuarioUuid}`,
+      payload,
+    );
+  }
+
+  inativarUsuarioFornecedor(
+    uuid: string,
+    fornecedorUuid: string,
+    usuarioUuid: string,
+  ): Observable<FornecedorUsuario> {
+    return this.http.post<FornecedorUsuario>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/usuarios/${usuarioUuid}/inativar`,
+      {},
+    );
+  }
+
+  listarApontamentosProposta(
+    uuid: string,
+    fornecedorUuid: string,
+  ): Observable<{ data: PropostaApontamento[] }> {
+    return this.http.get<{ data: PropostaApontamento[] }>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/proposta/apontamentos`,
+    );
+  }
+
+  criarApontamentoProposta(
+    uuid: string,
+    fornecedorUuid: string,
+    payload: { descricao: string },
+  ): Observable<PropostaApontamento> {
+    return this.http.post<PropostaApontamento>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/proposta/apontamentos`,
+      payload,
+    );
+  }
+
+  responderApontamentoProposta(
+    uuid: string,
+    fornecedorUuid: string,
+    apontamentoUuid: string,
+    payload: { resposta: string },
+  ): Observable<PropostaApontamento> {
+    return this.http.post<PropostaApontamento>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/proposta/apontamentos/${apontamentoUuid}/responder`,
+      payload,
+    );
+  }
+
+  encerrarApontamentoProposta(
+    uuid: string,
+    fornecedorUuid: string,
+    apontamentoUuid: string,
+  ): Observable<PropostaApontamento> {
+    return this.http.post<PropostaApontamento>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/proposta/apontamentos/${apontamentoUuid}/encerrar`,
+      {},
     );
   }
 }

@@ -1,0 +1,123 @@
+<p-dialog
+  [header]="titulo"
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [breakpoints]="{ '960px': '94vw', '640px': '98vw' }"
+  [style]="{ width: '52rem', maxWidth: '100%' }"
+  styleClass="abertura-contrato-dialog"
+>
+  <p class="dialog-intro">
+    Solicite a abertura, analise o checklist documental (SIM / NÃO / N/A) e confirme quando estiver ok.
+  </p>
+
+  @if (formError) {
+    <p-message severity="error" [text]="formError" styleClass="mb-3 w-full" />
+  }
+
+  @if (loading) {
+    <div class="dialog-loading">
+      <p-progressSpinner strokeWidth="4" [style]="{ width: '2rem', height: '2rem' }" />
+      <span>Carregando documentação…</span>
+    </div>
+  } @else {
+    <div class="status-row">
+      <span>Status</span>
+      <p-tag
+        [value]="statusLabel(abertura?.status ?? fornecedor?.abertura_contrato_status ?? 'nao_iniciada')"
+        severity="info"
+      />
+    </div>
+
+    @if (podeSolicitar) {
+      <div class="dialog-actions-top">
+        <p-button
+          label="Solicitar abertura"
+          icon="pi pi-send"
+          [loading]="solicitando"
+          (onClick)="solicitar()"
+        />
+      </div>
+    }
+
+    @if (!abertura?.itens?.length) {
+      <p class="dialog-empty">
+        Nenhum item de checklist ainda. Use “Solicitar abertura” para gerar a documentação padrão.
+      </p>
+    } @else {
+      <p-table
+        [value]="abertura!.itens"
+        styleClass="p-datatable-gridlines vendor-list-table"
+        [tableStyle]="{ 'min-width': '40rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Item</th>
+            <th style="width: 6rem">Obrig.</th>
+            <th style="width: 7rem">Análise</th>
+            <th>Observação</th>
+            @if (!readonly) {
+              <th style="width: 12rem">Registrar</th>
+            }
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>
+              <strong>{{ item.codigo }}</strong>
+              <div>{{ item.label }}</div>
+            </td>
+            <td>{{ item.obrigatorio ? 'Sim' : 'Não' }}</td>
+            <td>
+              <p-tag
+                [value]="labelAnalise(item.status_analise)"
+                [severity]="severityAnalise(item.status_analise)"
+              />
+            </td>
+            <td>
+              @if (readonly) {
+                {{ item.observacao_analise || '—' }}
+              } @else {
+                <textarea
+                  pInputTextarea
+                  rows="2"
+                  class="w-full"
+                  [(ngModel)]="observacoes[item.uuid]"
+                  maxlength="500"
+                ></textarea>
+              }
+            </td>
+            @if (!readonly) {
+              <td>
+                <p-selectButton
+                  [options]="opcoesAnalise"
+                  optionLabel="label"
+                  optionValue="value"
+                  [allowEmpty]="false"
+                  [ngModel]="item.status_analise === 'pendente' ? null : item.status_analise"
+                  [disabled]="!!analisandoUuid || abertura?.status === 'aceito'"
+                  (onChange)="analisar(item, $event.value)"
+                />
+              </td>
+            }
+          </tr>
+        </ng-template>
+      </p-table>
+
+      @if (!readonly && abertura?.status !== 'aceito') {
+        <div class="dialog-actions-bottom">
+          <p-button
+            label="Confirmar documentação OK"
+            icon="pi pi-check-circle"
+            severity="success"
+            [loading]="confirmando"
+            [disabled]="!podeConfirmar || !!analisandoUuid"
+            (onClick)="confirmar()"
+          />
+        </div>
+      }
+    }
+  }
+</p-dialog>
