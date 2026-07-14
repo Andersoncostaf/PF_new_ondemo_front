@@ -42,19 +42,21 @@
               (input)="onCnpjInput($event)"
             />
           </span>
-          @if (buscandoCnpj) {
+          @if (buscandoCnpj || enriquecendo) {
             <p-progressSpinner
               styleClass="cnpj-spinner"
               strokeWidth="4"
               [style]="{ width: '1.5rem', height: '1.5rem' }"
-              ariaLabel="Buscando CNPJ"
+              [ariaLabel]="enriquecendo ? 'Buscando dados públicos' : 'Buscando CNPJ'"
             />
           }
         </div>
         @if (invalid('cnpj')) {
           <small class="field-error">{{ errorMessage('cnpj') }}</small>
         } @else {
-          <small class="field-hint">Digite os 14 dígitos — buscamos no catálogo e histórico da empresa.</small>
+          <small class="field-hint">
+            Digite os 14 dígitos — buscamos no catálogo, histórico e dados públicos do CNPJ.
+          </small>
         }
       </div>
 
@@ -133,6 +135,43 @@
       </div>
     </section>
 
+    @if (temRedes) {
+      <p-divider />
+      <section class="form-section" aria-labelledby="sec-presenca">
+        <h3 id="sec-presenca" class="form-section__title">
+          <i class="pi pi-globe" aria-hidden="true"></i>
+          Presença digital encontrada
+        </h3>
+        <ul class="redes-lista">
+          @if (redes.site) {
+            <li>
+              <i class="pi pi-link" aria-hidden="true"></i>
+              <a [href]="redes.site" target="_blank" rel="noopener noreferrer">Site</a>
+            </li>
+          }
+          @if (redes.instagram) {
+            <li>
+              <i class="pi pi-instagram" aria-hidden="true"></i>
+              <a [href]="redes.instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
+            </li>
+          }
+          @if (redes.linkedin) {
+            <li>
+              <i class="pi pi-linkedin" aria-hidden="true"></i>
+              <a [href]="redes.linkedin" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            </li>
+          }
+          @if (redes.facebook) {
+            <li>
+              <i class="pi pi-facebook" aria-hidden="true"></i>
+              <a [href]="redes.facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
+            </li>
+          }
+        </ul>
+        <small class="field-hint">Links públicos para conferência — não são salvos no cadastro.</small>
+      </section>
+    }
+
     <p-divider />
 
     <section class="form-section" aria-labelledby="sec-responsavel">
@@ -176,7 +215,7 @@
         label="Cadastrar fornecedor"
         icon="pi pi-check"
         [loading]="salvando"
-        [disabled]="form.invalid || salvando"
+        [disabled]="form.invalid || salvando || enriquecendo"
         (onClick)="salvar()"
       />
     </div>

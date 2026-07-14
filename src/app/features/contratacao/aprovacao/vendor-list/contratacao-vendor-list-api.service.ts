@@ -8,6 +8,7 @@ import {
   ContratacaoFornecedorListItem,
   ContratacaoVendorListDetail,
   FornecedorBuscaResponse,
+  FornecedorEnrichmentResponse,
   GerarSugestoesFornecedorPayload,
   SugestoesFornecedorResponse,
 } from '../../contratacao.models';
@@ -52,6 +53,16 @@ export class ContratacaoVendorListApiService {
     return this.http.get<FornecedorBuscaResponse>(`${this.baseUrl}/${uuid}/fornecedores/buscar`, {
       params: { cnpj },
     });
+  }
+
+  enriquecerFornecedor(
+    uuid: string,
+    payload: Partial<CadastrarFornecedorPayload> & { cidade?: string | null; uf?: string | null },
+  ): Observable<FornecedorEnrichmentResponse> {
+    return this.http.post<FornecedorEnrichmentResponse>(
+      `${this.baseUrl}/${uuid}/fornecedores/enriquecer`,
+      payload,
+    );
   }
 
   removerFornecedor(uuid: string, fornecedorUuid: string): Observable<{ message: string }> {

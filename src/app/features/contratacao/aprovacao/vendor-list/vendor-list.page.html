@@ -103,6 +103,12 @@
               <h4 class="sugestao-card__nome">{{ item.razao_social }}</h4>
               <p class="sugestao-card__meta">CNPJ: {{ formatarCnpj(item.cnpj) }}</p>
               <p class="sugestao-card__meta">{{ formatarLocalidade(item) }}</p>
+              @if (item.telefone) {
+                <p class="sugestao-card__meta">Tel.: {{ formatarTelefone(item.telefone) }}</p>
+              }
+              @if (item.email) {
+                <p class="sugestao-card__meta">{{ item.email }}</p>
+              }
               <p class="sugestao-card__motivo">{{ item.motivo }}</p>
               @if (item.ja_cadastrado) {
                 <p-tag value="Já cadastrado" severity="secondary" />
@@ -206,7 +212,9 @@
   [contratacaoUuid]="uuid"
   [cnpjsCadastrados]="cnpjsCadastrados"
   [prefill]="prefillFornecedor"
-  [(visible)]="dialogVisible"
+  [enriquecerAoAbrir]="enriquecerAoAbrir"
+  [visible]="dialogVisible"
+  (visibleChange)="onDialogVisibleChange($event)"
   (saved)="onFornecedorSalvo($event)"
 />
 

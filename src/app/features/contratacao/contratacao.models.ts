@@ -132,17 +132,42 @@ export interface CadastrarFornecedorPayload {
   telefone?: string;
   email?: string;
   vendedor: string;
+  site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
 }
 
 export interface FornecedorBuscaResponse {
   encontrado: boolean;
-  origem?: SugestaoFornecedorOrigem;
+  origem?: SugestaoFornecedorOrigem | 'brasil_api';
   cnpj?: string;
   razao_social?: string;
   telefone?: string | null;
   email?: string | null;
+  vendedor?: string | null;
   cidade?: string | null;
   uf?: string | null;
+}
+
+export interface FornecedorEnrichmentResponse {
+  encontrado: boolean;
+  fonte: string;
+  cnpj?: string | null;
+  razao_social?: string | null;
+  telefone?: string | null;
+  email?: string | null;
+  vendedor?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  campos_preenchidos: string[];
+  aviso: string;
 }
 
 export type SugestaoFornecedorOrigem = 'historico_tenant' | 'catalogo_tenant' | 'ia_externa';
@@ -158,6 +183,10 @@ export interface SugestaoFornecedorItem {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
   motivo: string;
   ja_cadastrado: boolean;
 }

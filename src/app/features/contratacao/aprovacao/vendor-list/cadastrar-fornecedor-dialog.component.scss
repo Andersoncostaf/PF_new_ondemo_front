@@ -92,6 +92,36 @@
   font-size: 0.75rem;
 }
 
+.redes-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+
+    i {
+      color: var(--brand-blue, var(--primary-color));
+    }
+
+    a {
+      color: var(--brand-blue, var(--primary-color));
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
 .dialog-footer {
   display: flex;
   justify-content: flex-end;

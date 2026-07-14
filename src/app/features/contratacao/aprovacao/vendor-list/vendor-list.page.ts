@@ -50,6 +50,7 @@ export class VendorListPageComponent implements OnInit {
   successMessage = '';
   dialogVisible = false;
   prefillFornecedor: CadastrarFornecedorPayload | null = null;
+  enriquecerAoAbrir = false;
   aceiteEmAndamento: string | null = null;
   exclusaoEmAndamento: string | null = null;
 
@@ -106,7 +107,15 @@ export class VendorListPageComponent implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
     this.prefillFornecedor = null;
+    this.enriquecerAoAbrir = false;
     this.dialogVisible = true;
+  }
+
+  onDialogVisibleChange(visible: boolean): void {
+    this.dialogVisible = visible;
+    if (!visible) {
+      this.enriquecerAoAbrir = false;
+    }
   }
 
   gerarSugestoes(): void {
@@ -136,12 +145,19 @@ export class VendorListPageComponent implements OnInit {
     }
 
     this.prefillFornecedor = {
-      cnpj: item.cnpj,
+      cnpj: item.cnpj ?? '',
       razao_social: item.razao_social,
       telefone: item.telefone ?? undefined,
       email: item.email ?? undefined,
       vendedor: '',
+      site: item.site ?? null,
+      instagram: item.instagram ?? null,
+      linkedin: item.linkedin ?? null,
+      facebook: item.facebook ?? null,
+      cidade: item.cidade,
+      uf: item.uf,
     };
+    this.enriquecerAoAbrir = true;
     this.successMessage = '';
     this.errorMessage = '';
     this.dialogVisible = true;
@@ -172,6 +188,7 @@ export class VendorListPageComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = `Fornecedor ${fornecedor.razao_social} cadastrado com sucesso.`;
     this.prefillFornecedor = null;
+    this.enriquecerAoAbrir = false;
     this.sugestoes = this.sugestoes.map((s) =>
       s.cnpj === fornecedor.cnpj ? { ...s, ja_cadastrado: true } : s,
     );
@@ -210,6 +227,9 @@ export class VendorListPageComponent implements OnInit {
   }
 
   formatarCnpj(value: string): string {
+    if (!value?.trim()) {
+      return 'Não informado';
+    }
     return formatCnpj(value);
   }
 
