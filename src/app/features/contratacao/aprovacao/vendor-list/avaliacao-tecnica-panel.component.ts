@@ -93,10 +93,13 @@ export class AvaliacaoTecnicaPanelComponent implements OnInit, OnChanges {
   }
 
   get podeConcluir(): boolean {
+    const indice = this.indiceLocal;
     return (
       this.editavel &&
       this.temVencedor &&
       this.itens.every((i) => i.nota != null) &&
+      indice != null &&
+      indice >= this.indiceMinimo &&
       !this.salvando &&
       !this.concluindo
     );
@@ -138,7 +141,7 @@ export class AvaliacaoTecnicaPanelComponent implements OnInit, OnChanges {
       .salvarAvaliacaoTecnica(this.contratacaoUuid, {
         observacao: this.observacao.trim() || null,
         itens: this.itens.map((i) => ({
-          uuid: i.uuid,
+          codigo: i.codigo,
           nota: i.nota,
           observacao: i.observacao ?? null,
         })),
@@ -170,7 +173,7 @@ export class AvaliacaoTecnicaPanelComponent implements OnInit, OnChanges {
       .salvarAvaliacaoTecnica(this.contratacaoUuid, {
         observacao: this.observacao.trim() || null,
         itens: this.itens.map((i) => ({
-          uuid: i.uuid,
+          codigo: i.codigo,
           nota: i.nota,
           observacao: i.observacao ?? null,
         })),

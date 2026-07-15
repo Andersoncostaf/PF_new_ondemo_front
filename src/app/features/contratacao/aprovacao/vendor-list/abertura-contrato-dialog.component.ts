@@ -19,6 +19,7 @@ import { TagModule } from 'primeng/tag';
 
 import { ContratacaoVendorListApiService } from './contratacao-vendor-list-api.service';
 import {
+  AberturaApontamento,
   AberturaContrato,
   AberturaContratoItem,
   aberturaContratoStatusLabel,
@@ -59,6 +60,8 @@ export class AberturaContratoDialogComponent implements OnChanges {
   analisandoUuid: string | null = null;
   abertura: AberturaContrato | null = null;
   observacoes: Record<string, string> = {};
+  novoApontamento: Record<string, string> = {};
+  apontamentoEmAndamento: string | null = null;
   formError = '';
 
   readonly opcoesAnalise = [
@@ -162,7 +165,7 @@ export class AberturaContratoDialogComponent implements OnChanges {
     this.api
       .analisarItemAbertura(this.contratacaoUuid, this.fornecedor.uuid, item.uuid, {
         status_analise: status,
-        observacao: this.observacoes[item.uuid]?.trim() || null,
+        observacao_analise: this.observacoes[item.uuid]?.trim() || null,
       })
       .subscribe({
         next: (res) => {
@@ -248,7 +251,86 @@ export class AberturaContratoDialogComponent implements OnChanges {
     const next: Record<string, string> = {};
     for (const item of itens) {
       next[item.uuid] = item.observacao_analise ?? '';
+      if (!(item.uuid in this.novoApontamento)) {
+        this.novoApontamento[item.uuid] = '';
+      }
     }
     this.observacoes = next;
+  }
+
+  abrirApontamento(item: AberturaContratoItem): void {
+    if (!this.fornecedor || this.readonly || this.apontamentoEmAndamento) return;
+    const descricao = (this.novoApontamento[item.uuid] ?? '').trim();
+    if (!descricao) {
+      this.formError = 'Informe a descrição do apontamento.';
+      return;
+    }
+
+    this.apontamentoEmAndamento = item.uuid;
+    this.formError = '';
+    this.api
+      .abrirApontamentoAbertura(this.contratacaoUuid, this.fornecedor.uuid, item.uuid, {
+        descricao,
+      })
+      .subscribe({
+        next: (apontamento) => {
+          this.apontamentoEmAndamento = null;
+          this.novoApontamento[item.uuid] = '';
+          if (this.abertura) {
+            this.abertura = {
+              ...this.abertura,
+              status: 'em_ajuste',
+              itens: this.abertura.itens.map((i) =>
+                i.uuid === item.uuid
+                  ? { ...i, apontamentos: [...(i.apontamentos ?? []), apontamento] }
+                  : i,
+              ),
+            };
+          }
+          this.success.emit('Apontamento aberto.');
+          this.changed.emit();
+        },
+        error: (err) => {
+          this.apontamentoEmAndamento = null;
+          this.formError =
+            (err.error as { message?: string })?.message ??
+            'Não foi possível abrir o apontamento.';
+        },
+      });
+  }
+
+  encerrarApontamento(item: AberturaContratoItem, apontamento: AberturaApontamento): void {
+    if (!this.fornecedor || this.readonly || this.apontamentoEmAndamento) return;
+    this.apontamentoEmAndamento = apontamento.uuid;
+    this.formError = '';
+    this.api
+      .encerrarApontamentoAbertura(this.contratacaoUuid, this.fornecedor.uuid, apontamento.uuid)
+      .subscribe({
+        next: (atualizado) => {
+          this.apontamentoEmAndamento = null;
+          if (this.abertura) {
+            this.abertura = {
+              ...this.abertura,
+              itens: this.abertura.itens.map((i) =>
+                i.uuid === item.uuid
+                  ? {
+                      ...i,
+                      apontamentos: (i.apontamentos ?? []).map((a) =>
+                        a.uuid === apontamento.uuid ? atualizado : a,
+                      ),
+                    }
+                  : i,
+              ),
+            };
+          }
+          this.success.emit('Apontamento encerrado.');
+        },
+        error: (err) => {
+          this.apontamentoEmAndamento = null;
+          this.formError =
+            (err.error as { message?: string })?.message ??
+            'Não foi possível encerrar o apontamento.';
+        },
+      });
   }
 }

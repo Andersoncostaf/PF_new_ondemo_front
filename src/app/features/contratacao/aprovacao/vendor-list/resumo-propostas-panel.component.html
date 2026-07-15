@@ -145,5 +145,61 @@
         </tr>
       </ng-template>
     </p-table>
+
+    @if (equalizacao && equalizacao.linhas.length > 0) {
+      <div class="equalizacao-block">
+        <h4>Equalização por QQP</h4>
+        <p class="vl-section__hint">
+          Distribui a proposta equalizada (ou inicial) pelos itens do QQP para comparar fornecedores.
+        </p>
+        <p-table
+          [value]="equalizacao.linhas"
+          styleClass="p-datatable-gridlines vendor-list-table"
+          [tableStyle]="{ 'min-width': '48rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>#</th>
+              <th>Item</th>
+              <th>Und</th>
+              <th>Qtd</th>
+              @for (f of equalizacao.fornecedores; track f.uuid) {
+                <th>{{ f.descricao }}</th>
+              }
+              <th>Média</th>
+              <th>Δ %</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-linha>
+            <tr>
+              <td>{{ linha.item }}</td>
+              <td>{{ linha.descricao }}</td>
+              <td>{{ linha.unidade }}</td>
+              <td>{{ linha.quantidade }}</td>
+              @for (preco of linha.precos; track preco.fornecedor_uuid) {
+                <td>{{ formatCurrency(preco.preco_total) }}</td>
+              }
+              <td>{{ formatCurrency(linha.media_precos) }}</td>
+              <td>{{ formatPercent(linha.percentual_diferenca) }}</td>
+            </tr>
+          </ng-template>
+          @if (equalizacao.total) {
+            <ng-template pTemplate="footer">
+              <tr>
+                <td></td>
+                <td><strong>{{ equalizacao.total.descricao }}</strong></td>
+                <td></td>
+                <td></td>
+                @for (preco of equalizacao.total.precos; track preco.fornecedor_uuid) {
+                  <td><strong>{{ formatCurrency(preco.preco_total) }}</strong></td>
+                }
+                <td><strong>{{ formatCurrency(equalizacao.total.media_precos) }}</strong></td>
+                <td><strong>{{ formatPercent(equalizacao.total.percentual_diferenca) }}</strong></td>
+              </tr>
+            </ng-template>
+          }
+        </p-table>
+      </div>
+    }
   }
 </section>

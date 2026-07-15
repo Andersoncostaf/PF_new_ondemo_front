@@ -104,7 +104,56 @@
             }
           </tr>
         </ng-template>
-      </p-table>
+        </p-table>
+
+      <div class="apontamentos-block">
+        <h4>Apontamentos por item</h4>
+        @for (item of abertura!.itens; track item.uuid) {
+          <div class="apontamento-item">
+            <strong>{{ item.codigo }} — {{ item.label }}</strong>
+            @if (item.apontamentos?.length) {
+              <ul>
+                @for (ap of item.apontamentos; track ap.uuid) {
+                  <li>
+                    <span>{{ ap.descricao }}</span>
+                    <p-tag [value]="ap.status" severity="info" />
+                    @if (!readonly && ap.status !== 'encerrado') {
+                      <p-button
+                        label="Encerrar"
+                        size="small"
+                        [text]="true"
+                        [loading]="apontamentoEmAndamento === ap.uuid"
+                        (onClick)="encerrarApontamento(item, ap)"
+                      />
+                    }
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="dialog-empty">Sem apontamentos neste item.</p>
+            }
+            @if (!readonly && abertura?.status !== 'aceito') {
+              <div class="apontamento-form">
+                <textarea
+                  pInputTextarea
+                  rows="2"
+                  class="w-full"
+                  [(ngModel)]="novoApontamento[item.uuid]"
+                  maxlength="1000"
+                  placeholder="Descreva o apontamento para o fornecedor"
+                ></textarea>
+                <p-button
+                  label="Abrir apontamento"
+                  icon="pi pi-plus"
+                  size="small"
+                  [loading]="apontamentoEmAndamento === item.uuid"
+                  (onClick)="abrirApontamento(item)"
+                />
+              </div>
+            }
+          </div>
+        }
+      </div>
 
       @if (!readonly && abertura?.status !== 'aceito') {
         <div class="dialog-actions-bottom">

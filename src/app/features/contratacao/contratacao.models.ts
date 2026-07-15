@@ -117,6 +117,18 @@ export type AberturaContratoStatus =
   | 'em_ajuste'
   | 'aceito';
 
+export type VisitaTecnicaStatus =
+  | 'nao_iniciada'
+  | 'interesse_confirmado'
+  | 'aguardando_aceite_fornecedor'
+  | 'agendamento_feito';
+
+export type VisitaTecnicaResolucao =
+  | 'pendente'
+  | 'aguardando_aprovacao_dispensa'
+  | 'dispensada'
+  | 'concluida';
+
 export type AberturaItemStatusAnalise = 'pendente' | 'sim' | 'nao' | 'na';
 
 export type AvaliacaoTecnicaStatus = 'rascunho' | 'aguardando_area' | 'concluida';
@@ -147,6 +159,17 @@ export interface ContratacaoFornecedorListItem {
   abertura_enviada_em?: string | null;
   abertura_confirmada_em?: string | null;
   optante_simples?: boolean;
+  visita_tecnica_status?: VisitaTecnicaStatus | string;
+  visita_tecnica_resolucao?: VisitaTecnicaResolucao | string;
+  visita_tecnica_necessaria?: boolean | null;
+  visita_agendada_data?: string | null;
+  visita_agendada_hora?: string | null;
+  visita_agendada_local?: string | null;
+  visita_agendada_por_compras_em?: string | null;
+  visita_tecnica_observacao?: string | null;
+  visita_dispensa_justificativa?: string | null;
+  visita_tecnica_concluida_em?: string | null;
+  visita_tecnica_dispensada_em?: string | null;
   created_at?: string;
 }
 
@@ -184,10 +207,19 @@ export interface AvaliacaoTecnica {
 export interface SalvarAvaliacaoTecnicaPayload {
   observacao?: string | null;
   itens: Array<{
-    uuid: string;
+    codigo: string;
     nota: number | null;
     observacao?: string | null;
   }>;
+}
+
+export interface AberturaApontamento {
+  uuid: string;
+  descricao: string;
+  status: string;
+  autor_origem?: string | null;
+  resposta?: string | null;
+  created_at?: string;
 }
 
 export interface AberturaContratoItem {
@@ -206,18 +238,20 @@ export interface AberturaContratoItem {
   observacao_analise?: string | null;
   vencimento?: string | null;
   nome_arquivo?: string | null;
+  apontamentos?: AberturaApontamento[];
 }
 
 export interface AberturaContrato {
   status: AberturaContratoStatus | string;
   itens: AberturaContratoItem[];
+  fornecedor?: ContratacaoFornecedorListItem;
   total_obrigatorios?: number;
   conformes?: number;
 }
 
 export interface AnalisarAberturaItemPayload {
   status_analise: 'sim' | 'nao' | 'na';
-  observacao?: string | null;
+  observacao_analise?: string | null;
 }
 
 export interface FornecedorUsuario {
@@ -264,6 +298,63 @@ export const ABERTURA_CONTRATO_STATUS_LABELS: Record<AberturaContratoStatus, str
 
 export function aberturaContratoStatusLabel(status: string): string {
   return ABERTURA_CONTRATO_STATUS_LABELS[status as AberturaContratoStatus] ?? status;
+}
+
+export interface VisitaTecnica {
+  fornecedor_uuid: string;
+  visita_tecnica_status: VisitaTecnicaStatus | string;
+  visita_tecnica_resolucao: VisitaTecnicaResolucao | string;
+  visita_tecnica_necessaria: boolean | null;
+  visita_agendada_data: string | null;
+  visita_agendada_hora: string | null;
+  visita_agendada_local: string | null;
+  visita_agendada_por_compras_em: string | null;
+  visita_tecnica_observacao: string | null;
+  visita_dispensa_justificativa: string | null;
+  visita_tecnica_concluida_em: string | null;
+  visita_tecnica_dispensada_em: string | null;
+  resolvida: boolean;
+}
+
+export interface AgendarVisitaTecnicaPayload {
+  data: string;
+  hora: string;
+  local: string;
+  observacao?: string | null;
+}
+
+export interface ConcluirVisitaTecnicaPayload {
+  observacao?: string | null;
+  data?: string | null;
+  hora?: string | null;
+  local?: string | null;
+}
+
+export interface DispensarVisitaTecnicaPayload {
+  justificativa?: string | null;
+  observacao?: string | null;
+}
+
+export const VISITA_TECNICA_STATUS_LABELS: Record<VisitaTecnicaStatus, string> = {
+  nao_iniciada: 'Não iniciada',
+  interesse_confirmado: 'Interesse confirmado',
+  aguardando_aceite_fornecedor: 'Aguardando aceite',
+  agendamento_feito: 'Agendamento feito',
+};
+
+export const VISITA_TECNICA_RESOLUCAO_LABELS: Record<VisitaTecnicaResolucao, string> = {
+  pendente: 'Pendente',
+  aguardando_aprovacao_dispensa: 'Aguardando dispensa',
+  dispensada: 'Dispensada',
+  concluida: 'Concluída',
+};
+
+export function visitaTecnicaStatusLabel(status: string): string {
+  return VISITA_TECNICA_STATUS_LABELS[status as VisitaTecnicaStatus] ?? status;
+}
+
+export function visitaTecnicaResolucaoLabel(resolucao: string): string {
+  return VISITA_TECNICA_RESOLUCAO_LABELS[resolucao as VisitaTecnicaResolucao] ?? resolucao;
 }
 
 export interface CadastrarFornecedorPayload {

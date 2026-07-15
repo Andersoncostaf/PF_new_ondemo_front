@@ -6,13 +6,17 @@ import { environment } from '../../../../../environments/environment';
 import {
   AberturaContrato,
   AberturaContratoItem,
+  AgendarVisitaTecnicaPayload,
   AnalisarAberturaItemPayload,
+  AberturaApontamento,
   AtualizarFornecedorUsuarioPayload,
   AvaliacaoTecnica,
   CadastrarFornecedorPayload,
   CadastrarFornecedorUsuarioPayload,
+  ConcluirVisitaTecnicaPayload,
   ContratacaoFornecedorListItem,
   ContratacaoVendorListDetail,
+  DispensarVisitaTecnicaPayload,
   FornecedorBuscaResponse,
   FornecedorEnrichmentResponse,
   FornecedorUsuario,
@@ -21,6 +25,7 @@ import {
   SalvarAvaliacaoTecnicaPayload,
   SalvarPropostaPayload,
   SugestoesFornecedorResponse,
+  VisitaTecnica,
 } from '../../contratacao.models';
 
 @Injectable({ providedIn: 'root' })
@@ -178,6 +183,45 @@ export class ContratacaoVendorListApiService {
     );
   }
 
+  obterVisitaTecnica(uuid: string, fornecedorUuid: string): Observable<VisitaTecnica> {
+    return this.http.get<VisitaTecnica>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/visita-tecnica`,
+    );
+  }
+
+  agendarVisitaTecnica(
+    uuid: string,
+    fornecedorUuid: string,
+    payload: AgendarVisitaTecnicaPayload,
+  ): Observable<VisitaTecnica> {
+    return this.http.put<VisitaTecnica>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/visita-tecnica/agendar`,
+      payload,
+    );
+  }
+
+  concluirVisitaTecnica(
+    uuid: string,
+    fornecedorUuid: string,
+    payload: ConcluirVisitaTecnicaPayload = {},
+  ): Observable<VisitaTecnica> {
+    return this.http.post<VisitaTecnica>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/visita-tecnica/concluir`,
+      payload,
+    );
+  }
+
+  dispensarVisitaTecnica(
+    uuid: string,
+    fornecedorUuid: string,
+    payload: DispensarVisitaTecnicaPayload = {},
+  ): Observable<VisitaTecnica> {
+    return this.http.post<VisitaTecnica>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/visita-tecnica/dispensar`,
+      payload,
+    );
+  }
+
   listarUsuariosFornecedor(
     uuid: string,
     fornecedorUuid: string,
@@ -260,6 +304,41 @@ export class ContratacaoVendorListApiService {
   ): Observable<PropostaApontamento> {
     return this.http.post<PropostaApontamento>(
       `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/proposta/apontamentos/${apontamentoUuid}/encerrar`,
+      {},
+    );
+  }
+
+  abrirApontamentoAbertura(
+    uuid: string,
+    fornecedorUuid: string,
+    itemUuid: string,
+    payload: { descricao: string },
+  ): Observable<AberturaApontamento> {
+    return this.http.post<AberturaApontamento>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato/itens/${itemUuid}/apontamentos`,
+      payload,
+    );
+  }
+
+  responderApontamentoAbertura(
+    uuid: string,
+    fornecedorUuid: string,
+    apontamentoUuid: string,
+    payload: { resposta: string },
+  ): Observable<AberturaApontamento> {
+    return this.http.post<AberturaApontamento>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato/apontamentos/${apontamentoUuid}/responder`,
+      payload,
+    );
+  }
+
+  encerrarApontamentoAbertura(
+    uuid: string,
+    fornecedorUuid: string,
+    apontamentoUuid: string,
+  ): Observable<AberturaApontamento> {
+    return this.http.post<AberturaApontamento>(
+      `${this.baseUrl}/${uuid}/fornecedores/${fornecedorUuid}/abertura-contrato/apontamentos/${apontamentoUuid}/encerrar`,
       {},
     );
   }

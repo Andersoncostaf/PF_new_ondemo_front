@@ -18,6 +18,7 @@ import { ContratacaoVendorListApiService } from './contratacao-vendor-list-api.s
 import { FornecedorUsuariosDialogComponent } from './fornecedor-usuarios-dialog.component';
 import { PropostaApontamentosDialogComponent } from './proposta-apontamentos-dialog.component';
 import { ResumoPropostasPanelComponent } from './resumo-propostas-panel.component';
+import { VisitaTecnicaDialogComponent } from './visita-tecnica-dialog.component';
 import {
   AvaliacaoTecnica,
   CadastrarFornecedorPayload,
@@ -25,6 +26,7 @@ import {
   ContratacaoVendorListDetail,
   SugestaoFornecedorItem,
   aberturaContratoStatusLabel,
+  visitaTecnicaResolucaoLabel,
 } from '../../contratacao.models';
 import { contratacaoStatusLabel, contratacaoStatusSeverity } from '../../contratacao-status.utils';
 import { formatCnpj, formatTelefone } from '../../../../core/utils/br/br-document.util';
@@ -48,6 +50,7 @@ import { formatCnpj, formatTelefone } from '../../../../core/utils/br/br-documen
     FornecedorUsuariosDialogComponent,
     PropostaApontamentosDialogComponent,
     ResumoPropostasPanelComponent,
+    VisitaTecnicaDialogComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './vendor-list.page.html',
@@ -78,12 +81,14 @@ export class VendorListPageComponent implements OnInit {
 
   fornecedorDialog: ContratacaoFornecedorListItem | null = null;
   aberturaDialogVisible = false;
+  visitaDialogVisible = false;
   usuariosDialogVisible = false;
   apontamentosDialogVisible = false;
 
   readonly statusLabel = contratacaoStatusLabel;
   readonly statusSeverity = contratacaoStatusSeverity;
   readonly aberturaStatusLabel = aberturaContratoStatusLabel;
+  readonly visitaResolucaoLabel = visitaTecnicaResolucaoLabel;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -278,6 +283,11 @@ export class VendorListPageComponent implements OnInit {
     this.aberturaDialogVisible = true;
   }
 
+  abrirVisitaTecnica(fornecedor: ContratacaoFornecedorListItem): void {
+    this.fornecedorDialog = fornecedor;
+    this.visitaDialogVisible = true;
+  }
+
   abrirUsuarios(fornecedor: ContratacaoFornecedorListItem): void {
     this.fornecedorDialog = fornecedor;
     this.usuariosDialogVisible = true;
@@ -290,6 +300,25 @@ export class VendorListPageComponent implements OnInit {
 
   onAberturaChanged(): void {
     this.load();
+  }
+
+  onVisitaChanged(): void {
+    this.load();
+  }
+
+  visitaResolucaoSeverity(
+    resolucao: string | null | undefined,
+  ): 'success' | 'warn' | 'info' | 'secondary' {
+    switch (resolucao) {
+      case 'concluida':
+        return 'success';
+      case 'dispensada':
+        return 'info';
+      case 'aguardando_aprovacao_dispensa':
+        return 'warn';
+      default:
+        return 'secondary';
+    }
   }
 
   confirmarAprovarVendorList(): void {

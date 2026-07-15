@@ -161,6 +161,7 @@
             <th>Vendedor</th>
             <th style="min-width: 10rem">Participação</th>
             <th style="min-width: 8rem">Documentação</th>
+            <th style="min-width: 8rem">Visita técnica</th>
             <th style="min-width: 16rem">Ações</th>
           </tr>
         </ng-template>
@@ -204,6 +205,12 @@
               />
             </td>
             <td>
+              <p-tag
+                [value]="visitaResolucaoLabel(item.visita_tecnica_resolucao || 'pendente')"
+                [severity]="visitaResolucaoSeverity(item.visita_tecnica_resolucao)"
+              />
+            </td>
+            <td>
               <div class="acoes-cell">
                 <p-button
                   label="Documentação"
@@ -211,6 +218,13 @@
                   size="small"
                   [text]="true"
                   (onClick)="abrirDocumentacao(item)"
+                />
+                <p-button
+                  label="Visita técnica"
+                  icon="pi pi-map-marker"
+                  size="small"
+                  [text]="true"
+                  (onClick)="abrirVisitaTecnica(item)"
                 />
                 <p-button
                   label="Usuários"
@@ -244,7 +258,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="7">
+            <td colspan="8">
               Nenhum fornecedor cadastrado. Use “Cadastrar fornecedor” ou uma sugestão acima.
             </td>
           </tr>
@@ -255,6 +269,8 @@
     <app-resumo-propostas-panel
       [contratacaoUuid]="uuid"
       [fornecedores]="fornecedores"
+      [qqpItens]="contratacao?.qqp_itens ?? []"
+      [tituloServico]="contratacao?.titulo || 'Serviço contratado'"
       [readonly]="workflowReadonly"
       (changed)="onPropostasChanged()"
       (error)="onPanelError($event)"
@@ -310,6 +326,17 @@
   [readonly]="posCotacaoReadonly"
   (visibleChange)="aberturaDialogVisible = $event"
   (changed)="onAberturaChanged()"
+  (error)="onPanelError($event)"
+  (success)="onPanelSuccess($event)"
+/>
+
+<app-visita-tecnica-dialog
+  [contratacaoUuid]="uuid"
+  [fornecedor]="fornecedorDialog"
+  [visible]="visitaDialogVisible"
+  [readonly]="posCotacaoReadonly"
+  (visibleChange)="visitaDialogVisible = $event"
+  (changed)="onVisitaChanged()"
   (error)="onPanelError($event)"
   (success)="onPanelSuccess($event)"
 />

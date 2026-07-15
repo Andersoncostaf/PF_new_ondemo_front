@@ -1,0 +1,116 @@
+<p-dialog
+  [header]="titulo"
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [breakpoints]="{ '960px': '94vw', '640px': '98vw' }"
+  [style]="{ width: '36rem', maxWidth: '100%' }"
+  styleClass="visita-tecnica-dialog"
+>
+  <p class="dialog-intro">
+    Compras pode agendar, registrar a visita como concluída ou dispensá-la (sem portal do fornecedor).
+  </p>
+
+  @if (formError) {
+    <p-message severity="error" [text]="formError" styleClass="mb-3 w-full" />
+  }
+
+  @if (loading) {
+    <div class="dialog-loading">
+      <p-progressSpinner strokeWidth="4" [style]="{ width: '2rem', height: '2rem' }" />
+      <span>Carregando visita técnica…</span>
+    </div>
+  } @else {
+    <div class="status-row">
+      <span>Status</span>
+      <p-tag
+        [value]="statusLabel(visita?.visita_tecnica_status ?? 'nao_iniciada')"
+        severity="info"
+      />
+      <span>Resolução</span>
+      <p-tag
+        [value]="resolucaoLabel(visita?.visita_tecnica_resolucao ?? 'pendente')"
+        [severity]="resolucaoSeverity(visita?.visita_tecnica_resolucao)"
+      />
+    </div>
+
+    <div class="form-grid">
+      <label class="field">
+        <span>Data</span>
+        <input
+          pInputText
+          type="date"
+          [(ngModel)]="data"
+          [disabled]="!podeEditar || salvando"
+        />
+      </label>
+      <label class="field">
+        <span>Hora</span>
+        <input
+          pInputText
+          type="time"
+          [(ngModel)]="hora"
+          [disabled]="!podeEditar || salvando"
+        />
+      </label>
+      <label class="field field--full">
+        <span>Local</span>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="local"
+          maxlength="500"
+          placeholder="Endereço ou local da visita"
+          [disabled]="!podeEditar || salvando"
+        />
+      </label>
+      <label class="field field--full">
+        <span>Observação / justificativa</span>
+        <textarea
+          pInputTextarea
+          rows="3"
+          [(ngModel)]="observacao"
+          maxlength="600"
+          placeholder="Opcional — também usada na dispensa"
+          [disabled]="!podeEditar || salvando"
+        ></textarea>
+      </label>
+    </div>
+
+    @if (resolvida) {
+      <p class="dialog-empty">
+        Visita técnica já resolvida
+        ({{ visita?.visita_tecnica_resolucao === 'dispensada' ? 'dispensada' : 'concluída' }}).
+      </p>
+    }
+
+    @if (podeEditar) {
+      <div class="dialog-actions-bottom">
+        <p-button
+          label="Dispensar"
+          icon="pi pi-ban"
+          severity="secondary"
+          [outlined]="true"
+          [loading]="salvando"
+          (onClick)="dispensar()"
+        />
+        <p-button
+          label="Agendar"
+          icon="pi pi-calendar"
+          [outlined]="true"
+          [loading]="salvando"
+          (onClick)="agendar()"
+        />
+        <p-button
+          label="Concluir"
+          icon="pi pi-check"
+          severity="success"
+          [loading]="salvando"
+          (onClick)="concluir()"
+        />
+      </div>
+    }
+  }
+</p-dialog>

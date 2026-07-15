@@ -43,3 +43,12 @@
 :host ::ng-deep .row-vencedor > td {
   background: color-mix(in srgb, var(--green-50, #ecfdf5) 70%, transparent);
 }
+
+.equalizacao-block {
+  margin-top: 1.25rem;
+
+  h4 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+  }
+}

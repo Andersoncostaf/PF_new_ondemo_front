@@ -10,7 +10,15 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 
 import { ContratacaoVendorListApiService } from './contratacao-vendor-list-api.service';
-import { ContratacaoFornecedorListItem, SalvarPropostaPayload } from '../../contratacao.models';
+import {
+  EqualizacaoTabela,
+  montarTabelaEqualizacao,
+} from './equalizacao-propostas.util';
+import {
+  ContratacaoFornecedorListItem,
+  QqpItem,
+  SalvarPropostaPayload,
+} from '../../contratacao.models';
 
 interface PropostaRow {
   uuid: string;
@@ -44,6 +52,8 @@ interface PropostaRow {
 export class ResumoPropostasPanelComponent implements OnChanges {
   @Input({ required: true }) contratacaoUuid = '';
   @Input() fornecedores: ContratacaoFornecedorListItem[] = [];
+  @Input() qqpItens: QqpItem[] = [];
+  @Input() tituloServico = 'Serviço contratado';
   @Input() readonly = false;
   @Output() changed = new EventEmitter<void>();
   @Output() error = new EventEmitter<string>();
@@ -52,11 +62,12 @@ export class ResumoPropostasPanelComponent implements OnChanges {
   rows: PropostaRow[] = [];
   vencedorUuid: string | null = null;
   definindoVencedor = false;
+  equalizacao: EqualizacaoTabela | null = null;
 
   constructor(private readonly api: ContratacaoVendorListApiService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fornecedores']) {
+    if (changes['fornecedores'] || changes['qqpItens'] || changes['tituloServico']) {
       this.syncRows();
     }
   }
@@ -69,7 +80,11 @@ export class ResumoPropostasPanelComponent implements OnChanges {
   }
 
   economiaPercentual(row: PropostaRow): number | null {
-    if (row.proposta_equalizada == null || row.proposta_final == null || Number(row.proposta_equalizada) === 0) {
+    if (
+      row.proposta_equalizada == null ||
+      row.proposta_final == null ||
+      Number(row.proposta_equalizada) === 0
+    ) {
       return null;
     }
     return (
@@ -154,5 +169,9 @@ export class ResumoPropostasPanelComponent implements OnChanges {
       salvando: false,
     }));
     this.vencedorUuid = this.rows.find((r) => r.vencedor)?.uuid ?? null;
+    this.equalizacao =
+      this.fornecedores.length > 0
+        ? montarTabelaEqualizacao(this.qqpItens, this.fornecedores, this.tituloServico)
+        : null;
   }
 }

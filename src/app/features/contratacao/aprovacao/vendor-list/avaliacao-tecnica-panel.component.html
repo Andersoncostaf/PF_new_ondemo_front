@@ -32,6 +32,14 @@
       />
     }
 
+    @if (indiceLocal != null && indiceLocal < indiceMinimo) {
+      <p-message
+        severity="warn"
+        [text]="'Índice atual abaixo do mínimo de ' + indiceMinimo + '% para concluir.'"
+        styleClass="mb-3 w-full"
+      />
+    }
+
     <div class="indice-row">
       <span class="indice-row__label">Índice ponderado</span>
       <strong>
